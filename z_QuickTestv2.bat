@@ -41,31 +41,65 @@ if not defined STEAM_APPID (
 rem Get current timestamp for directory naming
 for /f "usebackq tokens=1" %%a in (`powershell -Command "Get-Date -Format 'yyyyMMdd_HHmmss'"`) do set "TIMESTAMP=%%a"
 
+echo Welcome to Tirien's Rebirth Mod Packager.
+echo Based on a script by Yoraiz0r.
+echo.
+
 rem Get mod folder from command line or prompt for input
 if not "%~1"=="" (
     set "MOD_FOLDER=%~1"
 ) else (
-    set /p "INPUT_FOLDER=Enter mod folder name (or press Enter to use default): "
+    echo Your mod folder should be in:
+    echo %MOD_BASE_DIR%
+    echo and contain a 'mod-content' folder which includes the full filepath of the assets you are modifying.
+    echo.
+    echo Example:
+    echo %MOD_BASE_DIR%\cloud-green-hair\mod-content\End\Content\Character\Player\PC0000_00_Cloud_Standard\Texture\[PC0000_00_Hair_C.uasset, PC0000_00_Hair_C.ubulk]
+    echo.
+:prompt_loop
+if "!INPUT_FOLDER!"=="" if "!LAST_USED_MOD_FOLDER!"=="" (
+    set "PROMPT_MSG=Enter mod folder name"
+    if defined LAST_USED_MOD_FOLDER set "PROMPT_MSG=!PROMPT_MSG! (or press Enter to use !LAST_USED_MOD_FOLDER!)"
+    set /p "INPUT_FOLDER=!PROMPT_MSG!: "
+    goto :prompt_loop
+)
     if "!INPUT_FOLDER!"=="" (
-        if not defined DEFAULT_MOD_FOLDER (
-            echo Error: No mod folder specified and DEFAULT_MOD_FOLDER not set in config.ini
+        if not defined LAST_USED_MOD_FOLDER (
+            echo Error: No mod folder specified and LAST_USED_MOD_FOLDER not set in config.ini
             echo Usage: %~nx0 [mod-folder-name]
             echo Example: %~nx0 tifa-beach-hair-red-black
+            timeout /t 2 /nobreak >nul
             exit /b 1
         )
         
-        echo Using default mod folder: %DEFAULT_MOD_FOLDER%
+        echo Using default mod folder: %LAST_USED_MOD_FOLDER%
         echo.
         set /p "CONFIRM=Continue with this mod folder? (Y/N): "
         if /i not "!CONFIRM!"=="Y" (
             echo Operation cancelled by user.
             exit /b 1
         )
-        set "MOD_FOLDER=%DEFAULT_MOD_FOLDER%"
+        set "MOD_FOLDER=%LAST_USED_MOD_FOLDER%"
     ) else (
         set "MOD_FOLDER=!INPUT_FOLDER!"
     )
 )
+
+rem Update LAST_USED_MOD_FOLDER in config.ini
+echo Updating last used mod folder...
+echo Current MOD_FOLDER value: %MOD_FOLDER%
+
+rem Create a temporary file
+type nul > config.ini.tmp
+for /f "usebackq tokens=*" %%a in ("config.ini") do (
+    set "line=%%a"
+    if "!line:~0,19!"=="LAST_USED_MOD_FOLDER" (
+        echo LAST_USED_MOD_FOLDER=%MOD_FOLDER%>> config.ini.tmp
+    ) else (
+        echo %%a>> config.ini.tmp
+    )
+)
+move /y config.ini.tmp config.ini > nul
 
 rem Set content path and verify it exists
 set "CONTENT_PATH=%MOD_BASE_DIR%\%MOD_FOLDER%\mod-content"
@@ -134,7 +168,7 @@ if /i not "!TEST_MOD!"=="Y" (
 
 rem Copy files to game directory for testing
 echo.
-echo Cleaning up previous test folders...
+echo Cleaning up previous test folders from game directory...
 for /d %%i in ("%GAME_DIR%\%MOD_NAME%_*") do rd /s /q "%%i"
 
 echo Copying mod files to game directory...
