@@ -1,29 +1,54 @@
 @echo off
 setlocal EnableDelayedExpansion
 
-rem ===== MANUAL MOD FOLDER SETTING =====
-rem Set this if not using command line argument
-set "DEFAULT_MOD_FOLDER=tifa-gothic-makeup-purple-lipstick"
-rem ====================================
+rem Load configuration from config.ini
+if not exist "config.ini" (
+    echo Error: config.ini not found!
+    echo Please ensure config.ini exists in the same directory as this script.
+    exit /b 1
+)
 
-rem Set static paths
-set "UNREALREZEN_DIR=D:\Everything\projects\ff7-rebirth-modding\tools\UnrealReZen_V01"
-set "MOD_BASE_DIR=D:\Everything\projects\ff7-rebirth-modding\my-mods"
-set "GAME_DIR=C:\Program Files (x86)\Steam\steamapps\common\FINAL FANTASY VII REBIRTH\End\Content\Paks"
-set "STEAM_EXE=C:\Program Files (x86)\Steam\steam.exe"
-set "STEAM_APPID=2909400"
+rem Read config.ini, skipping comment lines
+for /f "usebackq tokens=1,* delims==" %%a in ("config.ini") do (
+    set "line=%%a"
+    if not "!line:~0,1!"=="#" (
+        set "%%a=%%b"
+    )
+)
+
+rem Verify required settings are loaded
+if not defined UNREALREZEN_DIR (
+    echo Error: UNREALREZEN_DIR not set in config.ini
+    exit /b 1
+)
+if not defined MOD_BASE_DIR (
+    echo Error: MOD_BASE_DIR not set in config.ini
+    exit /b 1
+)
+if not defined GAME_DIR (
+    echo Error: GAME_DIR not set in config.ini
+    exit /b 1
+)
+if not defined STEAM_EXE (
+    echo Error: STEAM_EXE not set in config.ini
+    exit /b 1
+)
+if not defined STEAM_APPID (
+    echo Error: STEAM_APPID not set in config.ini
+    exit /b 1
+)
 
 rem Get current timestamp for directory naming
 for /f "usebackq tokens=1" %%a in (`powershell -Command "Get-Date -Format 'yyyyMMdd_HHmmss'"`) do set "TIMESTAMP=%%a"
 
-rem Get mod folder from command line or default
+rem Get mod folder from command line or prompt for input
 if not "%~1"=="" (
     set "MOD_FOLDER=%~1"
 ) else (
     set /p "INPUT_FOLDER=Enter mod folder name (or press Enter to use default): "
     if "!INPUT_FOLDER!"=="" (
-        if "%DEFAULT_MOD_FOLDER%"=="" (
-            echo Error: No mod folder specified and no default set.
+        if not defined DEFAULT_MOD_FOLDER (
+            echo Error: No mod folder specified and DEFAULT_MOD_FOLDER not set in config.ini
             echo Usage: %~nx0 [mod-folder-name]
             echo Example: %~nx0 tifa-beach-hair-red-black
             exit /b 1
