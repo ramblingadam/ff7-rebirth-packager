@@ -29,14 +29,14 @@ function Update-Config {
 function Show-FolderMenu {
     param($folders, $selectedIndex, $lastUsedIndex)
     Clear-Host
-    Write-Host "Welcome to Tirien's Rebirth Mod Packager."
-    Write-Host "Based on a script by Yoraiz0r.`n"
-    Write-Host "Your mod folder should be in:"
-    Write-Host "$($config.MOD_BASE_DIR)"
-    Write-Host "and contain a 'mod-content' folder which includes the full filepath of the assets you are modifying.`n"
-    Write-Host "Example:"
-    Write-Host "$($config.MOD_BASE_DIR)\cloud-green-hair\mod-content\End\Content\Character\Player\PC0000_00_Cloud_Standard\Texture\[PC0000_00_Hair_C.uasset, PC0000_00_Hair_C.ubulk]`n"
-    Write-Host "Select a mod folder using arrow keys (UP/DOWN) and press Enter to confirm:"
+    Write-Host "Welcome to Tirien's Rebirth Mod Packager." -ForegroundColor Green
+    Write-Host "Based on a script by Yoraiz0r <3`n" 
+    Write-Host "Your mod folder should be in:" 
+    Write-Host "$($config.MOD_BASE_DIR)" -ForegroundColor Yellow
+    Write-Host "and contain a 'mod-content' folder which includes the full filepath of the assets you are modifying.`n" 
+    Write-Host "Example:" 
+    Write-Host "$($config.MOD_BASE_DIR)\cloud-green-hair\mod-content\End\Content\Character\Player\PC0000_00_Cloud_Standard\Texture\[PC0000_00_Hair_C.uasset, PC0000_00_Hair_C.ubulk]`n" -ForegroundColor Yellow
+    Write-Host "Select a mod folder using arrow keys (UP/DOWN) and press Enter to confirm:" 
     Write-Host "Press Escape to cancel and enter a name manually`n"
     
     for ($i = 0; $i -lt $folders.Count; $i++) {
