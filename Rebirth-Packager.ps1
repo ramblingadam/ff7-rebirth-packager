@@ -27,7 +27,7 @@ function Update-Config {
 
 # Function to draw the menu
 function Show-FolderMenu {
-    param($folders, $selectedIndex)
+    param($folders, $selectedIndex, $lastUsedIndex)
     Clear-Host
     Write-Host "Welcome to Tirien's Rebirth Mod Packager."
     Write-Host "Based on a script by Yoraiz0r.`n"
@@ -40,10 +40,12 @@ function Show-FolderMenu {
     Write-Host "Press Escape to cancel and enter a name manually`n"
     
     for ($i = 0; $i -lt $folders.Count; $i++) {
+        $prefix = if ($i -eq $selectedIndex) { "-> " } else { "   " }
+        $suffix = if ($i -eq $lastUsedIndex) { " (last used)" } else { "" }
         if ($i -eq $selectedIndex) {
-            Write-Host "-> $($folders[$i])" -ForegroundColor Green
+            Write-Host "$prefix$($folders[$i])$suffix" -ForegroundColor Green
         } else {
-            Write-Host "   $($folders[$i])"
+            Write-Host "$prefix$($folders[$i])$suffix"
         }
     }
 }
@@ -55,6 +57,7 @@ function Get-ModFolder {
     if ($folders.Count -gt 0) {
         # Find index of last used folder
         $selectedIndex = 0
+        $lastUsedIndex = -1
         if ($config.LAST_USED_MOD_FOLDER) {
             $lastUsedIndex = [array]::IndexOf($folders, $config.LAST_USED_MOD_FOLDER)
             if ($lastUsedIndex -ge 0) {
@@ -65,7 +68,7 @@ function Get-ModFolder {
         $maxIndex = $folders.Count - 1
 
         while ($true) {
-            Show-FolderMenu $folders $selectedIndex
+            Show-FolderMenu $folders $selectedIndex $lastUsedIndex
 
             $key = $host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown")
 
@@ -114,9 +117,6 @@ if (-not $modFolder) {
     exit 1
 }
 
-# Update last used folder in config
-Update-Config "LAST_USED_MOD_FOLDER" $modFolder
-
 # Set content path and verify it exists
 $contentPath = Join-Path $config.MOD_BASE_DIR "$modFolder\mod-content"
 if (-not (Test-Path $contentPath)) {
@@ -124,6 +124,9 @@ if (-not (Test-Path $contentPath)) {
     Write-Host $contentPath
     exit 1
 }
+
+# Update last used folder in config
+Update-Config "LAST_USED_MOD_FOLDER" $modFolder
 
 # Convert dash-case to camelCase
 $modName = ($modFolder -split '-' | ForEach-Object { $_.Substring(0,1).ToUpper() + $_.Substring(1).ToLower() }) -join ''
@@ -204,12 +207,8 @@ if ($unrealReZenExitCode -eq 0) {
         Write-Host "`nExiting in 3 seconds..."
         Start-Sleep -Seconds 3
         exit 0
-    } else {
-        Write-Host "`nMod was exported but not installed. You can find the files in:"
-        Write-Host $exportDir
-        # exit 0
-    }
+    } 
 } else {
     Write-Host "Error: UnrealReZen failed to export the mod files."
-    # exit 1
+    exit 1
 }
