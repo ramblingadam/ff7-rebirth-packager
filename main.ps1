@@ -1,5 +1,3 @@
-
-
 # Function to update config file
 function Update-Config {
     param($key, $value)
@@ -8,12 +6,178 @@ function Update-Config {
     [System.IO.File]::WriteAllText("$PWD\config.ini", $content)
 }
 
+# Function to validate directory exists
+function Test-DirectoryValid {
+    param($path)
+    return (Test-Path $path -PathType Container)
+}
+
+# Function to validate file exists
+function Test-FileValid {
+    param($path)
+    return (Test-Path $path -PathType Leaf)
+}
+
+# Function to get a valid directory from user
+function Get-ValidDirectory {
+    param($prompt, $currentValue)
+    
+    while ($true) {
+        Write-Host "`n$prompt" -ForegroundColor Cyan
+        if ($currentValue) {
+            Write-Host "Current value: " -NoNewline
+            Write-Host $currentValue -ForegroundColor Green
+            $input = Read-Host "Press Enter to keep current value, or enter new path"
+            if ([string]::IsNullOrWhiteSpace($input)) {
+                return $currentValue
+            }
+        } else {
+            $input = Read-Host "Enter path"
+        }
+        
+        if (Test-DirectoryValid $input) {
+            return $input
+        }
+        Write-Host " Directory not found. Please enter a valid path." -ForegroundColor Red
+    }
+}
+
+# Function to get a valid file from user
+function Get-ValidFile {
+    param($prompt, $currentValue)
+    
+    while ($true) {
+        Write-Host "`n$prompt" -ForegroundColor Cyan
+        if ($currentValue) {
+            Write-Host "Current value: " -NoNewline
+            Write-Host $currentValue -ForegroundColor Green
+            $input = Read-Host "Press Enter to keep current value, or enter new path"
+            if ([string]::IsNullOrWhiteSpace($input)) {
+                return $currentValue
+            }
+        } else {
+            $input = Read-Host "Enter path"
+        }
+        
+        if (Test-FileValid $input) {
+            return $input
+        }
+        Write-Host " File not found. Please enter a valid path." -ForegroundColor Red
+    }
+}
+
+# Read config file
+$config = @{}
+if (Test-Path 'config.ini') {
+    Get-Content 'config.ini' | ForEach-Object {
+        if ($_ -match '^([^#].+?)=(.*)$') {
+            $config[$matches[1].Trim()] = $matches[2].Trim()
+        }
+    }
+}
+
+# Check if we need to run first-time setup
+$requiredSettings = @(
+    @{
+        Key = "UNREALREZEN_DIR"
+        Prompt = "Where is UnrealReZen installed?"
+        Validator = "Directory"
+        Example = "C:\UnrealReZen"
+        Description = "The directory containing UnrealReZen.exe"
+    },
+    @{
+        Key = "MOD_BASE_DIR"
+        Prompt = "Where do you want to store your mods?"
+        Validator = "Directory"
+        Example = "D:\FF7R-Mods"
+        Description = "The directory where all your mod folders will be stored"
+    },
+    @{
+        Key = "GAME_DIR"
+        Prompt = "Where is FF7 Rebirth installed?"
+        Validator = "Directory"
+        Example = "C:\Program Files (x86)\Steam\steamapps\common\FINAL FANTASY VII REBIRTH"
+        Description = "Your FF7 Rebirth installation directory"
+    },
+    @{
+        Key = "STEAM_EXE"
+        Prompt = "Where is Steam installed?"
+        Validator = "File"
+        Example = "C:\Program Files (x86)\Steam\steam.exe"
+        Description = "Path to your Steam executable"
+    },
+    @{
+        Key = "STEAM_APPID"
+        Prompt = "Steam App ID for FF7 Rebirth"
+        Validator = "None"
+        Example = "2909400"
+        Description = "The Steam App ID for FF7 Rebirth (this should not need to change)"
+    }
+)
+
+$needsSetup = $false
+foreach ($setting in $requiredSettings) {
+    if (-not $config.ContainsKey($setting.Key) -or [string]::IsNullOrWhiteSpace($config[$setting.Key])) {
+        $needsSetup = $true
+        break
+    }
+}
+
+if ($needsSetup) {
+    Clear-Host
+    Write-Host "+==========================================+" -ForegroundColor Yellow
+    Write-Host "|     Welcome to FF7 Rebirth Mod Tools     |" -ForegroundColor Yellow
+    Write-Host "+==========================================+`n" -ForegroundColor Yellow
+    
+    Write-Host "Let's set up your configuration. You can change these settings later by editing config.ini`n" -ForegroundColor Cyan
+    
+    foreach ($setting in $requiredSettings) {
+        Write-Host "+- Setting up: " -NoNewline -ForegroundColor Blue
+        Write-Host $setting.Key -ForegroundColor White
+        Write-Host "|  $($setting.Description)" -ForegroundColor Gray
+        Write-Host "|  Example: " -NoNewline -ForegroundColor Blue
+        Write-Host $setting.Example -ForegroundColor Gray
+        Write-Host "+------------------" -ForegroundColor Blue
+        
+        $currentValue = if ($config.ContainsKey($setting.Key)) { $config[$setting.Key] } else { $null }
+        
+        $newValue = switch ($setting.Validator) {
+            "Directory" { Get-ValidDirectory $setting.Prompt $currentValue }
+            "File" { Get-ValidFile $setting.Prompt $currentValue }
+            default {
+                if ($currentValue) {
+                    Write-Host "`n$($setting.Prompt)" -ForegroundColor Cyan
+                    Write-Host "Current value: " -NoNewline
+                    Write-Host $currentValue -ForegroundColor Green
+                    $input = Read-Host "Press Enter to keep current value, or enter new value"
+                    if ([string]::IsNullOrWhiteSpace($input)) { $currentValue } else { $input }
+                } else {
+                    Write-Host "`n$($setting.Prompt)" -ForegroundColor Cyan
+                    Read-Host "Enter value"
+                }
+            }
+        }
+        
+        $config[$setting.Key] = $newValue
+        Update-Config $setting.Key $newValue
+        Write-Host "(/) Setting saved!" -ForegroundColor Green
+        Write-Host
+    }
+    
+    Write-Host "+==========================================+" -ForegroundColor Green
+    Write-Host "|          Configuration Complete!          |" -ForegroundColor Green
+    Write-Host "+==========================================+" -ForegroundColor Green
+    Write-Host "`nPress any key to continue..."
+    $null = $host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown")
+    Clear-Host
+}
+
 # Function to draw the menu
 function Show-FolderMenu {
     param($folders, $selectedIndex, $lastUsedIndex)
     Clear-Host
     Write-Host "Welcome to Tirien's Rebirth Mod Packager." -ForegroundColor Green
-    Write-Host "Based on a script by Yoraiz0r <3`n"
+    Write-Host "Based on a script by Yoraiz0r `n"
 
     Write-Host "Edit the config.ini to set up your base directories.`n" -ForegroundColor Yellow
 
@@ -86,14 +250,6 @@ function Get-ModFolder {
 # Main script
 Write-Host "Welcome to Tirien's Rebirth Mod Packager."
 Write-Host "Based on a script by Yoraiz0r.`n"
-
-# Read config file
-$config = @{}
-Get-Content 'config.ini' | ForEach-Object {
-    if ($_ -match '^([^#].+?)=(.*)$') {
-        $config[$matches[1].Trim()] = $matches[2].Trim()
-    }
-}
 
 # Verify required settings
 @('UNREALREZEN_DIR', 'MOD_BASE_DIR', 'GAME_DIR', 'STEAM_EXE', 'STEAM_APPID') | ForEach-Object {

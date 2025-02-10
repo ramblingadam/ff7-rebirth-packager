@@ -2,7 +2,7 @@
 setlocal EnableDelayedExpansion
 
 rem Launch PowerShell script with bypass to avoid execution policy issues
-powershell -ExecutionPolicy Bypass -File "%~dp0Rebirth-Packager.ps1"
+powershell -ExecutionPolicy Bypass -File "%~dp0main.ps1"
 
 rem If PowerShell exits with an error, pause to show the error
 if errorlevel 1 (
