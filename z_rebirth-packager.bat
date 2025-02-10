@@ -78,10 +78,7 @@ if "!INPUT_FOLDER!"=="" (
 )
 
 rem Update LAST_USED_MOD_FOLDER in config.ini
-type nul > config.ini.tmp
 powershell -ExecutionPolicy Bypass -File update_config.ps1 "%MOD_FOLDER%"
-move /y config.ini.tmp config.ini > nul
-
 
 rem Set content path and verify it exists
 set "CONTENT_PATH=%MOD_BASE_DIR%\%MOD_FOLDER%\mod-content"
