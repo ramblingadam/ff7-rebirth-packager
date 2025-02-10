@@ -62,8 +62,6 @@ if not "%~1"=="" (
 
 :prompt_loop
 if "!INPUT_FOLDER!"=="" (
-    @REM set "PROMPT_MSG=Enter mod folder name"
-    @REM if defined LAST_USED_MOD_FOLDER set "PROMPT_MSG=!PROMPT_MSG! (or press Enter to use !LAST_USED_MOD_FOLDER!)"
     set /p "INPUT_FOLDER=!PROMPT_MSG!: "
     if "!INPUT_FOLDER!"=="" if defined LAST_USED_MOD_FOLDER (
         set "INPUT_FOLDER=%LAST_USED_MOD_FOLDER%"
