@@ -87,7 +87,7 @@ $requiredSettings = @(
     },
     @{
         Key = "MOD_BASE_DIR"
-        Prompt = "Where do you want to store your mods?"
+        Prompt = "Where do you keep your mods?"
         Validator = "Directory"
         Example = "D:\FF7R-Mods"
         Description = "The directory where all your mod folders will be stored"
@@ -125,9 +125,10 @@ foreach ($setting in $requiredSettings) {
 
 if ($needsSetup) {
     Clear-Host
-    Write-Host "+==========================================+" -ForegroundColor Yellow
-    Write-Host "|     Welcome to FF7 Rebirth Mod Tools     |" -ForegroundColor Yellow
-    Write-Host "+==========================================+`n" -ForegroundColor Yellow
+    Write-Host "+=========================================+" -ForegroundColor Yellow
+    Write-Host "|      Tirien's Rebirth Mod Packager      |" -ForegroundColor Yellow
+    Write-Host "|      Based on a script by Yoraiz0r      |" -ForegroundColor Yellow
+    Write-Host "+=========================================+`n" -ForegroundColor Yellow
     
     Write-Host "Let's set up your configuration. You can change these settings later by editing config.ini`n" -ForegroundColor Cyan
     
@@ -176,10 +177,12 @@ if ($needsSetup) {
 function Show-FolderMenu {
     param($folders, $selectedIndex, $lastUsedIndex)
     Clear-Host
-    Write-Host "Welcome to Tirien's Rebirth Mod Packager." -ForegroundColor Green
-    Write-Host "Based on a script by Yoraiz0r `n"
+    Write-Host "+=========================================+" -ForegroundColor Yellow
+    Write-Host "|      Tirien's Rebirth Mod Packager      |" -ForegroundColor Yellow
+    Write-Host "|      Based on a script by Yoraiz0r      |" -ForegroundColor Yellow
+    Write-Host "+=========================================+`n" -ForegroundColor Yellow
 
-    Write-Host "Edit the config.ini to set up your base directories.`n" -ForegroundColor Yellow
+    Write-Host "Edit the config.ini to set up your base directories.`n" -ForegroundColor Cyan
 
     Write-Host "Your mod folder should be in:" -ForegroundColor Yellow
     Write-Host "$($config.MOD_BASE_DIR)" 
@@ -303,6 +306,7 @@ $exportDir = Join-Path $config.MOD_BASE_DIR "$modFolder\exported-$timestamp"
 New-Item -ItemType Directory -Path $exportDir -Force | Out-Null
 
 # Set file paths
+$gamePakDir = Join-Path $config.GAME_DIR "\End\Content\Paks"
 $exportUtoc = Join-Path $exportDir "${modName}_P.utoc"
 $exportUcas = Join-Path $exportDir "${modName}_P.ucas"
 $exportPak = Join-Path $exportDir "${modName}_P.pak"
@@ -320,7 +324,7 @@ $unrealReZenArgs = @(
     "--content-path", $contentPath,
     "--compression-format", "Zlib",
     "--engine-version", "GAME_UE4_26",
-    "--game-dir", $config.GAME_DIR,
+    "--game-dir", $gamePakDir,
     "--output-path", $exportUtoc
 )
 & "./UnrealReZen.exe" $unrealReZenArgs
@@ -346,9 +350,11 @@ if ($unrealReZenExitCode -eq 0) {
     # Ask user if they want to install mod and launch game
     $response = Read-Host "Would you like to test the mod now? (Y/N): "
     if ($response -eq 'Y' -or $response -eq 'y') {
+       
+
         # Clean up previous versions of this mod
         Write-Host "`nCleaning up previous versions..."
-        Get-ChildItem -Path $config.GAME_DIR -Directory | Where-Object { 
+        Get-ChildItem -Path $gamePakDir -Directory | Where-Object { 
             $_.Name -like "$modName-*" 
         } | ForEach-Object {
             Write-Host "Removing: $($_.FullName)"
@@ -356,22 +362,21 @@ if ($unrealReZenExitCode -eq 0) {
         }
 
         # Copy files to game directory
-        $gamePakDir = Join-Path $config.GAME_DIR "$modName-$timestamp"
-        if (-not (Test-Path $gamePakDir)) {
-            New-Item -ItemType Directory -Path $gamePakDir -Force | Out-Null
+        $gameExportDir = Join-Path $gamePakDir "$modName-$timestamp"
+        if (-not (Test-Path $gameExportDir)) {
+            New-Item -ItemType Directory -Path $gameExportDir -Force | Out-Null
         }
 
         Write-Host "`nCopying files to game directory:"
-        Write-Host $gamePakDir
-        Copy-Item -Path $exportUtoc -Destination $gamePakDir -Force
-        Copy-Item -Path $exportUcas -Destination $gamePakDir -Force
-        Copy-Item -Path $exportPak -Destination $gamePakDir -Force
+        Write-Host $gameExportDir
+        Copy-Item -Path $exportUtoc -Destination $gameExportDir -Force
+        Copy-Item -Path $exportUcas -Destination $gameExportDir -Force
+        Copy-Item -Path $exportPak -Destination $gameExportDir -Force
         Write-Host "Files copied successfully`n"
 
         # Launch game and exit
         Write-Host "Launching game..."
         Start-Process $config.STEAM_EXE -ArgumentList "-applaunch", $config.STEAM_APPID
-        Write-Host "`nExiting in 3 seconds..."
         Start-Sleep -Seconds 3
         exit 0
     } 
