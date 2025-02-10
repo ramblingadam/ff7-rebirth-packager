@@ -1,21 +1,4 @@
-# Read config file
-$config = @{}
-Get-Content 'config.ini' | ForEach-Object {
-    if ($_ -match '^([^#].+?)=(.*)$') {
-        $config[$matches[1].Trim()] = $matches[2].Trim()
-    }
-}
 
-# Verify required settings
-@('UNREALREZEN_DIR', 'MOD_BASE_DIR', 'GAME_DIR', 'STEAM_EXE', 'STEAM_APPID') | ForEach-Object {
-    if (-not $config.ContainsKey($_) -or [string]::IsNullOrWhiteSpace($config[$_])) {
-        Write-Host "Error: $_ not set in config.ini"
-        exit 1
-    }
-}
-
-# Get current timestamp for directory naming
-$timestamp = Get-Date -Format 'yyyyMMdd_HHmmss'
 
 # Function to update config file
 function Update-Config {
@@ -94,6 +77,25 @@ function Get-ModFolder {
 # Main script
 Write-Host "Welcome to Tirien's Rebirth Mod Packager."
 Write-Host "Based on a script by Yoraiz0r.`n"
+
+# Read config file
+$config = @{}
+Get-Content 'config.ini' | ForEach-Object {
+    if ($_ -match '^([^#].+?)=(.*)$') {
+        $config[$matches[1].Trim()] = $matches[2].Trim()
+    }
+}
+
+# Verify required settings
+@('UNREALREZEN_DIR', 'MOD_BASE_DIR', 'GAME_DIR', 'STEAM_EXE', 'STEAM_APPID') | ForEach-Object {
+    if (-not $config.ContainsKey($_) -or [string]::IsNullOrWhiteSpace($config[$_])) {
+        Write-Host "Error: $_ not set in config.ini"
+        exit 1
+    }
+}
+
+# Get current timestamp for directory naming
+$timestamp = Get-Date -Format 'yyyyMMdd_HHmmss'
 
 # Get mod folder from arguments or prompt
 $modFolder = if ($args.Count -gt 0) { $args[0] } else { Get-ModFolder }
