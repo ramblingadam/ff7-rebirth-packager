@@ -14,13 +14,20 @@ function Show-FolderMenu {
     Clear-Host
     Write-Host "Welcome to Tirien's Rebirth Mod Packager." -ForegroundColor Green
     Write-Host "Based on a script by Yoraiz0r <3`n"
+
+    Write-Host "Edit the config.ini to set up your base directories.`n" -ForegroundColor Yellow
+
     Write-Host "Your mod folder should be in:" -ForegroundColor Yellow
     Write-Host "$($config.MOD_BASE_DIR)" 
     Write-Host "...and contain a 'mod-content' folder which includes the full original filepath of all assets you are packaging.`n" -ForegroundColor Red
+
     Write-Host "Example:" -ForegroundColor Yellow
     Write-Host "$($config.MOD_BASE_DIR)\"-NoNewline
     Write-Host "cloud-green-hair" -NoNewline -ForegroundColor Green
     Write-Host "\mod-content\End\Content\Character\Player\PC0000_00_Cloud_Standard\Texture\[PC0000_00_Hair_C.uasset, PC0000_00_Hair_C.ubulk]`n" 
+
+    Write-Host "The script will convert dash-cased filenames into a PascalCased mod name. For example, assets in the mod folder 'cloud-green-hair' will be packaged as 'CloudGreenHair'.`n"
+
     Write-Host "Select a mod folder using arrow keys (UP/DOWN) and press Enter to confirm:" -ForegroundColor Yellow
     Write-Host "Press Escape to cancel and enter a name manually`n" -ForegroundColor Yellow
     
