@@ -56,29 +56,23 @@ if not "%~1"=="" (
     echo Example:
     echo %MOD_BASE_DIR%\cloud-green-hair\mod-content\End\Content\Character\Player\PC0000_00_Cloud_Standard\Texture\[PC0000_00_Hair_C.uasset, PC0000_00_Hair_C.ubulk]
     echo.
+
+ set "PROMPT_MSG=Enter mod folder name"
+ if defined LAST_USED_MOD_FOLDER set "PROMPT_MSG=!PROMPT_MSG! (or press Enter to use !LAST_USED_MOD_FOLDER!)"
+
 :prompt_loop
-if "!INPUT_FOLDER!"=="" if "!LAST_USED_MOD_FOLDER!"=="" (
-    set "PROMPT_MSG=Enter mod folder name"
-    if defined LAST_USED_MOD_FOLDER set "PROMPT_MSG=!PROMPT_MSG! (or press Enter to use !LAST_USED_MOD_FOLDER!)"
+if "!INPUT_FOLDER!"=="" (
+    @REM set "PROMPT_MSG=Enter mod folder name"
+    @REM if defined LAST_USED_MOD_FOLDER set "PROMPT_MSG=!PROMPT_MSG! (or press Enter to use !LAST_USED_MOD_FOLDER!)"
     set /p "INPUT_FOLDER=!PROMPT_MSG!: "
+    if "!INPUT_FOLDER!"=="" if defined LAST_USED_MOD_FOLDER (
+        set "INPUT_FOLDER=%LAST_USED_MOD_FOLDER%"
+        goto :use_last_used
+    )
     goto :prompt_loop
 )
+:use_last_used
     if "!INPUT_FOLDER!"=="" (
-        if not defined LAST_USED_MOD_FOLDER (
-            echo Error: No mod folder specified and LAST_USED_MOD_FOLDER not set in config.ini
-            echo Usage: %~nx0 [mod-folder-name]
-            echo Example: %~nx0 tifa-beach-hair-red-black
-            timeout /t 2 /nobreak >nul
-            exit /b 1
-        )
-        
-        echo Using default mod folder: %LAST_USED_MOD_FOLDER%
-        echo.
-        set /p "CONFIRM=Continue with this mod folder? (Y/N): "
-        if /i not "!CONFIRM!"=="Y" (
-            echo Operation cancelled by user.
-            exit /b 1
-        )
         set "MOD_FOLDER=%LAST_USED_MOD_FOLDER%"
     ) else (
         set "MOD_FOLDER=!INPUT_FOLDER!"
@@ -86,20 +80,10 @@ if "!INPUT_FOLDER!"=="" if "!LAST_USED_MOD_FOLDER!"=="" (
 )
 
 rem Update LAST_USED_MOD_FOLDER in config.ini
-echo Updating last used mod folder...
-echo Current MOD_FOLDER value: %MOD_FOLDER%
-
-rem Create a temporary file
 type nul > config.ini.tmp
-for /f "usebackq tokens=*" %%a in ("config.ini") do (
-    set "line=%%a"
-    if "!line:~0,19!"=="LAST_USED_MOD_FOLDER" (
-        echo LAST_USED_MOD_FOLDER=%MOD_FOLDER%>> config.ini.tmp
-    ) else (
-        echo %%a>> config.ini.tmp
-    )
-)
+powershell -ExecutionPolicy Bypass -File update_config.ps1 "%MOD_FOLDER%"
 move /y config.ini.tmp config.ini > nul
+
 
 rem Set content path and verify it exists
 set "CONTENT_PATH=%MOD_BASE_DIR%\%MOD_FOLDER%\mod-content"
