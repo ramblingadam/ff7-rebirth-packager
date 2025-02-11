@@ -3,10 +3,10 @@
 Windows CLI tool for rapid packaging and testing mods for FF7 Rebirth
 
 Based on a script by Yoraiz0r
-#
- 
-https://github.com/user-attachments/assets/a54ed9a4-121c-4443-a95a-48807018df89
 
+#
+
+https://github.com/user-attachments/assets/a54ed9a4-121c-4443-a95a-48807018df89
 
 ### This tool:
 
@@ -18,13 +18,15 @@ https://github.com/user-attachments/assets/a54ed9a4-121c-4443-a95a-48807018df89
   FF7 Rebirth
 - Creates a .zip file for easy uploading to Nexus Mods in the timestamped export
   folder
-- If the user confirms:
-  - The mod files are copied to
-    `GAME_DIR/End/Content/Paks/YourModName_timestamp`
-  - If there are any previous version of the current mod name in the game's Paks
-    direcctory, will clean them up from the game's Pak directory first. (The
-    timestamped export folders in `MOD_BASE_DIR/your-mod-name` are NOT deleted)
-  - Lanunches the game
+- Asks the user if they want to test the mod immediately
+  - If the user confirms:
+    - The mod files are copied to
+      `GAME_DIR/End/Content/Paks/YourModName_timestamp`
+    - If there are any previous version of the current mod name in the game's
+      Paks direcctory, will clean them up from the game's Pak directory first.
+      (The timestamped export folders in `MOD_BASE_DIR/your-mod-name` are NOT
+      deleted)
+    - Launches the game
 
 # Requirements
 
