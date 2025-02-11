@@ -188,8 +188,8 @@ function Show-FolderMenu {
     Write-Host "|      Based on a script by Yoraiz0r      |" -ForegroundColor Yellow
     Write-Host "+=========================================+`n" -ForegroundColor Yellow
 
-    Write-Host "Edit the config.ini to set up your base directories."
     Write-Host "Please see README.md for instructions.`n" -ForegroundColor Yellow
+    Write-Host "Edit the config.ini to set up your base directories."
 
     # Write-Host "Your mod folders should be in:" -ForegroundColor Yellow
     # Write-Host "$($config.MOD_BASE_DIR)" 
