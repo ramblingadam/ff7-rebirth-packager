@@ -73,8 +73,21 @@ function Start-ConfigSetup {
     Write-Host "|      Tirien's Rebirth Mod Packager      |" -ForegroundColor Yellow
     Write-Host "|      Based on a script by Yoraiz0r      |" -ForegroundColor Yellow
     Write-Host "+=========================================+`n" -ForegroundColor Yellow
+
+
+    Write-Host "[!][!][!][!][!][!][!]  IMPORTANT  [!][!][!][[!]!][!][!][!]" -ForegroundColor Red
+    Write-Host "[!]" -NoNewline -ForegroundColor Red
+    Write-Host "    This script expects a specific file structure   " -NoNewLine
+    Write-Host "[!]" -ForegroundColor Red
+     Write-Host "[!]" -NoNewline -ForegroundColor Red
+    Write-Host "    in your mod folder to function properly.        "  -NoNewLine
+     Write-Host "[!]" -ForegroundColor Red
+     Write-Host "[!]" -NoNewline -ForegroundColor Red
+    Write-Host "    Please see README.md for instructions.          "  -NoNewLine
+    Write-Host "[!]" -ForegroundColor Red
+    Write-Host "[!][!][!][!][!][!][!][!][!]![!][!][!][!][!][[!]!][!][!][!]`n" -ForegroundColor Red
     
-    Write-Host "Let's set up your configuration. You can change these settings later by editing config.ini`n" -ForegroundColor Cyan
+    Write-Host "Let's set up your file paths. You can change these settings by editing config.ini`n" -ForegroundColor Cyan
     
     foreach ($setting in $requiredSettings) {
         Write-Host "Setting up: " -NoNewline -ForegroundColor Blue
@@ -297,7 +310,7 @@ Update-Config "LAST_USED_MOD_FOLDER" $modFolder
 $modName = ($modFolder -split '-' | ForEach-Object { $_.Substring(0,1).ToUpper() + $_.Substring(1).ToLower() }) -join ''
 
 # Create timestamped export directory
-$exportDir = Join-Path $config.MOD_BASE_DIR "$modFolder\exported-$timestamp"
+$exportDir = Join-Path $config.MOD_BASE_DIR "$modFolder\${modName}-$timestamp"
 New-Item -ItemType Directory -Path $exportDir -Force | Out-Null
 
 # Set file paths
