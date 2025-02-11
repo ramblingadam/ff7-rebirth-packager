@@ -3,6 +3,10 @@
 Windows CLI tool for rapid packaging and testing mods for FF7 Rebirth
 
 Based on a script by Yoraiz0r
+#
+ 
+https://github.com/user-attachments/assets/a54ed9a4-121c-4443-a95a-48807018df89
+
 
 ### This tool:
 
