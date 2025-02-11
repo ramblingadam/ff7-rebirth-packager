@@ -187,10 +187,9 @@ function Show-FolderMenu {
     Write-Host "+=========================================+`n" -ForegroundColor Yellow
 
     Write-Host "Please see README.md for instructions.`n" -ForegroundColor Yellow
-    Write-Host "Edit the config.ini to set up your base directories."
 
-    Write-Host "Select a mod folder using arrow keys (UP/DOWN) and press Enter to confirm:" -ForegroundColor Cyan
-    Write-Host "Press 'C' to open configuration setup`n" -ForegroundColor Yellow
+    Write-Host "Select a mod folder using arrow keys (UP/DOWN) and press Enter to confirm" -ForegroundColor Cyan
+    Write-Host "(Or press 'C' to open configuration setup)`n" -ForegroundColor Yellow
     
     for ($i = 0; $i -lt $folders.Count; $i++) {
         $prefix = if ($i -eq $selectedIndex) { "-> " } else { "   " }
@@ -341,50 +340,41 @@ if ($unrealReZenExitCode -eq 0) {
     Write-Host $exportDir\$modName.zip -ForegroundColor Green
 
     # Ask user if they want to install mod and launch game
-    Write-Host "`nWould you like to test the mod now? (Y/N)" -ForegroundColor Cyan
-    Write-Host "Press Y to launch game, N or ESC to exit..." -ForegroundColor Gray
+    Write-Host "`nWould you like to test the mod now?" -ForegroundColor Cyan
+    Write-Host "Press Y to launch game, any other key to exit..." -ForegroundColor Gray
 
-    while ($true) {
-        $key = $host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown")
-        switch ($key.VirtualKeyCode) {
-            89 { # 'Y' key
-                # Clean up previous versions of this mod in game directory
-                Write-Host "`nCleaning up previous versions..."
-                Get-ChildItem -Path $gamePakDir -Directory | Where-Object { 
-                    $_.Name -like "$modName-*" 
-                } | ForEach-Object {
-                    Write-Host "Removing: $($_.FullName)"
-                    Remove-Item $_.FullName -Recurse -Force
-                }
-
-                # Copy files to game directory
-                $gameExportDir = Join-Path $gamePakDir "$modName-$timestamp"
-                if (-not (Test-Path $gameExportDir)) {
-                    New-Item -ItemType Directory -Path $gameExportDir -Force | Out-Null
-                }
-
-                Write-Host "`nCopying files to game directory:"
-                Write-Host $gameExportDir
-                Copy-Item -Path $exportUtoc -Destination $gameExportDir -Force
-                Copy-Item -Path $exportUcas -Destination $gameExportDir -Force
-                Copy-Item -Path $exportPak -Destination $gameExportDir -Force
-                Write-Host "Files copied successfully`n"
-
-                # Launch game and exit
-                Write-Host "Launching game..."
-                Start-Process $config.STEAM_EXE -ArgumentList "-applaunch", $config.STEAM_APPID
-                Start-Sleep -Seconds 3
-                exit 0
-            }
-            78 { # 'N' key
-                exit 0
-            }
-            27 { # Escape key
-                exit 0
-            }
+    $key = $host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown")
+    if ($key.VirtualKeyCode -eq 89) { # 'Y' key
+        # Clean up previous versions of this mod in game directory
+        Write-Host "`nCleaning up previous versions in game directory..." -ForegroundColor Yellow
+        Get-ChildItem -Path $gamePakDir -Directory | Where-Object { 
+            $_.Name -like "$modName-*" 
+        } | ForEach-Object {
+            Write-Host "Removing: $($_.FullName)"
+            Remove-Item $_.FullName -Recurse -Force
+            Write-Host "Removed: $($_.FullName)" -ForegroundColor Green
         }
+        Start-Sleep -Seconds 1
+
+        # Copy files to game directory
+        $gameExportDir = Join-Path $gamePakDir "$modName-$timestamp"
+        if (-not (Test-Path $gameExportDir)) {
+            New-Item -ItemType Directory -Path $gameExportDir -Force | Out-Null
+        }
+
+        Write-Host "`nCopying files to game directory:" -ForegroundColor Yellow
+        Copy-Item -Path $exportUtoc -Destination $gameExportDir -Force
+        Copy-Item -Path $exportUcas -Destination $gameExportDir -Force
+        Copy-Item -Path $exportPak -Destination $gameExportDir -Force
+        Write-Host "Files copied successfully`n" -ForegroundColor Green
+
+        # Launch game and exit
+        Write-Host "Launching game..." -ForegroundColor Yellow
+        Start-Process $config.STEAM_EXE -ArgumentList "-applaunch", $config.STEAM_APPID
+        Start-Sleep -Seconds 3
     }
+    exit 0
 } else {
-    Write-Host "Error: UnrealReZen failed to export the mod files."
+    Write-Host "Error: UnrealReZen failed to export the mod files." -ForegroundColor Red
     exit 1
 }
