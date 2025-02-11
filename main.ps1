@@ -66,6 +66,56 @@ function Get-ValidFile {
     }
 }
 
+# Function to run configuration setup
+function Start-ConfigSetup {
+    Clear-Host
+    Write-Host "+=========================================+" -ForegroundColor Yellow
+    Write-Host "|      Tirien's Rebirth Mod Packager      |" -ForegroundColor Yellow
+    Write-Host "|      Based on a script by Yoraiz0r      |" -ForegroundColor Yellow
+    Write-Host "+=========================================+`n" -ForegroundColor Yellow
+    
+    Write-Host "Let's set up your configuration. You can change these settings later by editing config.ini`n" -ForegroundColor Cyan
+    
+    foreach ($setting in $requiredSettings) {
+        Write-Host "Setting up: " -NoNewline -ForegroundColor Blue
+        Write-Host $setting.Key -ForegroundColor White
+        Write-Host "$($setting.Description)" -ForegroundColor Gray
+        Write-Host "Example: " -NoNewline -ForegroundColor Blue
+        Write-Host $setting.Example -ForegroundColor Gray
+
+        $currentValue = if ($config.ContainsKey($setting.Key)) { $config[$setting.Key] } else { $null }
+        
+        $newValue = switch ($setting.Validator) {
+            "Directory" { Get-ValidDirectory $setting.Prompt $currentValue }
+            "File" { Get-ValidFile $setting.Prompt $currentValue }
+            default {
+                if ($currentValue) {
+                    Write-Host "`n$($setting.Prompt)" -ForegroundColor Cyan
+                    Write-Host "Current value: " -NoNewline
+                    Write-Host $currentValue -ForegroundColor Green
+                    $input = Read-Host "Press Enter to keep current value, or enter new value"
+                    if ([string]::IsNullOrWhiteSpace($input)) { $currentValue } else { $input }
+                } else {
+                    Write-Host "`n$($setting.Prompt)" -ForegroundColor Cyan
+                    Read-Host "Enter value"
+                }
+            }
+        }
+        
+        $config[$setting.Key] = $newValue
+        Update-Config $setting.Key $newValue
+        Write-Host "Setting saved!" -ForegroundColor Green
+        Write-Host 
+    }
+    
+    Write-Host "+==========================================+" -ForegroundColor Green
+    Write-Host "|          Configuration Complete!         |" -ForegroundColor Green
+    Write-Host "+==========================================+" -ForegroundColor Green
+    Write-Host "`nPress any key to return to mod selection..."
+    $null = $host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown")
+    Clear-Host
+}
+
 # Read config file
 $config = @{}
 if (Test-Path 'config.ini') {
@@ -124,59 +174,7 @@ foreach ($setting in $requiredSettings) {
 }
 
 if ($needsSetup) {
-    Clear-Host
-    Write-Host "+=========================================+" -ForegroundColor Yellow
-    Write-Host "|      Tirien's Rebirth Mod Packager      |" -ForegroundColor Yellow
-    Write-Host "|      Based on a script by Yoraiz0r      |" -ForegroundColor Yellow
-    Write-Host "+=========================================+`n" -ForegroundColor Yellow
-    
-    Write-Host "Let's set up your configuration. You can change these settings later by editing config.ini`n" -ForegroundColor Cyan
-    
-    foreach ($setting in $requiredSettings) {
-        # Write-Host "+- Setting up: " -NoNewline -ForegroundColor Blue
-        # Write-Host $setting.Key -ForegroundColor White
-        # Write-Host "|  $($setting.Description)" -ForegroundColor Gray
-        # Write-Host "|  Example: " -NoNewline -ForegroundColor Blue
-        # Write-Host $setting.Example -ForegroundColor Gray
-        # Write-Host "+------------------" -ForegroundColor Blue
-        Write-Host "Setting up: " -NoNewline -ForegroundColor Blue
-        Write-Host $setting.Key -ForegroundColor White
-        Write-Host "$($setting.Description)" -ForegroundColor Gray
-        Write-Host "Example: " -NoNewline -ForegroundColor Blue
-        Write-Host $setting.Example -ForegroundColor Gray
-
-        
-        $currentValue = if ($config.ContainsKey($setting.Key)) { $config[$setting.Key] } else { $null }
-        
-        $newValue = switch ($setting.Validator) {
-            "Directory" { Get-ValidDirectory $setting.Prompt $currentValue }
-            "File" { Get-ValidFile $setting.Prompt $currentValue }
-            default {
-                if ($currentValue) {
-                    Write-Host "`n$($setting.Prompt)" -ForegroundColor Cyan
-                    Write-Host "Current value: " -NoNewline
-                    Write-Host $currentValue -ForegroundColor Green
-                    $input = Read-Host "Press Enter to keep current value, or enter new value"
-                    if ([string]::IsNullOrWhiteSpace($input)) { $currentValue } else { $input }
-                } else {
-                    Write-Host "`n$($setting.Prompt)" -ForegroundColor Cyan
-                    Read-Host "Enter value"
-                }
-            }
-        }
-        
-        $config[$setting.Key] = $newValue
-        Update-Config $setting.Key $newValue
-        Write-Host "Setting saved!" -ForegroundColor Green
-        Write-Host 
-    }
-    
-    Write-Host "+==========================================+" -ForegroundColor Green
-    Write-Host "|          Configuration Complete!         |" -ForegroundColor Green
-    Write-Host "+==========================================+" -ForegroundColor Green
-    Write-Host "`nPress any key to continue..."
-    $null = $host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown")
-    Clear-Host
+    Start-ConfigSetup
 }
 
 # Function to draw the menu
@@ -191,17 +189,8 @@ function Show-FolderMenu {
     Write-Host "Please see README.md for instructions.`n" -ForegroundColor Yellow
     Write-Host "Edit the config.ini to set up your base directories."
 
-    # Write-Host "Your mod folders should be in:" -ForegroundColor Yellow
-    # Write-Host "$($config.MOD_BASE_DIR)" 
-    # Write-Host "...and contain a 'mod-content' folder which includes the full original filepath of all assets you are packaging.`n" -ForegroundColor Red
-
-    # Write-Host "Example:" -ForegroundColor Yellow
-    # Write-Host "$($config.MOD_BASE_DIR)\"-NoNewline
-    # Write-Host "cloud-green-hair" -NoNewline -ForegroundColor Green
-    # Write-Host "\mod-content\End\Content\Character\Player\PC0000_00_Cloud_Standard\Texture\[PC0000_00_Hair_C.uasset, PC0000_00_Hair_C.ubulk]`n" 
-
     Write-Host "Select a mod folder using arrow keys (UP/DOWN) and press Enter to confirm:" -ForegroundColor Cyan
-    Write-Host "Press Escape to cancel and enter a name manually`n" -ForegroundColor Yellow
+    Write-Host "Press 'C' to open configuration setup`n" -ForegroundColor Yellow
     
     for ($i = 0; $i -lt $folders.Count; $i++) {
         $prefix = if ($i -eq $selectedIndex) { "-> " } else { "   " }
@@ -246,6 +235,10 @@ function Get-ModFolder {
                 13 { # Enter
                     return $folders[$selectedIndex]
                 }
+                67 { # 'C' key
+                    Start-ConfigSetup
+                    continue
+                }
                 27 { # Escape
                     return $null
                 }
@@ -256,8 +249,6 @@ function Get-ModFolder {
 }
 
 # Main script
-Write-Host "Welcome to Tirien's Rebirth Mod Packager."
-Write-Host "Based on a script by Yoraiz0r.`n"
 
 # Verify required settings
 @('UNREALREZEN_DIR', 'MOD_BASE_DIR', 'GAME_DIR', 'STEAM_EXE', 'STEAM_APPID') | ForEach-Object {
@@ -316,12 +307,9 @@ $exportUtoc = Join-Path $exportDir "${modName}_P.utoc"
 $exportUcas = Join-Path $exportDir "${modName}_P.ucas"
 $exportPak = Join-Path $exportDir "${modName}_P.pak"
 
-Write-Host "`nUsing Mod Name: $modName"
-Write-Host "Content Path: $contentPath"
-Write-Host "Export Directory: $exportDir`n"
-Start-Sleep -Seconds 2
-
-Write-Host "Exporting mod files to: $exportDir`n"
+Write-Host "`nUsing Mod Name: " -NoNewline -ForegroundColor Yellow
+Write-Host "$modName`n" -ForegroundColor Green
+Start-Sleep -Seconds 1
 
 # Run UnrealReZen
 Push-Location $config.UNREALREZEN_DIR
@@ -344,47 +332,58 @@ if ($unrealReZenExitCode -eq 0) {
     $fs.Close()
     Start-Sleep -Seconds 1
 
-    Write-Host "`nMod files have been exported to:"
-    Write-Host $exportDir
+    Write-Host "`nMod files have been exported to:" -ForegroundColor Yellow
+    Write-Host "${exportDir}`n" -ForegroundColor Green
 
     # Create zip file
     Compress-Archive -Path (Join-Path $exportDir "*_P.*") -DestinationPath (Join-Path $exportDir "$modName.zip") -Force
-    Write-Host "Zip file created:"
-    Write-Host $exportDir\$modName.zip
+    Write-Host "Zip file created:" -ForegroundColor Yellow
+    Write-Host $exportDir\$modName.zip -ForegroundColor Green
 
     # Ask user if they want to install mod and launch game
-    $response = Read-Host "Would you like to test the mod now? (Y/N): "
-    if ($response -eq 'Y' -or $response -eq 'y') {
-       
+    Write-Host "`nWould you like to test the mod now? (Y/N)" -ForegroundColor Cyan
+    Write-Host "Press Y to launch game, N or ESC to exit..." -ForegroundColor Gray
 
-        # Clean up previous versions of this mod in game directory
-        Write-Host "`nCleaning up previous versions..."
-        Get-ChildItem -Path $gamePakDir -Directory | Where-Object { 
-            $_.Name -like "$modName-*" 
-        } | ForEach-Object {
-            Write-Host "Removing: $($_.FullName)"
-            Remove-Item $_.FullName -Recurse -Force
+    while ($true) {
+        $key = $host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown")
+        switch ($key.VirtualKeyCode) {
+            89 { # 'Y' key
+                # Clean up previous versions of this mod in game directory
+                Write-Host "`nCleaning up previous versions..."
+                Get-ChildItem -Path $gamePakDir -Directory | Where-Object { 
+                    $_.Name -like "$modName-*" 
+                } | ForEach-Object {
+                    Write-Host "Removing: $($_.FullName)"
+                    Remove-Item $_.FullName -Recurse -Force
+                }
+
+                # Copy files to game directory
+                $gameExportDir = Join-Path $gamePakDir "$modName-$timestamp"
+                if (-not (Test-Path $gameExportDir)) {
+                    New-Item -ItemType Directory -Path $gameExportDir -Force | Out-Null
+                }
+
+                Write-Host "`nCopying files to game directory:"
+                Write-Host $gameExportDir
+                Copy-Item -Path $exportUtoc -Destination $gameExportDir -Force
+                Copy-Item -Path $exportUcas -Destination $gameExportDir -Force
+                Copy-Item -Path $exportPak -Destination $gameExportDir -Force
+                Write-Host "Files copied successfully`n"
+
+                # Launch game and exit
+                Write-Host "Launching game..."
+                Start-Process $config.STEAM_EXE -ArgumentList "-applaunch", $config.STEAM_APPID
+                Start-Sleep -Seconds 3
+                exit 0
+            }
+            78 { # 'N' key
+                exit 0
+            }
+            27 { # Escape key
+                exit 0
+            }
         }
-
-        # Copy files to game directory
-        $gameExportDir = Join-Path $gamePakDir "$modName-$timestamp"
-        if (-not (Test-Path $gameExportDir)) {
-            New-Item -ItemType Directory -Path $gameExportDir -Force | Out-Null
-        }
-
-        Write-Host "`nCopying files to game directory:"
-        Write-Host $gameExportDir
-        Copy-Item -Path $exportUtoc -Destination $gameExportDir -Force
-        Copy-Item -Path $exportUcas -Destination $gameExportDir -Force
-        Copy-Item -Path $exportPak -Destination $gameExportDir -Force
-        Write-Host "Files copied successfully`n"
-
-        # Launch game and exit
-        Write-Host "Launching game..."
-        Start-Process $config.STEAM_EXE -ArgumentList "-applaunch", $config.STEAM_APPID
-        Start-Sleep -Seconds 3
-        exit 0
-    } 
+    }
 } else {
     Write-Host "Error: UnrealReZen failed to export the mod files."
     exit 1
