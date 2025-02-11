@@ -90,7 +90,7 @@ $requiredSettings = @(
         Prompt = "Where do you keep your mods?"
         Validator = "Directory"
         Example = "D:\FF7R-Mods"
-        Description = "The directory where all your mod folders will be stored"
+        Description = "The directory where your amazing mods live"
     },
     @{
         Key = "GAME_DIR"
@@ -111,7 +111,7 @@ $requiredSettings = @(
         Prompt = "Steam App ID for FF7 Rebirth"
         Validator = "None"
         Example = "2909400"
-        Description = "The Steam App ID for FF7 Rebirth (this should not need to change)"
+        Description = "The Steam App ID for FF7 Rebirth (You shouldn't change this)"
     }
 )
 
@@ -133,12 +133,18 @@ if ($needsSetup) {
     Write-Host "Let's set up your configuration. You can change these settings later by editing config.ini`n" -ForegroundColor Cyan
     
     foreach ($setting in $requiredSettings) {
-        Write-Host "+- Setting up: " -NoNewline -ForegroundColor Blue
+        # Write-Host "+- Setting up: " -NoNewline -ForegroundColor Blue
+        # Write-Host $setting.Key -ForegroundColor White
+        # Write-Host "|  $($setting.Description)" -ForegroundColor Gray
+        # Write-Host "|  Example: " -NoNewline -ForegroundColor Blue
+        # Write-Host $setting.Example -ForegroundColor Gray
+        # Write-Host "+------------------" -ForegroundColor Blue
+        Write-Host "Setting up: " -NoNewline -ForegroundColor Blue
         Write-Host $setting.Key -ForegroundColor White
-        Write-Host "|  $($setting.Description)" -ForegroundColor Gray
-        Write-Host "|  Example: " -NoNewline -ForegroundColor Blue
+        Write-Host "$($setting.Description)" -ForegroundColor Gray
+        Write-Host "Example: " -NoNewline -ForegroundColor Blue
         Write-Host $setting.Example -ForegroundColor Gray
-        Write-Host "+------------------" -ForegroundColor Blue
+
         
         $currentValue = if ($config.ContainsKey($setting.Key)) { $config[$setting.Key] } else { $null }
         
@@ -161,12 +167,12 @@ if ($needsSetup) {
         
         $config[$setting.Key] = $newValue
         Update-Config $setting.Key $newValue
-        Write-Host "(/) Setting saved!" -ForegroundColor Green
-        Write-Host
+        Write-Host "Setting saved!" -ForegroundColor Green
+        Write-Host 
     }
     
     Write-Host "+==========================================+" -ForegroundColor Green
-    Write-Host "|          Configuration Complete!          |" -ForegroundColor Green
+    Write-Host "|          Configuration Complete!         |" -ForegroundColor Green
     Write-Host "+==========================================+" -ForegroundColor Green
     Write-Host "`nPress any key to continue..."
     $null = $host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown")
@@ -182,20 +188,19 @@ function Show-FolderMenu {
     Write-Host "|      Based on a script by Yoraiz0r      |" -ForegroundColor Yellow
     Write-Host "+=========================================+`n" -ForegroundColor Yellow
 
-    Write-Host "Edit the config.ini to set up your base directories.`n" -ForegroundColor Cyan
+    Write-Host "Edit the config.ini to set up your base directories."
+    Write-Host "Please see README.md for instructions.`n" -ForegroundColor Yellow
 
-    Write-Host "Your mod folder should be in:" -ForegroundColor Yellow
-    Write-Host "$($config.MOD_BASE_DIR)" 
-    Write-Host "...and contain a 'mod-content' folder which includes the full original filepath of all assets you are packaging.`n" -ForegroundColor Red
+    # Write-Host "Your mod folders should be in:" -ForegroundColor Yellow
+    # Write-Host "$($config.MOD_BASE_DIR)" 
+    # Write-Host "...and contain a 'mod-content' folder which includes the full original filepath of all assets you are packaging.`n" -ForegroundColor Red
 
-    Write-Host "Example:" -ForegroundColor Yellow
-    Write-Host "$($config.MOD_BASE_DIR)\"-NoNewline
-    Write-Host "cloud-green-hair" -NoNewline -ForegroundColor Green
-    Write-Host "\mod-content\End\Content\Character\Player\PC0000_00_Cloud_Standard\Texture\[PC0000_00_Hair_C.uasset, PC0000_00_Hair_C.ubulk]`n" 
+    # Write-Host "Example:" -ForegroundColor Yellow
+    # Write-Host "$($config.MOD_BASE_DIR)\"-NoNewline
+    # Write-Host "cloud-green-hair" -NoNewline -ForegroundColor Green
+    # Write-Host "\mod-content\End\Content\Character\Player\PC0000_00_Cloud_Standard\Texture\[PC0000_00_Hair_C.uasset, PC0000_00_Hair_C.ubulk]`n" 
 
-    Write-Host "The script will convert dash-cased filenames into a PascalCased mod name. For example, assets in the mod folder 'cloud-green-hair' will be packaged as 'CloudGreenHair'.`n"
-
-    Write-Host "Select a mod folder using arrow keys (UP/DOWN) and press Enter to confirm:" -ForegroundColor Yellow
+    Write-Host "Select a mod folder using arrow keys (UP/DOWN) and press Enter to confirm:" -ForegroundColor Cyan
     Write-Host "Press Escape to cancel and enter a name manually`n" -ForegroundColor Yellow
     
     for ($i = 0; $i -lt $folders.Count; $i++) {
@@ -332,7 +337,7 @@ $unrealReZenExitCode = $LASTEXITCODE
 Pop-Location
 
 if ($unrealReZenExitCode -eq 0) {
-    # Write UCAS header exactly as in batch script
+    # Adjust UCAS header to be compatible with FF7 Rebirth
     $fs = New-Object IO.FileStream($exportUcas, [IO.FileMode]::Open, [IO.FileAccess]::ReadWrite)
     $header = [byte[]]@(0x8C, 0x06, 0x00, 0x30, 0xDE, 0x88, 0x30, 0xDC, 0x0C, 0xF0)
     $fs.Write($header, 0, $header.Length)
@@ -352,7 +357,7 @@ if ($unrealReZenExitCode -eq 0) {
     if ($response -eq 'Y' -or $response -eq 'y') {
        
 
-        # Clean up previous versions of this mod
+        # Clean up previous versions of this mod in game directory
         Write-Host "`nCleaning up previous versions..."
         Get-ChildItem -Path $gamePakDir -Directory | Where-Object { 
             $_.Name -like "$modName-*" 
