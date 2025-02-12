@@ -1,9 +1,9 @@
 # Function to update config file
 function Update-Config {
     param($key, $value)
-    $content = Get-Content 'config.ini' -Raw
+    $content = Get-Content '..\config.ini' -Raw
     $content = $content -replace "(?m)^$key=.*$", "$key=$value"
-    [System.IO.File]::WriteAllText("$PWD\config.ini", $content)
+    [System.IO.File]::WriteAllText("$PWD\..\config.ini", $content)
 }
 
 # Function to validate directory exists
@@ -131,8 +131,8 @@ function Start-ConfigSetup {
 
 # Read config file
 $config = @{}
-if (Test-Path 'config.ini') {
-    Get-Content 'config.ini' | ForEach-Object {
+if (Test-Path '..\config.ini') {
+    Get-Content '..\config.ini' | ForEach-Object {
         if ($_ -match '^([^#].+?)=(.*)$') {
             $config[$matches[1].Trim()] = $matches[2].Trim()
         }
