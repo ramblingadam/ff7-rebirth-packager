@@ -1,47 +1,51 @@
-$baseHairAssetPath = "End\Content\Character\Player"
+# Base path for hair assets
+$baseHairAssetPath = "End/Content/Character/Player"
 
+# Character file mappings with correct paths
 $characterFiles = @{
-  'Cloud' = @(
-      'Cloud_Hair_C.uasset',
-      'Cloud_Hair_N.uasset'
-  )
-  'Tifa' = @(
-      'PC0002_00_Tifa_Standard/PC0002_00_Hair_C.uasset',
-      'PC0002_05_Tifa_Soldier/PC0002_05_Hair_N.uasset',
-      'PC0002_08_Tifa_CostaClothing/PC0002_08_Hair_C.uasset'
-  )
-  # 'Tifa' = @(
-  #     'PC0002_00_Hair_C.uasset',
-  #     'PC0002_05_Hair_C.uasset',
-  #     'PC0002_08_Hair_C.uasset'
-  # )
-  'Barret' = @(
-      'PC0001_00_Barret_Standard/PC0001_00_Hair_C.uasset'
-  )
-  'Aerith' = @(
-      'Aerith_Hair_C.uasset',
-      'Aerith_Hair_N.uasset'
-  )
-  'Red XIII' = @(
-      'RedXIII_Fur_C.uasset',
-      'RedXIII_Fur_N.uasset'
-  )
-  'Yuffie' = @(
-      'Yuffie_Hair_C.uasset',
-      'Yuffie_Hair_N.uasset'
-  )
-  'Cait Sith' = @(
-      'CaitSith_Fur_C.uasset',
-      'CaitSith_Fur_N.uasset'
-  )
-  'Vincent' = @(
-      'Vincent_Hair_C.uasset',
-      'Vincent_Hair_N.uasset'
-  )
+    'Cloud' = @(
+        'Cloud_Hair_C.uasset',
+        'Cloud_Hair_N.uasset'
+    )
+    'Tifa' = @(
+        'PC0002_00_Tifa_Standard/Texture/PC0002_00_Hair_C.uasset',
+        'PC0002_05_Tifa_Soldier/Texture/PC0002_05_Hair_C.uasset',
+        'PC0002_08_Tifa_CostaClothing/Texture/PC0002_08_Hair_C.uasset'
+    )
+    'Barret' = @(
+        'PC0001_00_Barret_Standard/Texture/PC0001_00_Hair_C.uasset'
+    )
+    'Aerith' = @(
+        'Aerith_Hair_C.uasset',
+        'Aerith_Hair_N.uasset'
+    )
+    'Red XIII' = @(
+        'RedXIII_Fur_C.uasset',
+        'RedXIII_Fur_N.uasset'
+    )
+    'Yuffie' = @(
+        'Yuffie_Hair_C.uasset',
+        'Yuffie_Hair_N.uasset'
+    )
+    'Cait Sith' = @(
+        'CaitSith_Fur_C.uasset',
+        'CaitSith_Fur_N.uasset'
+    )
+    'Vincent' = @(
+        'Vincent_Hair_C.uasset',
+        'Vincent_Hair_N.uasset'
+    )
 }
 
-# Import functions from the packager script
-. ..\packager\main.ps1
+# Read config file to get MOD_BASE_DIR
+$config = @{}
+if (Test-Path '..\config.ini') {
+    Get-Content '..\config.ini' | ForEach-Object {
+        if ($_ -match '^([^#].+?)=(.*)$') {
+            $config[$matches[1].Trim()] = $matches[2].Trim()
+        }
+    }
+}
 
 # Function to show character selection menu
 function Show-CharacterMenu {
@@ -59,24 +63,31 @@ function Show-CharacterMenu {
     return $characters[$index]
 }
 
+# # Import just the mod selection function from the packager script
+# . ..\packager\main.ps1
+# $modSelectFunction = ${function:Show-ModMenu}.ToString()
+# Remove-Item function:Show-ModMenu
+# ${function:Show-ModMenu} = $modSelectFunction
+
 # Function to find files in mod directory
 function Find-CharacterFiles {
-  Write-Host "Finding character files..."
-  Write-Host "Mod path: $modPath"
-  Write-Host "Target files: $targetFiles"
-    param($modPath, $targetFiles)
+    param($modContentPath, $targetFiles)
     
+    Write-Host "Finding character files..."
+    Write-Host "Mod path: $modContentPath"
+    Write-Host "Target files: $targetFiles"
+
     $foundFiles = @{}
     foreach ($file in $targetFiles) {
+        $fullPath = Join-Path $modContentPath (Join-Path $baseHairAssetPath $file)
         Write-Host -NoNewline "Searching for $file... "
-        $found = Get-ChildItem -Path $modPath -Recurse -Filter $file -ErrorAction SilentlyContinue
-        if ($found) {
+        if (Test-Path $fullPath) {
             Write-Host "Found!" -ForegroundColor Green
-            $foundFiles[$file] = $found.FullName
+            $foundFiles[$file] = $fullPath
         } else {
-            Write-Host "Not found" -ForegroundColor Red
+                Write-Host "Not found" -ForegroundColor Red
+            }
         }
-    }
     return $foundFiles
 }
 
@@ -84,11 +95,12 @@ function Find-CharacterFiles {
 $character = Show-CharacterMenu
 $targetFiles = $characterFiles[$character]
 
-# Use the existing mod selection menu from main.ps1
-$modPath = Show-ModMenu
+# Get mod folder path
+# $modName = Show-ModMenu
+$modContentPath = Join-Path $config['MOD_BASE_DIR'] "tifa-hair-injection-test\mod-content"
 
 # Find character files
-$foundFiles = Find-CharacterFiles -modPath $modPath -targetFiles $targetFiles
+$foundFiles = Find-CharacterFiles -modContentPath $modContentPath -targetFiles $targetFiles
 
 # Check if all files were found
 $allFound = $foundFiles.Count -eq $targetFiles.Count
@@ -114,12 +126,71 @@ foreach ($file in $foundFiles.GetEnumerator()) {
     $textureExt = [System.IO.Path]::GetExtension($texturePath)
     $newTexturePath = Join-Path ([System.IO.Path]::GetDirectoryName($targetFile)) "$newTextureName$textureExt"
     
-    # Copy and rename texture file
-    Copy-Item $texturePath $newTexturePath -Force
+    Write-Host "`nProcessing file: $($file.Key)"
+    Write-Host "Target file: $targetFile"
+    Write-Host "New texture path: $newTexturePath"
     
-    # Call the texture injection script
-    $pythonScript = Join-Path $PSScriptRoot "UE4-DDS-Tools\src\main.py"
-    python $pythonScript --input $newTexturePath --output $targetFile
+    try {
+        # Copy and rename texture file
+        Write-Host "Copying texture file..." -NoNewline
+        Copy-Item $texturePath $newTexturePath -Force
+        Write-Host "Done!" -ForegroundColor Green
+        
+        # Call the texture injection script
+        $toolsDir = Join-Path $PSScriptRoot "UE4-DDS-Tools-v0.6.1-Batch"
+        $pythonExe = Join-Path $toolsDir "python\python.exe"
+        $pythonScript = Join-Path $toolsDir "src\main.py"
+        $filePathTxt = Join-Path $toolsDir "src\_file_path_.txt"
+        
+        Write-Host "Running texture injection..." -NoNewline
+        
+        # Write the target file path to _file_path_.txt
+        Set-Content -Path $filePathTxt -Value $targetFile
+        
+        # Get the directory of the target file to use as save folder
+        $saveFolder = Split-Path -Parent $targetFile
+        
+        # Change to the UE4-DDS-Tools directory
+        Push-Location $toolsDir
+        try {
+            # Call Python directly with our custom arguments
+            $pythonOutput = & $pythonExe -E $pythonScript $filePathTxt $newTexturePath --save_folder="$saveFolder" --skip_non_texture --image_filter=cubic 2>&1
+            
+            if ($LASTEXITCODE -eq 0) {
+                Write-Host "Done!" -ForegroundColor Green
+                Write-Host "`nPython Script Output:" -ForegroundColor Yellow
+                $pythonOutput | ForEach-Object { Write-Host $_ }
+                
+                # Clean up the copied texture file
+                Write-Host "Cleaning up temporary texture file..." -NoNewline
+                if (Test-Path $newTexturePath) {
+                    Remove-Item $newTexturePath -Force
+                    Write-Host "Done!" -ForegroundColor Green
+                } else {
+                    Write-Host "File not found!" -ForegroundColor Yellow
+                }
+            } else {
+                Write-Host "Failed!" -ForegroundColor Red
+                Write-Host "`nPython Script Output:" -ForegroundColor Yellow
+                $pythonOutput | ForEach-Object { Write-Host $_ }
+                throw "Python script failed with exit code $LASTEXITCODE"
+            }
+        }
+        finally {
+            # Always return to the original directory
+            Pop-Location
+        }
+    }
+    catch {
+        Write-Host "`nError occurred while processing $($file.Key):" -ForegroundColor Red
+        Write-Host $_.Exception.Message -ForegroundColor Red
+        $continue = Read-Host "`nDo you want to continue with the remaining files? (Y/N)"
+        if ($continue -ne 'Y') {
+            exit
+        }
+    }
 }
 
 Write-Host "`nProcess completed!" -ForegroundColor Green
+Write-Host "Press any key to exit..."
+$null = $Host.UI.RawUI.ReadKey('NoEcho,IncludeKeyDown')
