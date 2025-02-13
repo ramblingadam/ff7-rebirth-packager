@@ -1,1 +1,1 @@
-D:\Everything\projects\ff7-rebirth-modding\my-mods\tifa-hair-injection-test-green2\mod-content\End\Content\Character\Player\PC0002_05_Tifa_Soldier\Texture\PC0002_05_Hair_C.uasset
+D:\Everything\projects\ff7-rebirth-modding\my-mods\fancy-hair\mod-content\End\Content\Character\Player\PC0002_08_Tifa_CostaClothing\Texture\PC0002_08_Hair_C.uasset

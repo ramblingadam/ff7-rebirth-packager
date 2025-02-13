@@ -257,7 +257,7 @@ if (-not (Test-Path $contentPath)) {
 Update-Config "LAST_USED_MOD_FOLDER" $modFolder
 
 # Convert dash-case to camelCase
-$modName = ($modName -split '-' | ForEach-Object { $_.Substring(0,1).ToUpper() + $_.Substring(1).ToLower() }) -join ''
+$modName = ($modFolder -split '-' | ForEach-Object { $_.Substring(0,1).ToUpper() + $_.Substring(1).ToLower() }) -join ''
 
 # Create timestamped export directory
 $exportDir = Join-Path $config.MOD_BASE_DIR "$modFolder\${modName}-$timestamp"
