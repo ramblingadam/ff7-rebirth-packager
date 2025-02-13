@@ -1,10 +1,5 @@
-# Function to update config file
-function Update-Config {
-    param($key, $value)
-    $content = Get-Content '..\config.ini' -Raw
-    $content = $content -replace "(?m)^$key=.*$", "$key=$value"
-    [System.IO.File]::WriteAllText("$PWD\..\config.ini", $content)
-}
+# Import shared utilities
+. ..\shared-utils.ps1
 
 # Function to validate directory exists
 function Test-DirectoryValid {
@@ -64,6 +59,41 @@ function Get-ValidFile {
         }
         Write-Host " File not found. Please enter a valid path." -ForegroundColor Red
     }
+}
+
+# Function to start configuration setup
+function Start-ConfigSetup {
+    Clear-Host
+    Write-Host "+=========================================+" -ForegroundColor Yellow
+    Write-Host "|      Tirien's Rebirth Mod Packager      |" -ForegroundColor Yellow
+    Write-Host "|      Based on a script by Yoraiz0r      |" -ForegroundColor Yellow
+    Write-Host "+=========================================+`n" -ForegroundColor Yellow
+    
+    Write-Host "Configuration Setup" -ForegroundColor Cyan
+    
+    # Get tool directory
+    $config.UNREALREZEN_DIR = Get-ValidDirectory "Enter UnrealReZen directory path" $config.UNREALREZEN_DIR
+    Update-Config "UNREALREZEN_DIR" $config.UNREALREZEN_DIR
+    
+    # Get mod base directory
+    $config.MOD_BASE_DIR = Get-ValidDirectory "Enter mod base directory path" $config.MOD_BASE_DIR
+    Update-Config "MOD_BASE_DIR" $config.MOD_BASE_DIR
+    
+    # Get game directory
+    $config.GAME_DIR = Get-ValidDirectory "Enter game directory path" $config.GAME_DIR
+    Update-Config "GAME_DIR" $config.GAME_DIR
+    
+    # Get Steam executable
+    $config.STEAM_EXE = Get-ValidFile "Enter Steam executable path" $config.STEAM_EXE
+    Update-Config "STEAM_EXE" $config.STEAM_EXE
+}
+
+# Function to update config file
+function Update-Config {
+    param($key, $value)
+    $content = Get-Content '..\config.ini' -Raw
+    $content = $content -replace "(?m)^$key=.*$", "$key=$value"
+    [System.IO.File]::WriteAllText("$PWD\..\config.ini", $content)
 }
 
 # Function to run configuration setup
@@ -217,6 +247,7 @@ function Show-FolderMenu {
 
 # Function to get mod folder selection
 function Get-ModFolder {
+    param($config)
     $folders = Get-ChildItem -Path $config.MOD_BASE_DIR -Directory | Select-Object -ExpandProperty Name
     
     if ($folders.Count -gt 0) {
@@ -262,6 +293,18 @@ function Get-ModFolder {
 
 # Main script
 
+Clear-Host
+
+# Get mod folder selection
+$modName = Get-ModFolder $config
+if ($modName -eq "CONFIG") {
+    Start-ConfigSetup
+    exit
+}
+if (-not $modName) {
+    exit
+}
+
 # Verify required settings
 @('UNREALREZEN_DIR', 'MOD_BASE_DIR', 'GAME_DIR', 'STEAM_EXE', 'STEAM_APPID') | ForEach-Object {
     if (-not $config.ContainsKey($_) -or [string]::IsNullOrWhiteSpace($config[$_])) {
@@ -273,30 +316,8 @@ function Get-ModFolder {
 # Get current timestamp for directory naming
 $timestamp = Get-Date -Format 'yyyyMMdd_HHmmss'
 
-# Get mod folder from arguments or prompt
-$modFolder = if ($args.Count -gt 0) { $args[0] } else { Get-ModFolder }
-
-if (-not $modFolder) {
-    $promptMsg = "Enter mod folder name"
-    if ($config.LAST_USED_MOD_FOLDER) {
-        $promptMsg += " (or press Enter to use $($config.LAST_USED_MOD_FOLDER))"
-    }
-    
-    $modFolder = Read-Host -Prompt $promptMsg
-    
-    if (-not $modFolder -and $config.LAST_USED_MOD_FOLDER) {
-        $modFolder = $config.LAST_USED_MOD_FOLDER
-        Write-Host "Using last used mod folder: $modFolder"
-    }
-}
-
-if (-not $modFolder) {
-    Write-Host "No mod folder specified and no last used folder available."
-    exit 1
-}
-
 # Set content path and verify it exists
-$contentPath = Join-Path $config.MOD_BASE_DIR "$modFolder\mod-content"
+$contentPath = Join-Path $config.MOD_BASE_DIR "$modName\mod-content"
 if (-not (Test-Path $contentPath)) {
     Write-Host "Error: Mod content path not found:"
     Write-Host $contentPath
@@ -304,13 +325,13 @@ if (-not (Test-Path $contentPath)) {
 }
 
 # Update last used folder in config
-Update-Config "LAST_USED_MOD_FOLDER" $modFolder
+Update-Config "LAST_USED_MOD_FOLDER" $modName
 
 # Convert dash-case to camelCase
-$modName = ($modFolder -split '-' | ForEach-Object { $_.Substring(0,1).ToUpper() + $_.Substring(1).ToLower() }) -join ''
+$modName = ($modName -split '-' | ForEach-Object { $_.Substring(0,1).ToUpper() + $_.Substring(1).ToLower() }) -join ''
 
 # Create timestamped export directory
-$exportDir = Join-Path $config.MOD_BASE_DIR "$modFolder\${modName}-$timestamp"
+$exportDir = Join-Path $config.MOD_BASE_DIR "$modName\${modName}-$timestamp"
 New-Item -ItemType Directory -Path $exportDir -Force | Out-Null
 
 # Set file paths
