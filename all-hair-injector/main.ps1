@@ -309,6 +309,40 @@ function Get-TexturePath {
     } while ($true)
 }
 
+# Function to handle end of mod operation
+function Complete-ModOperation {
+    param(
+        $modFolder,
+        $isNew
+    )
+    
+    # Update last used mod in config
+    Update-Config "LAST_USED_MOD_FOLDER" $modFolder
+    
+    # Show completion message
+    if ($isNew) {
+        Write-Host "`nMod creation complete!" -ForegroundColor Green
+    } else {
+        Write-Host "`nMod update complete!" -ForegroundColor Green
+    }
+    
+    # Ask about packaging
+    Write-Host "`nWould you like to package and test your mod? (Y/N)" -ForegroundColor Cyan
+    
+    # Wait for keypress
+    $key = $Host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown")
+    
+    if ($key.Character -eq 'y' -or $key.Character -eq 'Y') {
+        Write-Host "`nLaunching packager..." -ForegroundColor Green
+        
+        # Launch the packager script
+        $packagerPath = Join-Path $PSScriptRoot "..\packager\start.bat"
+        Start-Process -FilePath $packagerPath -Wait
+    } else {
+        Write-Host "`nSkipping packaging." -ForegroundColor Yellow
+    }
+}
+
 # Read config file to get MOD_BASE_DIR
 $config = @{}
 if (Test-Path '..\config.ini') {
@@ -353,8 +387,8 @@ if ($updateMenuIndex -eq 0) {
     # Perform texture injection
     Start-TextureInjection $character $modContentPath $texturePath
     
-    Write-Host "`nMod creation complete!" -ForegroundColor Green
-    Write-Host "`nWould you like to package and test your new mod?" -ForegroundColor Green
+    # Handle completion
+    Complete-ModOperation $newModFolder $true
 }
 
 # Update existing mod
@@ -386,7 +420,6 @@ if ($updateMenuIndex -eq 1) {
     
     Start-TextureInjection $character $modContentPath $texturePath
     
-    Write-Host "`nMod update complete!" -ForegroundColor Green
-    Write-Host "`nWould you like to package and test your updated mod?" -ForegroundColor Green
-    exit
+    # Handle completion
+    Complete-ModOperation $modFolder $false
 }
