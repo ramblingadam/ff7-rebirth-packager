@@ -4,8 +4,8 @@ $baseHairAssetPath = "End/Content/Character/Player"
 # Character file mappings with correct paths
 $characterFiles = @{
     'Cloud' = @(
-        'Cloud_Hair_C.uasset',
-        'Cloud_Hair_N.uasset'
+        'PC0000_00_Cloud_Standard/Texture/PC0000_00_Cloud_Standard.uasset',
+        'PC0000_06_Cloud_Soldier/Texture/PC0000_06_Cloud_Soldier.uasset'
     )
     'Tifa' = @(
         'PC0002_00_Tifa_Standard/Texture/PC0002_00_Hair_C.uasset',
@@ -16,25 +16,23 @@ $characterFiles = @{
         'PC0001_00_Barret_Standard/Texture/PC0001_00_Hair_C.uasset'
     )
     'Aerith' = @(
-        'Aerith_Hair_C.uasset',
-        'Aerith_Hair_N.uasset'
+        'PC0003_00_Aerith_Standard/Texture/PC0003_00_Hair_C.uasset',
+        'PC0003_05_Aerith_Soldier/Texture/PC0003_05_Hair_C.uasset'
     )
     'Red XIII' = @(
-        'RedXIII_Fur_C.uasset',
-        'RedXIII_Fur_N.uasset'
+        'PC0004_00_RedXIII_Standard/Texture/PC0004_00_Hair_C.uasset',
+        'PC0004_02_RedXIII_Loveless/Texture/PC0004_02_Hair_C.uasset'
     )
     'Yuffie' = @(
-        'Yuffie_Hair_C.uasset',
-        'Yuffie_Hair_N.uasset'
+        'PC0005_00_Yuffie_Standard/Texture/PC0005_00_Hair_C.uasset'
     )
     'Cait Sith' = @(
-        'CaitSith_Fur_C.uasset',
-        'CaitSith_Fur_N.uasset'
+        'PC0007_00_CaitSith_Standard/Texture/PC0007_00_Hair_C.uasset'
     )
-    'Vincent' = @(
-        'Vincent_Hair_C.uasset',
-        'Vincent_Hair_N.uasset'
-    )
+    # 'Vincent' = @(
+    #     'Vincent_Hair_C.uasset',
+    #     'Vincent_Hair_N.uasset'
+    # )
 }
 
 # Read config file to get MOD_BASE_DIR
