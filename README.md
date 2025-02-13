@@ -1,10 +1,15 @@
-# FF7 Rebirth Packager
+# FF7 Rebirth Modding CLI Tools - Packager & Hair Mod Builder
 
-Windows CLI tool for rapid packaging and testing mods for FF7 Rebirth
+Windows CLI tools for rapid packaging and testing mods for FF7 Rebirth
 
-Based on a script by Yoraiz0r
+This repo currently sports two tools:
 
-#
+- Packager: A quick mod packaging/testing script
+- EZ Hair Mod Maker: A quick hair mod creation script
+
+# Packager
+
+Packaging/testing tool based on a script by Yoraiz0r
 
 https://github.com/user-attachments/assets/a54ed9a4-121c-4443-a95a-48807018df89
 
