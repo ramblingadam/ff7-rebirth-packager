@@ -1,1 +1,1 @@
-D:\Everything\projects\ff7-rebirth-modding\my-mods\fancy-hair\mod-content\End\Content\Character\Player\PC0002_08_Tifa_CostaClothing\Texture\PC0002_08_Hair_C.uasset
+D:\Everything\projects\ff7-rebirth-modding\my-mods\barret-hair-white\mod-content\End\Content\Character\Player\PC0001_00_Barret_Standard\Texture\PC0001_00_Hair_C.uasset

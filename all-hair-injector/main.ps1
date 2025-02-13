@@ -173,6 +173,8 @@ function Start-TextureInjection {
             try {
                 # Call Python with our custom arguments
                 $pythonOutput = & $pythonExe -E $pythonScript $filePathTxt $newTexturePath --save_folder="$targetDir" --skip_non_texture --image_filter=cubic 2>&1
+
+                Start-Sleep -Seconds 1
                 
                 if ($LASTEXITCODE -eq 0) {
                     Write-Host "Done!" -ForegroundColor Green
@@ -210,8 +212,8 @@ function Start-TextureInjection {
 # Function to ask user if they want to update an existing hair mod or make a new one
 function Show-UpdateMenu {
     Write-Host "`nDo you want to update an existing hair mod or make a new one?"
-    Write-Host "1. Make a new hair mod"
-    Write-Host "2. Update existing hair mod"
+    Write-Host "1. Make a new (unpacked) hair mod"
+    Write-Host "2. Update existing (unpacked) hair mod"
     
     do {
         $selection = Read-Host "`nEnter the number of your selection"
@@ -266,9 +268,9 @@ if ($updateMenuIndex -eq 0) {
     # Verify source files
     $missingFiles = Test-SourceFiles $character
     if ($missingFiles.Count -gt 0) {
-        Write-Host "`nError: Missing required source files for $character:" -ForegroundColor Red
+        Write-Host "`nError: Missing required source files for ${character}:" -ForegroundColor Red
         $missingFiles | ForEach-Object { Write-Host "- $_" }
-        Write-Host "`nPlease export these files from UModel or FModel and place them in the original-hair folder/$character folder and try again." -ForegroundColor Yellow
+        Write-Host "`nPlease export these files from UModel or FModel and place them in the original-hair folder/${character} folder and try again." -ForegroundColor Yellow
         exit
     }
     
