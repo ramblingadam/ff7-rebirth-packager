@@ -220,88 +220,17 @@ if ($needsSetup) {
     Start-ConfigSetup
 }
 
-# Function to draw the menu
-function Show-FolderMenu {
-    param($folders, $selectedIndex, $lastUsedIndex)
-    Clear-Host
-    Write-Host "+=========================================+" -ForegroundColor Yellow
-    Write-Host "|      Tirien's Rebirth Mod Packager      |" -ForegroundColor Yellow
-    Write-Host "|      Based on a script by Yoraiz0r      |" -ForegroundColor Yellow
-    Write-Host "+=========================================+`n" -ForegroundColor Yellow
-
-    Write-Host "Please see README.md for instructions.`n" -ForegroundColor Yellow
-
-    Write-Host "Select a mod folder using arrow keys (UP/DOWN) and press Enter to confirm" -ForegroundColor Cyan
-    Write-Host "(Or press 'C' to open configuration setup)`n" -ForegroundColor Yellow
-    
-    for ($i = 0; $i -lt $folders.Count; $i++) {
-        $prefix = if ($i -eq $selectedIndex) { "-> " } else { "   " }
-        $suffix = if ($i -eq $lastUsedIndex) { " (last used)" } else { "" }
-        if ($i -eq $selectedIndex) {
-            Write-Host "$prefix$($folders[$i])$suffix" -ForegroundColor Green
-        } else {
-            Write-Host "$prefix$($folders[$i])$suffix"
-        }
-    }
-}
-
-# Function to get mod folder selection
-function Get-ModFolder {
-    param($config)
-    $folders = Get-ChildItem -Path $config.MOD_BASE_DIR -Directory | Select-Object -ExpandProperty Name
-    
-    if ($folders.Count -gt 0) {
-        # Find index of last used folder
-        $selectedIndex = 0
-        $lastUsedIndex = -1
-        if ($config.LAST_USED_MOD_FOLDER) {
-            $lastUsedIndex = [array]::IndexOf($folders, $config.LAST_USED_MOD_FOLDER)
-            if ($lastUsedIndex -ge 0) {
-                $selectedIndex = $lastUsedIndex
-            }
-        }
-        
-        $maxIndex = $folders.Count - 1
-
-        while ($true) {
-            Show-FolderMenu $folders $selectedIndex $lastUsedIndex
-
-            $key = $host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown")
-
-            switch ($key.VirtualKeyCode) {
-                38 { # Up arrow
-                    $selectedIndex = [Math]::Max(0, $selectedIndex - 1)
-                }
-                40 { # Down arrow
-                    $selectedIndex = [Math]::Min($maxIndex, $selectedIndex + 1)
-                }
-                13 { # Enter
-                    return $folders[$selectedIndex]
-                }
-                67 { # 'C' key
-                    Start-ConfigSetup
-                    continue
-                }
-                27 { # Escape
-                    return $null
-                }
-            }
-        }
-    }
-    return $null
-}
-
 # Main script
 
 Clear-Host
 
 # Get mod folder selection
-$modName = Get-ModFolder $config
-if ($modName -eq "CONFIG") {
+$modFolder = Get-ModFolder $config
+if ($modFolder -eq "CONFIG") {
     Start-ConfigSetup
     exit
 }
-if (-not $modName) {
+if (-not $modFolder) {
     exit
 }
 
@@ -317,7 +246,7 @@ if (-not $modName) {
 $timestamp = Get-Date -Format 'yyyyMMdd_HHmmss'
 
 # Set content path and verify it exists
-$contentPath = Join-Path $config.MOD_BASE_DIR "$modName\mod-content"
+$contentPath = Join-Path $config.MOD_BASE_DIR "$modFolder\mod-content"
 if (-not (Test-Path $contentPath)) {
     Write-Host "Error: Mod content path not found:"
     Write-Host $contentPath
@@ -325,13 +254,13 @@ if (-not (Test-Path $contentPath)) {
 }
 
 # Update last used folder in config
-Update-Config "LAST_USED_MOD_FOLDER" $modName
+Update-Config "LAST_USED_MOD_FOLDER" $modFolder
 
 # Convert dash-case to camelCase
 $modName = ($modName -split '-' | ForEach-Object { $_.Substring(0,1).ToUpper() + $_.Substring(1).ToLower() }) -join ''
 
 # Create timestamped export directory
-$exportDir = Join-Path $config.MOD_BASE_DIR "$modName\${modName}-$timestamp"
+$exportDir = Join-Path $config.MOD_BASE_DIR "$modFolder\${modName}-$timestamp"
 New-Item -ItemType Directory -Path $exportDir -Force | Out-Null
 
 # Set file paths
