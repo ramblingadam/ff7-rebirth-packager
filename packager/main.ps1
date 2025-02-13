@@ -71,10 +71,6 @@ function Start-ConfigSetup {
     
     Write-Host "Configuration Setup" -ForegroundColor Cyan
     
-    # Get tool directory
-    $config.UNREALREZEN_DIR = Get-ValidDirectory "Enter UnrealReZen directory path" $config.UNREALREZEN_DIR
-    Update-Config "UNREALREZEN_DIR" $config.UNREALREZEN_DIR
-    
     # Get mod base directory
     $config.MOD_BASE_DIR = Get-ValidDirectory "Enter mod base directory path" $config.MOD_BASE_DIR
     Update-Config "MOD_BASE_DIR" $config.MOD_BASE_DIR
@@ -172,13 +168,6 @@ if (Test-Path '..\config.ini') {
 # Check if we need to run first-time setup
 $requiredSettings = @(
     @{
-        Key = "UNREALREZEN_DIR"
-        Prompt = "Where is UnrealReZen installed?"
-        Validator = "Directory"
-        Example = "C:\UnrealReZen"
-        Description = "The directory containing UnrealReZen.exe"
-    },
-    @{
         Key = "MOD_BASE_DIR"
         Prompt = "Where do you keep your mods?"
         Validator = "Directory"
@@ -198,13 +187,6 @@ $requiredSettings = @(
         Validator = "File"
         Example = "C:\Program Files (x86)\Steam\steam.exe"
         Description = "Path to your Steam executable"
-    },
-    @{
-        Key = "STEAM_APPID"
-        Prompt = "Steam App ID for FF7 Rebirth"
-        Validator = "None"
-        Example = "2909400"
-        Description = "The Steam App ID for FF7 Rebirth (You shouldn't change this)"
     }
 )
 
@@ -235,7 +217,7 @@ if (-not $modFolder) {
 }
 
 # Verify required settings
-@('UNREALREZEN_DIR', 'MOD_BASE_DIR', 'GAME_DIR', 'STEAM_EXE', 'STEAM_APPID') | ForEach-Object {
+@('MOD_BASE_DIR', 'GAME_DIR', 'STEAM_EXE', 'STEAM_APPID') | ForEach-Object {
     if (-not $config.ContainsKey($_) -or [string]::IsNullOrWhiteSpace($config[$_])) {
         Write-Host "Error: $_ not set in config.ini"
         exit 1
@@ -274,7 +256,8 @@ Write-Host "$modName`n" -ForegroundColor Green
 Start-Sleep -Seconds 1
 
 # Run UnrealReZen
-Push-Location $config.UNREALREZEN_DIR
+$unrealRezenPath = Join-Path $PSScriptRoot "UnrealReZen\UnrealReZen.exe"
+Push-Location (Split-Path $unrealRezenPath)
 $unrealReZenArgs = @(
     "--content-path", $contentPath,
     "--compression-format", "Zlib",

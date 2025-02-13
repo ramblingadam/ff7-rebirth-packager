@@ -189,3 +189,22 @@ MOD_BASE_DIR/ <- You will set this directory during the first run of the script
 - Ensure your `GAME_DIR` points to the BASE FF7 Rebirth install directory (by
   default, this is
   `C:\Program Files (x86)\Steam\steamapps\common\FINAL FANTASY VII REBIRTH`)
+
+# Credits
+
+### EZ Mod Packager
+
+Based on a script by Yoraiz0r
+
+### UE4-DDS-Tools
+
+The EZ Hair Mod Maker uses
+[UE4-DDS-Tools](https://github.com/matyalatte/UE4-DDS-Tools) by matyalatte,
+distributed under the MIT License. A copy of this tool is included in the
+`ez-hair-mod-maker/UE4-DDS-Tools-v0.6.1-Batch` directory.
+
+### UnrealReZen
+
+The EZ Mod Packager uses [UnrealReZen](https://github.com/rm-NoobInCoding/UnrealReZen)
+by rm-NoobInCoding. A copy of this tool is included in the `packager/UnrealReZen`
+directory.
