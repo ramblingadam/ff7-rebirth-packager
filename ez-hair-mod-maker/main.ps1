@@ -76,7 +76,7 @@ $characterFiles = @{
     )
     # 'Vincent' = @(
     #     'Vincent_Hair_C.uasset',
-    #     'Vincent_Hair_N.uasset'
+    #     'Vincent_Hair_C.uasset'
     # )
 }
 
@@ -335,7 +335,7 @@ function Complete-ModOperation {
         Write-Host "`nLaunching packager..." -ForegroundColor Green
         
         # Launch the packager script
-        $packagerPath = Join-Path $PSScriptRoot "..\packager\start.bat"
+        $packagerPath = Join-Path $PSScriptRoot "..\ez-mod-packager\start.bat"
         Start-Process -FilePath $packagerPath -Wait
     } else {
         Write-Host "`nSkipping packaging." -ForegroundColor Yellow
