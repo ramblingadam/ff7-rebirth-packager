@@ -167,7 +167,6 @@ function Start-TextureInjection {
     $toolsDir = Join-Path $PSScriptRoot "UE4-DDS-Tools-v0.6.1-Batch"
     $pythonExe = Join-Path $toolsDir "python\python.exe"
     $pythonScript = Join-Path $toolsDir "src\main.py"
-    $filePathTxt = Join-Path $toolsDir "src\_file_path_.txt"
     
     for ($i = 0; $i -lt $sourceFiles.Count; $i += 2) {  # Process in pairs (uasset + ubulk)
         $sourceUasset = Join-Path "original-hair" $sourceFiles[$i]
@@ -195,15 +194,15 @@ function Start-TextureInjection {
             
             # Prepare for texture injection
             Write-Host "Running texture injection..." -NoNewline
-            Set-Content -Path $filePathTxt -Value (Join-Path $targetDir (Split-Path $sourceUasset -Leaf))
+            
+            # Get the target uasset path
+            $targetUasset = Join-Path $targetDir (Split-Path $sourceUasset -Leaf)
             
             # Change to the UE4-DDS-Tools directory
             Push-Location $toolsDir
             try {
-                # Call Python with our custom arguments
-                $pythonOutput = & $pythonExe -E $pythonScript $filePathTxt $newTexturePath --save_folder="$targetDir" --skip_non_texture --image_filter=cubic 2>&1
-
-                Start-Sleep -Seconds 1
+                # Call Python directly with our custom arguments
+                $pythonOutput = & $pythonExe -E $pythonScript $targetUasset $newTexturePath --save_folder="$targetDir" --skip_non_texture --image_filter=cubic 2>&1
                 
                 if ($LASTEXITCODE -eq 0) {
                     Write-Host "Done!" -ForegroundColor Green
