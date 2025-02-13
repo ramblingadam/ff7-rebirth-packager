@@ -1,3 +1,6 @@
+# Import shared utilities
+. ..\shared-utils.ps1
+
 # Base path for hair assets
 $baseHairAssetPath = "End/Content/Character/Player"
 
@@ -61,12 +64,6 @@ function Show-CharacterMenu {
     return $characters[$index]
 }
 
-# # Import just the mod selection function from the packager script
-# . ..\packager\main.ps1
-# $modSelectFunction = ${function:Show-ModMenu}.ToString()
-# Remove-Item function:Show-ModMenu
-# ${function:Show-ModMenu} = $modSelectFunction
-
 # Function to find files in mod directory
 function Find-CharacterFiles {
     param($modContentPath, $targetFiles)
@@ -94,8 +91,15 @@ $character = Show-CharacterMenu
 $targetFiles = $characterFiles[$character]
 
 # Get mod folder path
-# $modName = Show-ModMenu
-$modContentPath = Join-Path $config['MOD_BASE_DIR'] "tifa-hair-injection-test\mod-content"
+$modName = Get-ModFolder $config
+if ($modName -eq "CONFIG") {
+    Write-Host "Configuration setup selected. Please run the packager to configure settings." -ForegroundColor Yellow
+    exit
+}
+if (-not $modName) {
+    exit
+}
+$modContentPath = Join-Path $config['MOD_BASE_DIR'] "$modName\mod-content"
 
 # Find character files
 $foundFiles = Find-CharacterFiles -modContentPath $modContentPath -targetFiles $targetFiles
