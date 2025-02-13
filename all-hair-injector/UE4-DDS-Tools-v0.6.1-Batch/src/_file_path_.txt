@@ -1,1 +1,1 @@
-D:\Everything\projects\ff7-rebirth-modding\my-mods\barret-hair-white\mod-content\End\Content\Character\Player\PC0001_00_Barret_Standard\Texture\PC0001_00_Hair_C.uasset
+D:\Everything\projects\ff7-rebirth-modding\my-mods\barret-hair-test\mod-content\End\Content\Character\Player\PC0001_00_Barret_Standard\Texture\PC0001_00_Hair_C.uasset

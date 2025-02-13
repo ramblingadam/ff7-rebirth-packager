@@ -102,6 +102,35 @@ function Test-SourceFiles {
     return $missingFiles
 }
 
+# Function to verify files exist in mod content path
+function Test-ModFiles {
+    param(
+        $character,
+        $modContentPath
+    )
+    
+    $missingFiles = @()
+    $foundFiles = @()
+    
+    foreach ($targetPath in $characterFiles[$character]) {
+        $fullPath = Join-Path $modContentPath (Join-Path $baseHairAssetPath $targetPath)
+        Write-Host "Checking for $fullPath..." -NoNewline
+        
+        if (Test-Path $fullPath) {
+            Write-Host "Found!" -ForegroundColor Green
+            $foundFiles += $fullPath
+        } else {
+            Write-Host "Not found!" -ForegroundColor Yellow
+            $missingFiles += $fullPath
+        }
+    }
+    
+    return @{
+        MissingFiles = $missingFiles
+        FoundFiles = $foundFiles
+    }
+}
+
 # Function to create mod directory structure
 function New-ModDirectoryStructure {
     param($modName, $character)
@@ -294,11 +323,32 @@ if ($updateMenuIndex -eq 1) {
     $modContentPath = Join-Path $config['MOD_BASE_DIR'] "$modFolder\mod-content"
 
     $character = Show-CharacterMenu
-    $targetFiles = $characterFiles[$character]
-
-    exit
+    
+    # Verify files exist in mod
+    Write-Host "`nVerifying files in existing mod..."
+    $fileCheck = Test-ModFiles $character $modContentPath
+    
+    if ($fileCheck.MissingFiles.Count -gt 0) {
+        Write-Host "`nWarning: Some files are missing in the mod:" -ForegroundColor Yellow
+        $fileCheck.MissingFiles | ForEach-Object { Write-Host "- $_" }
+        
+        $proceed = Read-Host "`nWould you like to proceed anyway? (Y/N)"
+        if ($proceed -ne 'Y') {
+            Write-Host "`nExiting..." -ForegroundColor Red
+            exit
+        }
+    } else {
+        Write-Host "`nAll required files found in mod!" -ForegroundColor Green
+    }
+    
+    # Get texture file path
+    do {
+        $texturePath = Read-Host "`nEnter the path to your texture file (png, jpg, or bmp)"
+    } while (-not (Test-Path $texturePath) -or -not ($texturePath -match '\.(png|jpg|bmp)$'))
+    
     Start-TextureInjection $character $modContentPath $texturePath
     
-    Write-Host "`nMod creation complete!" -ForegroundColor Green
+    Write-Host "`nMod update complete!" -ForegroundColor Green
+    Write-Host "`nWould you like to package and test your updated mod?" -ForegroundColor Green
     exit
 }
