@@ -268,6 +268,47 @@ function Show-CharacterMenu {
     return $characters[$index]
 }
 
+# Function to get texture path with previous path support
+function Get-TexturePath {
+    $lastUsedPath = $config['LAST_USED_TEXTURE_PATH']
+    
+    if ($lastUsedPath -and (Test-Path $lastUsedPath)) {
+        Write-Host "`nPrevious texture: $lastUsedPath"
+        Write-Host "Press Enter to use previous texture, or enter a new path:"
+    } else {
+        Write-Host "`nEnter the path to your texture file (png, jpg, or bmp):"
+    }
+    
+    do {
+        $input = Read-Host
+        
+        # Use previous path if input is empty and previous path exists
+        if ([string]::IsNullOrWhiteSpace($input) -and $lastUsedPath -and (Test-Path $lastUsedPath)) {
+            $texturePath = $lastUsedPath
+        } else {
+            $texturePath = $input
+        }
+        
+        # Validate the path
+        if (-not (Test-Path $texturePath)) {
+            Write-Host "Error: File does not exist!" -ForegroundColor Red
+            continue
+        }
+        if (-not ($texturePath -match '\.(png|jpg|bmp)$')) {
+            Write-Host "Error: File must be a png, jpg, or bmp!" -ForegroundColor Red
+            continue
+        }
+        
+        # Update config with new path
+        if ($texturePath -ne $lastUsedPath) {
+            Update-Config "LAST_USED_TEXTURE_PATH" $texturePath
+        }
+        
+        return $texturePath
+        
+    } while ($true)
+}
+
 # Read config file to get MOD_BASE_DIR
 $config = @{}
 if (Test-Path '..\config.ini') {
@@ -304,9 +345,7 @@ if ($updateMenuIndex -eq 0) {
     }
     
     # Get texture file path
-    do {
-        $texturePath = Read-Host "`nEnter the path to your texture file (png, jpg, or bmp)"
-    } while (-not (Test-Path $texturePath) -or -not ($texturePath -match '\.(png|jpg|bmp)$'))
+    $texturePath = Get-TexturePath
     
     # Create mod structure
     $modContentPath = New-ModDirectoryStructure $newModFolder $character
@@ -315,6 +354,7 @@ if ($updateMenuIndex -eq 0) {
     Start-TextureInjection $character $modContentPath $texturePath
     
     Write-Host "`nMod creation complete!" -ForegroundColor Green
+    Write-Host "`nWould you like to package and test your new mod?" -ForegroundColor Green
 }
 
 # Update existing mod
@@ -342,9 +382,7 @@ if ($updateMenuIndex -eq 1) {
     }
     
     # Get texture file path
-    do {
-        $texturePath = Read-Host "`nEnter the path to your texture file (png, jpg, or bmp)"
-    } while (-not (Test-Path $texturePath) -or -not ($texturePath -match '\.(png|jpg|bmp)$'))
+    $texturePath = Get-TexturePath
     
     Start-TextureInjection $character $modContentPath $texturePath
     
