@@ -349,14 +349,24 @@ function Complete-ModOperation {
     $key = $Host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown")
     
     if ($key.Character -eq 'y' -or $key.Character -eq 'Y') {
-        Write-Host "`nLaunching packager..." -ForegroundColor Green
+        Write-Host "`nWould you like to launch the game after packaging? (Y/N)" -ForegroundColor Cyan
+        $launchKey = $Host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown")
+        $launchGame = $launchKey.Character -eq 'y' -or $launchKey.Character -eq 'Y'
         
-        # Launch the packager script
-        $packagerPath = Join-Path $PSScriptRoot "..\ez-mod-packager\start.bat"
-        Start-Process -FilePath $packagerPath -Wait
-    } else {
-        Write-Host "`nSkipping packaging." -ForegroundColor Yellow
+        Write-Host "`nStarting packaging process..." -ForegroundColor Yellow
+        $result = Start-ModPackaging -ModFolder $modFolder -Config $config -LaunchGame:$launchGame
+        
+        if (-not $result) {
+            Write-Host "`nPackaging failed. Please check the error messages above." -ForegroundColor Red
+            Write-Host "Press any key to exit..."
+            $null = $Host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown")
+            exit 1
+        }
     }
+    
+    Write-Host "`nPress any key to exit..."
+    $null = $Host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown")
+    exit 0
 }
 
 # Function to show main menu
