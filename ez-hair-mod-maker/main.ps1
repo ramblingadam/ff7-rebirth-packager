@@ -253,34 +253,74 @@ function Show-UpdateMenu {
 
 # Function to show character selection menu
 function Show-CharacterMenu {
+    param(
+        $selectedIndex,
+        $lastUsedIndex
+    )
     Clear-Host
     Write-Host "+=========================================+" -ForegroundColor Yellow
     Write-Host "|         Select Character to Edit        |" -ForegroundColor Yellow
     Write-Host "+=========================================+`n" -ForegroundColor Yellow
     
-    Write-Host "Available Characters:`n" -ForegroundColor Cyan
+    Write-Host "Select a character using arrow keys (UP/DOWN) and press Enter to confirm" -ForegroundColor Cyan
+    Write-Host "(Or press 'C' to open configuration setup)`n" -ForegroundColor Yellow
     
     # Convert dictionary keys to array for consistent indexing
     $characters = @($characterFiles.Keys)
     
     for ($i = 0; $i -lt $characters.Count; $i++) {
-        Write-Host "$($i + 1). $($characters[$i])"
+        $prefix = if ($i -eq $selectedIndex) { "-> " } else { "   " }
+        $suffix = if ($i -eq $lastUsedIndex) { " (last used)" } else { "" }
+        if ($i -eq $selectedIndex) {
+            Write-Host "$prefix$($characters[$i])$suffix" -ForegroundColor Green
+        } else {
+            Write-Host "$prefix$($characters[$i])$suffix"
+        }
     }
-    Write-Host "`nEnter the number of the character you want to edit: " -NoNewline
+}
+
+# Function to get character selection
+function Get-CharacterSelection {
+    # Convert dictionary keys to array for consistent indexing
+    $characters = @($characterFiles.Keys)
+    
+    # Find index of last used character
+    $selectedIndex = 0
+    $lastUsedIndex = -1
+    if ($config.LAST_USED_CHARACTER) {
+        $lastUsedIndex = [array]::IndexOf($characters, $config.LAST_USED_CHARACTER)
+        if ($lastUsedIndex -ge 0) {
+            $selectedIndex = $lastUsedIndex
+        }
+    }
+    
+    $maxIndex = $characters.Count - 1
     
     while ($true) {
-        $selection = Read-Host
-        if ($selection -match '^\d+$') {
-            $index = [int]$selection - 1
-            if ($index -ge 0 -and $index -lt $characters.Count) {
-                $selectedCharacter = $characters[$index]
+        Show-CharacterMenu $selectedIndex $lastUsedIndex
+        
+        $key = $host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown")
+        
+        switch ($key.VirtualKeyCode) {
+            38 { # Up arrow
+                if ($selectedIndex -gt 0) { $selectedIndex-- }
+            }
+            40 { # Down arrow
+                if ($selectedIndex -lt $maxIndex) { $selectedIndex++ }
+            }
+            67 { # 'C' key
+                return "CONFIG"
+            }
+            13 { # Enter
+                $selectedCharacter = $characters[$selectedIndex]
+                # Update last used character in config
+                Update-Config "LAST_USED_CHARACTER" $selectedCharacter
                 Write-Host "`nYou have selected: " -NoNewline
                 Write-Host $selectedCharacter -ForegroundColor Green
-                Start-Sleep -Seconds 2
+                Start-Sleep -Seconds 1
                 return $selectedCharacter
             }
         }
-        Write-Host "Invalid selection. Please enter a number between 1 and $($characters.Count): " -NoNewline -ForegroundColor Red
     }
 }
 
@@ -459,7 +499,11 @@ while ($true) {
         }
         
         # Select character
-        $character = Show-CharacterMenu
+        $character = Get-CharacterSelection
+        if ($character -eq "CONFIG") {
+            Start-ConfigSetup "FF7 Rebirth Hair Mod Maker" "A tool for creating hair mods"
+            continue
+        }
         if (-not $character) { continue }
         
         # Verify source files
@@ -495,7 +539,11 @@ while ($true) {
 
         $modContentPath = Join-Path $config['MOD_BASE_DIR'] "$modFolder\mod-content"
 
-        $character = Show-CharacterMenu
+        $character = Get-CharacterSelection
+        if ($character -eq "CONFIG") {
+            Start-ConfigSetup "FF7 Rebirth Hair Mod Maker" "A tool for creating hair mods"
+            continue
+        }
         if (-not $character) { continue }
         
         # Verify files exist in mod
