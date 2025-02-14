@@ -374,7 +374,8 @@ function Complete-ModOperation {
     param(
         $modFolder,
         $isNew,
-        [switch]$AutoLaunch = $false
+        [switch]$AutoLaunch = $false,
+        $launchGame = $false
     )
     
     # Update last used mod in config
@@ -391,27 +392,8 @@ function Complete-ModOperation {
         Write-Host "`nQuick updating and launching..." -ForegroundColor Yellow
         Start-ModPackaging -ModFolder $modFolder -Config $config -LaunchGame:$true
     } else {
-        # Ask about packaging
-        Write-Host "`nWould you like to package and test your mod? (Y/N)" -ForegroundColor Cyan
-        
-        # Wait for keypress
-        $key = $Host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown")
-        
-        if ($key.Character -eq 'y' -or $key.Character -eq 'Y') {
-            Write-Host "`nWould you like to launch the game after packaging? (Y/N)" -ForegroundColor Cyan
-            $launchKey = $Host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown")
-            $launchGame = $launchKey.Character -eq 'y' -or $launchKey.Character -eq 'Y'
-            
-            Write-Host "`nStarting packaging process..." -ForegroundColor Yellow
-            $result = Start-ModPackaging -ModFolder $modFolder -Config $config -LaunchGame:$launchGame
-            
-            if (-not $result) {
-                Write-Host "`nPackaging failed. Please check the error messages above." -ForegroundColor Red
-                Write-Host "Press any key to exit..."
-                $null = $Host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown")
-                exit 1
-            }
-        }
+        Write-Host "`nStarting packaging process..." -ForegroundColor Yellow
+        Start-ModPackaging -ModFolder $modFolder -Config $config -LaunchGame:$launchGame
     }
     
     if (-not $AutoLaunch) {
@@ -572,12 +554,8 @@ while ($true) {
     # Make new mod
     if ($choice -eq 1) {
         # Get mod name
-        $newModFolder = Read-Host "Enter a name for your new hair mod"
-        if (Test-Path (Join-Path $config['MOD_BASE_DIR'] $newModFolder)) {
-            Write-Host "Warning: Mod folder already exists!" -ForegroundColor Yellow
-            $continue = Read-Host "Do you want to continue? (y/n)"
-            if ($continue -ne "y") { continue }
-        }
+        $newModFolder = Read-Host "`nEnter a name for your mod (e.g., 'tifa-green-hair')"
+        if ([string]::IsNullOrWhiteSpace($newModFolder)) { continue }
         
         # Select character
         $character = Get-CharacterSelection
@@ -590,23 +568,31 @@ while ($true) {
         # Verify source files
         $missingFiles = Test-SourceFiles $character
         if ($missingFiles.Count -gt 0) {
-            Write-Host "`nMissing required source files. Please add them to the original-hair directory." -ForegroundColor Red
-            Write-Host "Press any key to exit..."
+            Write-Host "`nError: The following source files are missing:" -ForegroundColor Red
+            $missingFiles | ForEach-Object { Write-Host $_ }
+            Write-Host "`nPlease extract these files from the game and place them in the original-hair directory."
+            Write-Host "Press any key to continue..."
             $null = $Host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown")
             continue
         }
         
-        # Get texture file path
-        $texturePath = Get-TexturePath
+        # Ask about launching game before starting
+        Write-Host "`nWould you like to launch the game after packaging? (Y/N)" -ForegroundColor Cyan
+        $launchKey = $Host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown")
+        $launchGame = $launchKey.Character -eq 'y' -or $launchKey.Character -eq 'Y'
         
-        # Create mod structure
+        # Get texture path
+        $texturePath = Get-TexturePath
+        if (-not $texturePath) { continue }
+        
+        # Create mod directory structure
         $modContentPath = New-ModDirectoryStructure $newModFolder $character
         
-        # Perform texture injection
+        # Start texture injection
         Start-TextureInjection $character $modContentPath $texturePath
         
-        # Handle completion
-        Complete-ModOperation $newModFolder $true
+        # Complete the operation (will always package for new mods)
+        Complete-ModOperation $newModFolder $true -launchGame $launchGame
     }
 
     # Update existing mod
@@ -644,12 +630,17 @@ while ($true) {
             Write-Host "`nAll required files found in mod!" -ForegroundColor Green
         }
         
+        # Ask about launching game before starting
+        Write-Host "`nWould you like to launch the game after packaging? (Y/N)" -ForegroundColor Cyan
+        $launchKey = $Host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown")
+        $launchGame = $launchKey.Character -eq 'y' -or $launchKey.Character -eq 'Y'
+        
         # Get texture file path
         $texturePath = Get-TexturePath
         
         Start-TextureInjection $character $modContentPath $texturePath
         
-        # Handle completion
-        Complete-ModOperation $modFolder $false
+        # Complete the operation (will always package)
+        Complete-ModOperation $modFolder $false -launchGame $launchGame
     }
 }
