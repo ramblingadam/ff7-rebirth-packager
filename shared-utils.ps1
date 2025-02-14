@@ -228,10 +228,21 @@ function Start-ModPackaging {
         Write-Host "`nMod files have been exported to:" -ForegroundColor Yellow
         Write-Host "${exportDir}`n" -ForegroundColor Green
         
+    
+        
         # Create zip file
         Compress-Archive -Path (Join-Path $exportDir "*_P.*") -DestinationPath (Join-Path $exportDir "$modName.zip") -Force
         Write-Host "Zip file created:" -ForegroundColor Yellow
         Write-Host $exportDir\$modName.zip -ForegroundColor Green
+        
+        # Copy the texture file if it exists in config
+        if ($Config.LAST_USED_TEXTURE_PATH -and (Test-Path $Config.LAST_USED_TEXTURE_PATH)) {
+            $textureExt = [System.IO.Path]::GetExtension($Config.LAST_USED_TEXTURE_PATH)
+            $exportTexturePath = Join-Path $exportDir "$modName$textureExt"
+            Copy-Item -Path $Config.LAST_USED_TEXTURE_PATH -Destination $exportTexturePath -Force
+            Write-Host "Texture file copied to:" -ForegroundColor Yellow
+            Write-Host $exportTexturePath -ForegroundColor Green
+        }
         
         if ($LaunchGame) {
             Install-AndLaunchMod -ModName $modName -Timestamp $timestamp -ExportDir $exportDir -ExportUtoc $exportUtoc -ExportUcas $exportUcas -ExportPak $exportPak -Config $Config
