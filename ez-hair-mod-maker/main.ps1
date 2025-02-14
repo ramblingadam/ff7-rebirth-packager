@@ -164,7 +164,7 @@ function Start-TextureInjection {
     $targetPaths = $characterFiles[$character]
     
     # Setup Python environment
-    $toolsDir = Join-Path $PSScriptRoot "UE4-DDS-Tools-v0.6.1-Batch"
+    $toolsDir = Join-Path (Split-Path $PSScriptRoot -Parent) "tools\UE4-DDS-Tools-v0.6.1-Batch"
     $pythonExe = Join-Path $toolsDir "python\python.exe"
     $pythonScript = Join-Path $toolsDir "src\main.py"
     

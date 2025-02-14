@@ -174,7 +174,7 @@ Write-Host "$modName`n" -ForegroundColor Green
 Start-Sleep -Seconds 1
 
 # Run UnrealReZen
-$unrealRezenPath = Join-Path $PSScriptRoot "UnrealReZen\UnrealReZen.exe"
+$unrealRezenPath = Join-Path (Split-Path $PSScriptRoot -Parent) "tools\UnrealReZen\UnrealReZen.exe"
 Push-Location (Split-Path $unrealRezenPath)
 $unrealReZenArgs = @(
     "--content-path", $contentPath,
