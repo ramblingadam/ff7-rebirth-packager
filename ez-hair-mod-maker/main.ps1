@@ -244,8 +244,12 @@ function Show-UpdateMenu {
     Write-Host "2. Update existing (unpacked) hair mod"
     
     do {
-        $selection = Read-Host "`nEnter the number of your selection"
-        $index = [int]$selection - 1
+        $key = $Host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown")
+        
+        $index = -1
+        if ([int]::TryParse($key.Character, [ref]$null)) {
+            $index = [int]$key.Character - 1
+        }
     } while ($index -lt 0 -or $index -ge 2)
     
     return $index
@@ -369,7 +373,8 @@ function Get-TexturePath {
 function Complete-ModOperation {
     param(
         $modFolder,
-        $isNew
+        $isNew,
+        [switch]$AutoLaunch = $false
     )
     
     # Update last used mod in config
@@ -382,30 +387,37 @@ function Complete-ModOperation {
         Write-Host "`nMod update complete!" -ForegroundColor Green
     }
     
-    # Ask about packaging
-    Write-Host "`nWould you like to package and test your mod? (Y/N)" -ForegroundColor Cyan
-    
-    # Wait for keypress
-    $key = $Host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown")
-    
-    if ($key.Character -eq 'y' -or $key.Character -eq 'Y') {
-        Write-Host "`nWould you like to launch the game after packaging? (Y/N)" -ForegroundColor Cyan
-        $launchKey = $Host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown")
-        $launchGame = $launchKey.Character -eq 'y' -or $launchKey.Character -eq 'Y'
+    if ($AutoLaunch) {
+        Write-Host "`nQuick updating and launching..." -ForegroundColor Yellow
+        Start-ModPackaging -ModFolder $modFolder -Config $config -LaunchGame:$true
+    } else {
+        # Ask about packaging
+        Write-Host "`nWould you like to package and test your mod? (Y/N)" -ForegroundColor Cyan
         
-        Write-Host "`nStarting packaging process..." -ForegroundColor Yellow
-        $result = Start-ModPackaging -ModFolder $modFolder -Config $config -LaunchGame:$launchGame
+        # Wait for keypress
+        $key = $Host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown")
         
-        if (-not $result) {
-            Write-Host "`nPackaging failed. Please check the error messages above." -ForegroundColor Red
-            Write-Host "Press any key to exit..."
-            $null = $Host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown")
-            exit 1
+        if ($key.Character -eq 'y' -or $key.Character -eq 'Y') {
+            Write-Host "`nWould you like to launch the game after packaging? (Y/N)" -ForegroundColor Cyan
+            $launchKey = $Host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown")
+            $launchGame = $launchKey.Character -eq 'y' -or $launchKey.Character -eq 'Y'
+            
+            Write-Host "`nStarting packaging process..." -ForegroundColor Yellow
+            $result = Start-ModPackaging -ModFolder $modFolder -Config $config -LaunchGame:$launchGame
+            
+            if (-not $result) {
+                Write-Host "`nPackaging failed. Please check the error messages above." -ForegroundColor Red
+                Write-Host "Press any key to exit..."
+                $null = $Host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown")
+                exit 1
+            }
         }
     }
     
-    Write-Host "`nPress any key to exit..."
-    $null = $Host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown")
+    if (-not $AutoLaunch) {
+        Write-Host "`nPress any key to exit..."
+        $null = $Host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown")
+    }
     exit 0
 }
 
@@ -419,7 +431,8 @@ function Show-MainMenu {
     Write-Host "+=========================================+`n" -ForegroundColor Yellow
 
     Write-Host "Select an option using arrow keys (UP/DOWN) and press Enter to confirm" -ForegroundColor Cyan
-    Write-Host "(Or press 'C' to open configuration setup)`n" -ForegroundColor Yellow
+    Write-Host "Press 'Q' for quick update using last settings" -ForegroundColor Yellow
+    Write-Host "Press 'C' to open configuration setup`n" -ForegroundColor Yellow
     
     $options = @(
         "Create New Hair Mod",
@@ -456,11 +469,74 @@ function Get-MenuSelection {
             67 { # 'C' key
                 return "CONFIG"
             }
+            81 { # 'Q' key
+                return "QUICK"
+            }
             13 { # Enter
                 return $selectedIndex + 1
             }
         }
     }
+}
+
+# Function to perform quick update using last used settings
+function Start-QuickUpdate {
+    # Verify we have all required last used settings
+    if (-not $config.LAST_USED_MOD_FOLDER -or 
+        -not $config.LAST_USED_CHARACTER -or 
+        -not $config.LAST_USED_TEXTURE_PATH) {
+        Write-Host "`nError: Cannot perform quick update - missing last used settings." -ForegroundColor Red
+        Write-Host "Please perform a regular update first to set all required values."
+        Write-Host "Press any key to continue..."
+        $null = $Host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown")
+        return
+    }
+    
+    $modFolder = $config.LAST_USED_MOD_FOLDER
+    $character = $config.LAST_USED_CHARACTER
+    $texturePath = $config.LAST_USED_TEXTURE_PATH
+    
+    # Verify mod folder exists
+    $modContentPath = Join-Path $config['MOD_BASE_DIR'] "$modFolder\mod-content"
+    if (-not (Test-Path $modContentPath)) {
+        Write-Host "`nError: Mod folder not found:" -ForegroundColor Red
+        Write-Host $modContentPath
+        Write-Host "Press any key to continue..."
+        $null = $Host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown")
+        return
+    }
+    
+    # Verify texture exists
+    if (-not (Test-Path $texturePath)) {
+        Write-Host "`nError: Last used texture file not found:" -ForegroundColor Red
+        Write-Host $texturePath
+        Write-Host "Press any key to continue..."
+        $null = $Host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown")
+        return
+    }
+    
+    # Verify files exist in mod
+    $fileCheck = Test-ModFiles $character $modContentPath
+    if ($fileCheck.MissingFiles.Count -gt 0) {
+        Write-Host "`nError: The following files are missing from the mod:" -ForegroundColor Red
+        $fileCheck.MissingFiles | ForEach-Object { Write-Host $_ }
+        Write-Host "`nThis mod doesn't appear to be a hair mod for $character."
+        Write-Host "Press any key to continue..."
+        $null = $Host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown")
+        return
+    }
+    
+    Write-Host "`nQuick updating mod using last settings:" -ForegroundColor Cyan
+    Write-Host "Mod: " -NoNewline; Write-Host $modFolder -ForegroundColor Green
+    Write-Host "Character: " -NoNewline; Write-Host $character -ForegroundColor Green
+    Write-Host "Texture: " -NoNewline; Write-Host $texturePath -ForegroundColor Green
+    Start-Sleep -Seconds 1
+    
+    # Start texture injection
+    Start-TextureInjection $character $modContentPath $texturePath
+    
+    # Complete the operation and auto-launch
+    Complete-ModOperation $modFolder $false -AutoLaunch
 }
 
 # Main script execution
@@ -481,15 +557,20 @@ while ($true) {
         continue
     }
 
-    $updateMenuIndex = Get-MenuSelection
+    $choice = Get-MenuSelection
     
-    if ($updateMenuIndex -eq "CONFIG") {
+    if ($choice -eq "CONFIG") {
         Start-ConfigSetup "FF7 Rebirth Hair Mod Maker" "By Tirien"
         continue
     }
 
+    if ($choice -eq "QUICK") {
+        Start-QuickUpdate
+        continue
+    }
+    
     # Make new mod
-    if ($updateMenuIndex -eq 1) {
+    if ($choice -eq 1) {
         # Get mod name
         $newModFolder = Read-Host "Enter a name for your new hair mod"
         if (Test-Path (Join-Path $config['MOD_BASE_DIR'] $newModFolder)) {
@@ -529,7 +610,7 @@ while ($true) {
     }
 
     # Update existing mod
-    if ($updateMenuIndex -eq 2) {
+    if ($choice -eq 2) {
         $modFolder = Get-ModFolder $config
         if ($modFolder -eq "CONFIG") {
             Start-ConfigSetup "FF7 Rebirth Hair Mod Maker" "By Tirien"
