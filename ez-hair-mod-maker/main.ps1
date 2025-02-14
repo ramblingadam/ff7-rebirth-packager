@@ -342,6 +342,11 @@ function Complete-ModOperation {
     }
 }
 
+# Main script execution
+Clear-Host
+
+
+
 # Read config file to get MOD_BASE_DIR
 $config = @{}
 if (Test-Path '..\config.ini') {
@@ -350,6 +355,11 @@ if (Test-Path '..\config.ini') {
             $config[$matches[1].Trim()] = $matches[2].Trim()
         }
     }
+}
+
+# Check if config values are set
+if (-not $config.MOD_BASE_DIR -or -not $config.GAME_DIR -or -not $config.STEAM_EXE) {
+    Start-ConfigSetup "FF7 Rebirth Hair Mod Maker" "By Tirien"
 }
 
 # Main workflow
@@ -374,6 +384,8 @@ if ($updateMenuIndex -eq 0) {
         Write-Host "`nError: Missing required source files for ${character}:" -ForegroundColor Red
         $missingFiles | ForEach-Object { Write-Host "- $_" }
         Write-Host "`nPlease export these files from UModel or FModel and place them in the original-hair folder/${character} folder and try again." -ForegroundColor Yellow
+        Write-Host "`nPress any key to exit..."
+        $key = $Host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown")
         exit
     }
     

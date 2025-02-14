@@ -61,98 +61,12 @@ function Get-ValidFile {
     }
 }
 
-# Function to start configuration setup
-function Start-ConfigSetup {
-    Clear-Host
-    Write-Host "+=========================================+" -ForegroundColor Yellow
-    Write-Host "|      Tirien's Rebirth Mod Packager      |" -ForegroundColor Yellow
-    Write-Host "|      Based on a script by Yoraiz0r      |" -ForegroundColor Yellow
-    Write-Host "+=========================================+`n" -ForegroundColor Yellow
-    
-    Write-Host "Configuration Setup" -ForegroundColor Cyan
-    
-    # Get mod base directory
-    $config.MOD_BASE_DIR = Get-ValidDirectory "Enter mod base directory path" $config.MOD_BASE_DIR
-    Update-Config "MOD_BASE_DIR" $config.MOD_BASE_DIR
-    
-    # Get game directory
-    $config.GAME_DIR = Get-ValidDirectory "Enter game directory path" $config.GAME_DIR
-    Update-Config "GAME_DIR" $config.GAME_DIR
-    
-    # Get Steam executable
-    $config.STEAM_EXE = Get-ValidFile "Enter Steam executable path" $config.STEAM_EXE
-    Update-Config "STEAM_EXE" $config.STEAM_EXE
-}
-
 # Function to update config file
 function Update-Config {
     param($key, $value)
     $content = Get-Content '..\config.ini' -Raw
     $content = $content -replace "(?m)^$key=.*$", "$key=$value"
     [System.IO.File]::WriteAllText("$PWD\..\config.ini", $content)
-}
-
-# Function to run configuration setup
-function Start-ConfigSetup {
-    Clear-Host
-    Write-Host "+=========================================+" -ForegroundColor Yellow
-    Write-Host "|      Tirien's Rebirth Mod Packager      |" -ForegroundColor Yellow
-    Write-Host "|      Based on a script by Yoraiz0r      |" -ForegroundColor Yellow
-    Write-Host "+=========================================+`n" -ForegroundColor Yellow
-
-
-    Write-Host "[!][!][!][!][!][!][!]  IMPORTANT  [!][!][!][[!]!][!][!][!]" -ForegroundColor Red
-    Write-Host "[!]" -NoNewline -ForegroundColor Red
-    Write-Host "    This script expects a specific file structure   " -NoNewLine
-    Write-Host "[!]" -ForegroundColor Red
-     Write-Host "[!]" -NoNewline -ForegroundColor Red
-    Write-Host "    in your mod folder to function properly.        "  -NoNewLine
-     Write-Host "[!]" -ForegroundColor Red
-     Write-Host "[!]" -NoNewline -ForegroundColor Red
-    Write-Host "    Please see README.md for instructions.          "  -NoNewLine
-    Write-Host "[!]" -ForegroundColor Red
-    Write-Host "[!][!][!][!][!][!][!][!][!]![!][!][!][!][!][[!]!][!][!][!]`n" -ForegroundColor Red
-    
-    Write-Host "Let's set up your file paths. You can change these settings by editing config.ini`n" -ForegroundColor Cyan
-    
-    foreach ($setting in $requiredSettings) {
-        Write-Host "Setting up: " -NoNewline -ForegroundColor Blue
-        Write-Host $setting.Key -ForegroundColor White
-        Write-Host "$($setting.Description)" -ForegroundColor Gray
-        Write-Host "Example: " -NoNewline -ForegroundColor Blue
-        Write-Host $setting.Example -ForegroundColor Gray
-
-        $currentValue = if ($config.ContainsKey($setting.Key)) { $config[$setting.Key] } else { $null }
-        
-        $newValue = switch ($setting.Validator) {
-            "Directory" { Get-ValidDirectory $setting.Prompt $currentValue }
-            "File" { Get-ValidFile $setting.Prompt $currentValue }
-            default {
-                if ($currentValue) {
-                    Write-Host "`n$($setting.Prompt)" -ForegroundColor Cyan
-                    Write-Host "Current value: " -NoNewline
-                    Write-Host $currentValue -ForegroundColor Green
-                    $input = Read-Host "Press Enter to keep current value, or enter new value"
-                    if ([string]::IsNullOrWhiteSpace($input)) { $currentValue } else { $input }
-                } else {
-                    Write-Host "`n$($setting.Prompt)" -ForegroundColor Cyan
-                    Read-Host "Enter value"
-                }
-            }
-        }
-        
-        $config[$setting.Key] = $newValue
-        Update-Config $setting.Key $newValue
-        Write-Host "Setting saved!" -ForegroundColor Green
-        Write-Host 
-    }
-    
-    Write-Host "+==========================================+" -ForegroundColor Green
-    Write-Host "|          Configuration Complete!         |" -ForegroundColor Green
-    Write-Host "+==========================================+" -ForegroundColor Green
-    Write-Host "`nPress any key to return to mod selection..."
-    $null = $host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown")
-    Clear-Host
 }
 
 # Read config file
@@ -199,17 +113,21 @@ foreach ($setting in $requiredSettings) {
 }
 
 if ($needsSetup) {
-    Start-ConfigSetup
+    Start-ConfigSetup "Tirien's Rebirth Mod Packager" "Based on a script by Yoraiz0r"
 }
 
-# Main script
-
+# Main script execution
 Clear-Host
+
+# Check if config values are set
+if (-not $config.MOD_BASE_DIR -or -not $config.GAME_DIR -or -not $config.STEAM_EXE) {
+    Start-ConfigSetup "Tirien's Rebirth Mod Packager" "Based on a script by Yoraiz0r"
+}
 
 # Get mod folder selection
 $modFolder = Get-ModFolder $config
 if ($modFolder -eq "CONFIG") {
-    Start-ConfigSetup
+    Start-ConfigSetup "Tirien's Rebirth Mod Packager" "Based on a script by Yoraiz0r"
     exit
 }
 if (-not $modFolder) {

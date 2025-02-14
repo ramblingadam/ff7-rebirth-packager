@@ -75,3 +75,92 @@ function Update-Config {
     $content = $content -replace "(?m)^$key=.*$", "$key=$value"
     [System.IO.File]::WriteAllText($configPath, $content)
 }
+
+# Function to validate directory exists
+function Test-DirectoryValid {
+    param($path)
+    return (Test-Path $path -PathType Container)
+}
+
+# Function to validate file exists
+function Test-FileValid {
+    param($path)
+    return (Test-Path $path -PathType Leaf)
+}
+
+# Function to get a valid directory from user
+function Get-ValidDirectory {
+    param($prompt, $currentValue)
+    
+    while ($true) {
+        Write-Host "`n$prompt" -ForegroundColor Cyan
+        if ($currentValue) {
+            Write-Host "Current value: " -NoNewline
+            Write-Host $currentValue -ForegroundColor Green
+            $input = Read-Host "Press Enter to keep current value, or enter new path"
+            if ([string]::IsNullOrWhiteSpace($input)) {
+                return $currentValue
+            }
+        } else {
+            $input = Read-Host "Enter path"
+        }
+        
+        if (Test-DirectoryValid $input) {
+            return $input
+        }
+        Write-Host " Directory not found. Please enter a valid path." -ForegroundColor Red
+    }
+}
+
+# Function to get a valid file from user
+function Get-ValidFile {
+    param($prompt, $currentValue)
+    
+    while ($true) {
+        Write-Host "`n$prompt" -ForegroundColor Cyan
+        if ($currentValue) {
+            Write-Host "Current value: " -NoNewline
+            Write-Host $currentValue -ForegroundColor Green
+            $input = Read-Host "Press Enter to keep current value, or enter new path"
+            if ([string]::IsNullOrWhiteSpace($input)) {
+                return $currentValue
+            }
+        } else {
+            $input = Read-Host "Enter path"
+        }
+        
+        if (Test-FileValid $input) {
+            return $input
+        }
+        Write-Host " File not found. Please enter a valid path." -ForegroundColor Red
+    }
+}
+
+# Function to start configuration setup
+function Start-ConfigSetup {
+    param(
+        $title = "Configuration Setup",
+        $subtitle = ""
+    )
+    Clear-Host
+    Write-Host "+=========================================+" -ForegroundColor Yellow
+    Write-Host "|$(' ' * [math]::Floor((41 - $title.Length) / 2))$title$(' ' * [math]::Ceiling((41 - $title.Length) / 2))|" -ForegroundColor Yellow
+    if ($subtitle) {
+        Write-Host "|$(' ' * [math]::Floor((41 - $subtitle.Length) / 2))$subtitle$(' ' * [math]::Ceiling((41 - $subtitle.Length) / 2))|" -ForegroundColor Yellow
+    }
+    Write-Host "+=========================================+`n" -ForegroundColor Yellow
+    
+    Write-Host "Configuration Setup" -ForegroundColor Cyan
+    
+    # Get mod base directory
+    $config.MOD_BASE_DIR = Get-ValidDirectory "Enter mod base directory path" $config.MOD_BASE_DIR
+    Update-Config "MOD_BASE_DIR" $config.MOD_BASE_DIR
+    
+    # Get game directory
+    $config.GAME_DIR = Get-ValidDirectory "Enter game directory path" $config.GAME_DIR
+    Update-Config "GAME_DIR" $config.GAME_DIR
+    
+    # Get Steam executable
+    $config.STEAM_EXE = Get-ValidFile "Enter Steam executable path" $config.STEAM_EXE
+    Update-Config "STEAM_EXE" $config.STEAM_EXE
+}
