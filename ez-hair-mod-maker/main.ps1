@@ -560,7 +560,7 @@ while ($true) {
         # Select character
         $character = Get-CharacterSelection
         if ($character -eq "CONFIG") {
-            Start-ConfigSetup "FF7 Rebirth Hair Mod Maker" "A tool for creating hair mods"
+            Start-ConfigSetup "FF7 Rebirth Hair Mod Maker" "By Tirien"
             continue
         }
         if (-not $character) { continue }
@@ -576,14 +576,14 @@ while ($true) {
             continue
         }
         
-        # Ask about launching game before starting
-        Write-Host "`nWould you like to launch the game after packaging? (Y/N)" -ForegroundColor Cyan
-        $launchKey = $Host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown")
-        $launchGame = $launchKey.Character -eq 'y' -or $launchKey.Character -eq 'Y'
-        
         # Get texture path
         $texturePath = Get-TexturePath
         if (-not $texturePath) { continue }
+        
+        # Ask about launching game after getting texture
+        Write-Host "`nWould you like to launch the game after packaging? (Y/N)" -ForegroundColor Cyan
+        $launchKey = $Host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown")
+        $launchGame = $launchKey.Character -eq 'y' -or $launchKey.Character -eq 'Y'
         
         # Create mod directory structure
         $modContentPath = New-ModDirectoryStructure $newModFolder $character
@@ -630,13 +630,14 @@ while ($true) {
             Write-Host "`nAll required files found in mod!" -ForegroundColor Green
         }
         
-        # Ask about launching game before starting
+        # Get texture file path
+        $texturePath = Get-TexturePath
+        if (-not $texturePath) { continue }
+        
+        # Ask about launching game after getting texture
         Write-Host "`nWould you like to launch the game after packaging? (Y/N)" -ForegroundColor Cyan
         $launchKey = $Host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown")
         $launchGame = $launchKey.Character -eq 'y' -or $launchKey.Character -eq 'Y'
-        
-        # Get texture file path
-        $texturePath = Get-TexturePath
         
         Start-TextureInjection $character $modContentPath $texturePath
         
