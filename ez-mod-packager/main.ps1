@@ -128,7 +128,7 @@ if (-not $config.MOD_BASE_DIR -or -not $config.GAME_DIR -or -not $config.STEAM_E
 $modFolder = Get-ModFolder $config
 if ($modFolder -eq "CONFIG") {
     Start-ConfigSetup "Tirien's Rebirth Mod Packager" "Based on a script by Yoraiz0r"
-    exit
+    continue
 }
 if (-not $modFolder) {
     exit

@@ -253,18 +253,35 @@ function Show-UpdateMenu {
 
 # Function to show character selection menu
 function Show-CharacterMenu {
-    Write-Host "`nSelect a character to modify:"
-    $characters = $characterFiles.Keys | Sort-Object
+    Clear-Host
+    Write-Host "+=========================================+" -ForegroundColor Yellow
+    Write-Host "|         Select Character to Edit        |" -ForegroundColor Yellow
+    Write-Host "+=========================================+`n" -ForegroundColor Yellow
+    
+    Write-Host "Available Characters:`n" -ForegroundColor Cyan
+    
+    # Convert dictionary keys to array for consistent indexing
+    $characters = @($characterFiles.Keys)
+    
     for ($i = 0; $i -lt $characters.Count; $i++) {
         Write-Host "$($i + 1). $($characters[$i])"
     }
+    Write-Host "`nEnter the number of the character you want to edit: " -NoNewline
     
-    do {
-        $selection = Read-Host "`nEnter the number of your selection"
-        $index = [int]$selection - 1
-    } while ($index -lt 0 -or $index -ge $characters.Count)
-    
-    return $characters[$index]
+    while ($true) {
+        $selection = Read-Host
+        if ($selection -match '^\d+$') {
+            $index = [int]$selection - 1
+            if ($index -ge 0 -and $index -lt $characters.Count) {
+                $selectedCharacter = $characters[$index]
+                Write-Host "`nYou have selected: " -NoNewline
+                Write-Host $selectedCharacter -ForegroundColor Green
+                Start-Sleep -Seconds 2
+                return $selectedCharacter
+            }
+        }
+        Write-Host "Invalid selection. Please enter a number between 1 and $($characters.Count): " -NoNewline -ForegroundColor Red
+    }
 }
 
 # Function to get texture path with previous path support
@@ -342,95 +359,158 @@ function Complete-ModOperation {
     }
 }
 
+# Function to show main menu
+function Show-MainMenu {
+    param($selectedIndex = 0)
+    Clear-Host
+    Write-Host "+=========================================+" -ForegroundColor Yellow
+    Write-Host "|        FF7 Rebirth Hair Mod Maker       |" -ForegroundColor Yellow
+    Write-Host "|              By Tirien                  |" -ForegroundColor Yellow
+    Write-Host "+=========================================+`n" -ForegroundColor Yellow
+
+    Write-Host "Select an option using arrow keys (UP/DOWN) and press Enter to confirm" -ForegroundColor Cyan
+    Write-Host "(Or press 'C' to open configuration setup)`n" -ForegroundColor Yellow
+    
+    $options = @(
+        "Create New Hair Mod",
+        "Update Existing Hair Mod"
+    )
+    
+    for ($i = 0; $i -lt $options.Count; $i++) {
+        $prefix = if ($i -eq $selectedIndex) { "-> " } else { "   " }
+        if ($i -eq $selectedIndex) {
+            Write-Host "$prefix$($options[$i])" -ForegroundColor Green
+        } else {
+            Write-Host "$prefix$($options[$i])"
+        }
+    }
+}
+
+# Function to handle menu input
+function Get-MenuSelection {
+    $selectedIndex = 0
+    $maxIndex = 1
+
+    while ($true) {
+        Show-MainMenu $selectedIndex
+
+        $key = $host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown")
+
+        switch ($key.VirtualKeyCode) {
+            38 { # Up arrow
+                if ($selectedIndex -gt 0) { $selectedIndex-- }
+            }
+            40 { # Down arrow
+                if ($selectedIndex -lt $maxIndex) { $selectedIndex++ }
+            }
+            67 { # 'C' key
+                return "CONFIG"
+            }
+            13 { # Enter
+                return $selectedIndex + 1
+            }
+        }
+    }
+}
+
 # Main script execution
-Clear-Host
-
-
-
-# Read config file to get MOD_BASE_DIR
-$config = @{}
-if (Test-Path '..\config.ini') {
-    Get-Content '..\config.ini' | ForEach-Object {
-        if ($_ -match '^([^#].+?)=(.*)$') {
-            $config[$matches[1].Trim()] = $matches[2].Trim()
+while ($true) {
+    # Read config file to get MOD_BASE_DIR
+    $config = @{}
+    if (Test-Path '..\config.ini') {
+        Get-Content '..\config.ini' | ForEach-Object {
+            if ($_ -match '^([^#].+?)=(.*)$') {
+                $config[$matches[1].Trim()] = $matches[2].Trim()
+            }
         }
     }
-}
 
-# Check if config values are set
-if (-not $config.MOD_BASE_DIR -or -not $config.GAME_DIR -or -not $config.STEAM_EXE) {
-    Start-ConfigSetup "FF7 Rebirth Hair Mod Maker" "By Tirien"
-}
-
-# Main workflow
-$updateMenuIndex = Show-UpdateMenu
-
-# Make new mod
-if ($updateMenuIndex -eq 0) {
-    # Get mod name
-    $newModFolder = Read-Host "Enter a name for your new hair mod:"
-    if (Test-Path (Join-Path $config['MOD_BASE_DIR'] $newModFolder)) {
-        Write-Host "Warning: Mod folder already exists!" -ForegroundColor Yellow
-        $continue = Read-Host "Do you want to continue? (y/n)"
-        if ($continue -ne "y") { exit }
+    # Check if config values are set
+    if (-not $config.MOD_BASE_DIR -or -not $config.GAME_DIR -or -not $config.STEAM_EXE) {
+        Start-ConfigSetup "FF7 Rebirth Hair Mod Maker" "By Tirien"
+        continue
     }
+
+    $updateMenuIndex = Get-MenuSelection
     
-    # Select character
-    $character = Show-CharacterMenu
-    
-    # Verify source files
-    $missingFiles = Test-SourceFiles $character
-    if ($missingFiles.Count -gt 0) {
-        Write-Host "`nError: Missing required source files for ${character}:" -ForegroundColor Red
-        $missingFiles | ForEach-Object { Write-Host "- $_" }
-        Write-Host "`nPlease export these files from UModel or FModel and place them in the original-hair folder/${character} folder and try again." -ForegroundColor Yellow
-        Write-Host "`nPress any key to exit..."
-        $key = $Host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown")
-        exit
+    if ($updateMenuIndex -eq "CONFIG") {
+        Start-ConfigSetup "FF7 Rebirth Hair Mod Maker" "By Tirien"
+        continue
     }
-    
-    # Get texture file path
-    $texturePath = Get-TexturePath
-    
-    # Create mod structure
-    $modContentPath = New-ModDirectoryStructure $newModFolder $character
-    
-    # Perform texture injection
-    Start-TextureInjection $character $modContentPath $texturePath
-    
-    # Handle completion
-    Complete-ModOperation $newModFolder $true
-}
 
-# Update existing mod
-if ($updateMenuIndex -eq 1) {
-    $modFolder = Get-ModFolder $config
-    $modContentPath = Join-Path $config['MOD_BASE_DIR'] "$modFolder\mod-content"
-
-    $character = Show-CharacterMenu
-    
-    # Verify files exist in mod
-    Write-Host "`nVerifying files in existing mod..."
-    $fileCheck = Test-ModFiles $character $modContentPath
-    
-    if ($fileCheck.MissingFiles.Count -gt 0) {
-        Write-Host "`nWarning: Some files are missing in the mod:" -ForegroundColor Yellow
-        $fileCheck.MissingFiles | ForEach-Object { Write-Host "- $_" }
+    # Make new mod
+    if ($updateMenuIndex -eq 1) {
+        # Get mod name
+        $newModFolder = Read-Host "Enter a name for your new hair mod"
+        if (Test-Path (Join-Path $config['MOD_BASE_DIR'] $newModFolder)) {
+            Write-Host "Warning: Mod folder already exists!" -ForegroundColor Yellow
+            $continue = Read-Host "Do you want to continue? (y/n)"
+            if ($continue -ne "y") { continue }
+        }
         
-        $proceed = Read-Host "`nWould you like to proceed anyway? (Y/N)"
-        if ($proceed -ne 'Y') {
-            Write-Host "`nExiting..." -ForegroundColor Red
-            exit
+        # Select character
+        $character = Show-CharacterMenu
+        if (-not $character) { continue }
+        
+        # Verify source files
+        $missingFiles = Test-SourceFiles $character
+        if ($missingFiles.Count -gt 0) {
+            Write-Host "`nMissing required source files. Please add them to the original-hair directory." -ForegroundColor Red
+            Write-Host "Press any key to exit..."
+            $null = $Host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown")
+            continue
         }
-    } else {
-        Write-Host "`nAll required files found in mod!" -ForegroundColor Green
+        
+        # Get texture file path
+        $texturePath = Get-TexturePath
+        
+        # Create mod structure
+        $modContentPath = New-ModDirectoryStructure $newModFolder $character
+        
+        # Perform texture injection
+        Start-TextureInjection $character $modContentPath $texturePath
+        
+        # Handle completion
+        Complete-ModOperation $newModFolder $true
     }
-    
-    # Get texture file path
-    $texturePath = Get-TexturePath
-    
-    Start-TextureInjection $character $modContentPath $texturePath
-    
-    # Handle completion
-    Complete-ModOperation $modFolder $false
+
+    # Update existing mod
+    if ($updateMenuIndex -eq 2) {
+        $modFolder = Get-ModFolder $config
+        if ($modFolder -eq "CONFIG") {
+            Start-ConfigSetup "FF7 Rebirth Hair Mod Maker" "By Tirien"
+            continue
+        }
+        if (-not $modFolder) { continue }
+
+        $modContentPath = Join-Path $config['MOD_BASE_DIR'] "$modFolder\mod-content"
+
+        $character = Show-CharacterMenu
+        if (-not $character) { continue }
+        
+        # Verify files exist in mod
+        Write-Host "`nVerifying files in existing mod..."
+        $fileCheck = Test-ModFiles $character $modContentPath
+        
+        if ($fileCheck.MissingFiles.Count -gt 0) {
+            Write-Host "`nWarning: Some files are missing in the mod:" -ForegroundColor Yellow
+            $fileCheck.MissingFiles | ForEach-Object { Write-Host "- $_" }
+            
+            $proceed = Read-Host "`nWould you like to proceed anyway? (Y/N)"
+            if ($proceed -ne 'Y') {
+                Write-Host "`nExiting..." -ForegroundColor Red
+                continue
+            }
+        } else {
+            Write-Host "`nAll required files found in mod!" -ForegroundColor Green
+        }
+        
+        # Get texture file path
+        $texturePath = Get-TexturePath
+        
+        Start-TextureInjection $character $modContentPath $texturePath
+        
+        # Handle completion
+        Complete-ModOperation $modFolder $false
+    }
 }
