@@ -164,3 +164,132 @@ function Start-ConfigSetup {
     $config.STEAM_EXE = Get-ValidFile "Enter Steam executable path" $config.STEAM_EXE
     Update-Config "STEAM_EXE" $config.STEAM_EXE
 }
+
+# Function to package a mod and optionally launch the game
+function Start-ModPackaging {
+    param(
+        [Parameter(Mandatory=$true)]
+        [string]$ModFolder,
+        [Parameter(Mandatory=$true)]
+        [hashtable]$Config,
+        [switch]$LaunchGame = $false
+    )
+    
+    # Get current timestamp for directory naming
+    $timestamp = Get-Date -Format 'yyyyMMdd_HHmmss'
+    
+    # Set content path and verify it exists
+    $contentPath = Join-Path $Config.MOD_BASE_DIR "$ModFolder\mod-content"
+    if (-not (Test-Path $contentPath)) {
+        Write-Host "Error: Mod content path not found:"
+        Write-Host $contentPath
+        return $false
+    }
+    
+    # Convert dash-case to PascalCase for mod name
+    $modName = ($ModFolder -split '-' | ForEach-Object { $_.Substring(0,1).ToUpper() + $_.Substring(1).ToLower() }) -join ''
+    
+    # Create timestamped export directory
+    $exportDir = Join-Path $Config.MOD_BASE_DIR "$ModFolder\${modName}-$timestamp"
+    New-Item -ItemType Directory -Path $exportDir -Force | Out-Null
+    
+    # Set file paths
+    $gamePakDir = Join-Path $Config.GAME_DIR "\End\Content\Paks"
+    $exportUtoc = Join-Path $exportDir "${modName}_P.utoc"
+    $exportUcas = Join-Path $exportDir "${modName}_P.ucas"
+    $exportPak = Join-Path $exportDir "${modName}_P.pak"
+    
+    Write-Host "`nUsing Mod Name: " -NoNewline -ForegroundColor Yellow
+    Write-Host "$modName`n" -ForegroundColor Green
+    Start-Sleep -Seconds 1
+    
+    # Run UnrealReZen
+    $unrealRezenPath = Join-Path $PSScriptRoot "tools\UnrealReZen\UnrealReZen.exe"
+    Push-Location (Split-Path $unrealRezenPath)
+    $unrealReZenArgs = @(
+        "--content-path", $contentPath,
+        "--compression-format", "Zlib",
+        "--engine-version", "GAME_UE4_26",
+        "--game-dir", $gamePakDir,
+        "--output-path", $exportUtoc
+    )
+    & "./UnrealReZen.exe" $unrealReZenArgs
+    $unrealReZenExitCode = $LASTEXITCODE
+    Pop-Location
+    
+    if ($unrealReZenExitCode -eq 0) {
+        # Adjust UCAS header to be compatible with FF7 Rebirth
+        $fs = New-Object IO.FileStream($exportUcas, [IO.FileMode]::Open, [IO.FileAccess]::ReadWrite)
+        $header = [byte[]]@(0x8C, 0x06, 0x00, 0x30, 0xDE, 0x88, 0x30, 0xDC, 0x0C, 0xF0)
+        $fs.Write($header, 0, $header.Length)
+        $fs.Close()
+        Start-Sleep -Seconds 1
+        
+        Write-Host "`nMod files have been exported to:" -ForegroundColor Yellow
+        Write-Host "${exportDir}`n" -ForegroundColor Green
+        
+        # Create zip file
+        Compress-Archive -Path (Join-Path $exportDir "*_P.*") -DestinationPath (Join-Path $exportDir "$modName.zip") -Force
+        Write-Host "Zip file created:" -ForegroundColor Yellow
+        Write-Host $exportDir\$modName.zip -ForegroundColor Green
+        
+        if ($LaunchGame) {
+            Install-AndLaunchMod -ModName $modName -Timestamp $timestamp -ExportDir $exportDir -ExportUtoc $exportUtoc -ExportUcas $exportUcas -ExportPak $exportPak -Config $Config
+        }
+        
+        return $true
+    } else {
+        Write-Host "Error: UnrealReZen failed to export the mod files." -ForegroundColor Red
+        return $false
+    }
+}
+
+# Function to install mod and launch game
+function Install-AndLaunchMod {
+    param(
+        [Parameter(Mandatory=$true)]
+        [string]$ModName,
+        [Parameter(Mandatory=$true)]
+        [string]$Timestamp,
+        [Parameter(Mandatory=$true)]
+        [string]$ExportDir,
+        [Parameter(Mandatory=$true)]
+        [string]$ExportUtoc,
+        [Parameter(Mandatory=$true)]
+        [string]$ExportUcas,
+        [Parameter(Mandatory=$true)]
+        [string]$ExportPak,
+        [Parameter(Mandatory=$true)]
+        [hashtable]$Config
+    )
+    
+    $gamePakDir = Join-Path $Config.GAME_DIR "\End\Content\Paks"
+    
+    # Clean up previous versions of this mod in game directory
+    Write-Host "`nCleaning up previous versions in game directory..." -ForegroundColor Yellow
+    Get-ChildItem -Path $gamePakDir -Directory | Where-Object { 
+        $_.Name -like "$ModName-*" 
+    } | ForEach-Object {
+        Write-Host "Removing: $($_.FullName)"
+        Remove-Item $_.FullName -Recurse -Force
+        Write-Host "Removed: $($_.FullName)" -ForegroundColor Green
+    }
+    Start-Sleep -Seconds 1
+    
+    # Copy files to game directory
+    $gameExportDir = Join-Path $gamePakDir "$ModName-$Timestamp"
+    if (-not (Test-Path $gameExportDir)) {
+        New-Item -ItemType Directory -Path $gameExportDir -Force | Out-Null
+    }
+    
+    Write-Host "`nCopying files to game directory:" -ForegroundColor Yellow
+    Copy-Item -Path $ExportUtoc -Destination $gameExportDir -Force
+    Copy-Item -Path $ExportUcas -Destination $gameExportDir -Force
+    Copy-Item -Path $ExportPak -Destination $gameExportDir -Force
+    Write-Host "Files copied successfully`n" -ForegroundColor Green
+    
+    # Launch game
+    Write-Host "Launching game..." -ForegroundColor Yellow
+    Start-Process $Config.STEAM_EXE -ArgumentList "-applaunch", $Config.STEAM_APPID
+    Start-Sleep -Seconds 3
+}
