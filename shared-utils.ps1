@@ -172,7 +172,8 @@ function Start-ModPackaging {
         [string]$ModFolder,
         [Parameter(Mandatory=$true)]
         [hashtable]$Config,
-        [switch]$LaunchGame = $false
+        [switch]$LaunchGame = $false,
+        [string]$TexturePath = $null
     )
     
     # Get current timestamp for directory naming
@@ -228,18 +229,16 @@ function Start-ModPackaging {
         Write-Host "`nMod files have been exported to:" -ForegroundColor Yellow
         Write-Host "${exportDir}`n" -ForegroundColor Green
         
-    
-        
         # Create zip file
         Compress-Archive -Path (Join-Path $exportDir "*_P.*") -DestinationPath (Join-Path $exportDir "$modName.zip") -Force
         Write-Host "Zip file created:" -ForegroundColor Yellow
         Write-Host $exportDir\$modName.zip -ForegroundColor Green
         
-        # Copy the texture file if it exists in config
-        if ($Config.LAST_USED_TEXTURE_PATH -and (Test-Path $Config.LAST_USED_TEXTURE_PATH)) {
-            $textureExt = [System.IO.Path]::GetExtension($Config.LAST_USED_TEXTURE_PATH)
+        # Copy the texture file if provided
+        if ($TexturePath -and (Test-Path $TexturePath)) {
+            $textureExt = [System.IO.Path]::GetExtension($TexturePath)
             $exportTexturePath = Join-Path $exportDir "$modName$textureExt"
-            Copy-Item -Path $Config.LAST_USED_TEXTURE_PATH -Destination $exportTexturePath -Force
+            Copy-Item -Path $TexturePath -Destination $exportTexturePath -Force
             Write-Host "Texture file copied to:" -ForegroundColor Yellow
             Write-Host $exportTexturePath -ForegroundColor Green
         }

@@ -375,7 +375,8 @@ function Complete-ModOperation {
         $modFolder,
         $isNew,
         [switch]$AutoLaunch = $false,
-        $launchGame = $false
+        $launchGame = $false,
+        $texturePath = $null
     )
     
     # Update last used mod in config
@@ -390,10 +391,12 @@ function Complete-ModOperation {
     
     if ($AutoLaunch) {
         Write-Host "`nQuick updating and launching..." -ForegroundColor Yellow
-        Start-ModPackaging -ModFolder $modFolder -Config $config -LaunchGame:$true
+        Start-ModPackaging -ModFolder $modFolder -Config $config -LaunchGame:$true -TexturePath $config.LAST_USED_TEXTURE_PATH
+        exit 0
     } else {
         Write-Host "`nStarting packaging process..." -ForegroundColor Yellow
-        Start-ModPackaging -ModFolder $modFolder -Config $config -LaunchGame:$launchGame
+        Start-ModPackaging -ModFolder $modFolder -Config $config -LaunchGame:$launchGame -TexturePath $texturePath
+        exit 0
     }
     
     if (-not $AutoLaunch) {
@@ -592,7 +595,7 @@ while ($true) {
         Start-TextureInjection $character $modContentPath $texturePath
         
         # Complete the operation (will always package for new mods)
-        Complete-ModOperation $newModFolder $true -launchGame $launchGame
+        Complete-ModOperation $newModFolder $true -launchGame $launchGame -texturePath $texturePath
     }
 
     # Update existing mod
@@ -642,6 +645,6 @@ while ($true) {
         Start-TextureInjection $character $modContentPath $texturePath
         
         # Complete the operation (will always package)
-        Complete-ModOperation $modFolder $false -launchGame $launchGame
+        Complete-ModOperation $modFolder $false -launchGame $launchGame -texturePath $texturePath
     }
 }
