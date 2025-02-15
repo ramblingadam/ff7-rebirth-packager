@@ -139,30 +139,84 @@ function Get-ValidFile {
 # Function to start configuration setup
 function Start-ConfigSetup {
     param(
-        $title = "Configuration Setup",
-        $subtitle = ""
+        [string]$Title = "Configuration Setup",
+        [string]$Description = ""
     )
-    Clear-Host
-    Write-Host "+=========================================+" -ForegroundColor Yellow
-    Write-Host "|$(' ' * [math]::Floor((41 - $title.Length) / 2))$title$(' ' * [math]::Ceiling((41 - $title.Length) / 2))|" -ForegroundColor Yellow
-    if ($subtitle) {
-        Write-Host "|$(' ' * [math]::Floor((41 - $subtitle.Length) / 2))$subtitle$(' ' * [math]::Ceiling((41 - $subtitle.Length) / 2))|" -ForegroundColor Yellow
+    
+    Write-Host "`n$Title" -ForegroundColor Cyan
+    if ($Description) {
+        Write-Host $Description -ForegroundColor Gray
     }
-    Write-Host "+=========================================+`n" -ForegroundColor Yellow
+    Write-Host "----------------------------`n"
     
-    Write-Host "Configuration Setup" -ForegroundColor Cyan
+    # Load existing config if it exists
+    $configPath = Join-Path $PSScriptRoot "config.ini"
+    $config = @{}
+    if (Test-Path $configPath) {
+        Get-Content $configPath | ForEach-Object {
+            if ($_ -match '^\s*([^#][^=]+)=(.*)$') {
+                $config[$matches[1].Trim()] = $matches[2].Trim()
+            }
+        }
+    }
     
-    # Get mod base directory
-    $config.MOD_BASE_DIR = Get-ValidDirectory "Enter mod base directory path" $config.MOD_BASE_DIR
-    Update-Config "MOD_BASE_DIR" $config.MOD_BASE_DIR
+    # Mod base directory
+    Write-Host "1. Mod Base Directory (current: " -NoNewline
+    Write-Host "$($config['MOD_BASE_DIR'])" -ForegroundColor Yellow -NoNewline
+    Write-Host ")"
     
-    # Get game directory
-    $config.GAME_DIR = Get-ValidDirectory "Enter game directory path" $config.GAME_DIR
-    Update-Config "GAME_DIR" $config.GAME_DIR
+    # Game directory
+    Write-Host "2. Game Directory (current: " -NoNewline
+    Write-Host "$($config['GAME_DIR'])" -ForegroundColor Yellow -NoNewline
+    Write-Host ")"
     
-    # Get Steam executable
-    $config.STEAM_EXE = Get-ValidFile "Enter Steam executable path" $config.STEAM_EXE
-    Update-Config "STEAM_EXE" $config.STEAM_EXE
+    # Steam executable
+    Write-Host "3. Steam Executable (current: " -NoNewline
+    Write-Host "$($config['STEAM_EXE'])" -ForegroundColor Yellow -NoNewline
+    Write-Host ")"
+    
+    # Always Launch Game
+    $alwaysLaunch = if ($config['ALWAYS_LAUNCH_GAME'] -eq 'true') { 'Yes' } else { 'No' }
+    Write-Host "4. Always Launch Game After Packaging (current: " -NoNewline
+    Write-Host $alwaysLaunch -ForegroundColor Yellow -NoNewline
+    Write-Host ")"
+    
+    Write-Host "`nSelect an option to change (1-4), or press Enter to return to the menu"
+    $choice = Read-Host
+    
+    switch ($choice) {
+        "1" {
+            $newPath = Read-Host "Enter new mod base directory path"
+            if ($newPath) {
+                Update-Config "MOD_BASE_DIR" $newPath
+            }
+            Start-ConfigSetup $Title $Description
+        }
+        "2" {
+            $newPath = Read-Host "Enter new game directory path"
+            if ($newPath) {
+                Update-Config "GAME_DIR" $newPath
+            }
+            Start-ConfigSetup $Title $Description
+        }
+        "3" {
+            $newPath = Read-Host "Enter new Steam executable path"
+            if ($newPath) {
+                Update-Config "STEAM_EXE" $newPath
+            }
+            Start-ConfigSetup $Title $Description
+        }
+        "4" {
+            Write-Host "Would you like to always launch the game after packaging? (Y/N)"
+            $key = $Host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown")
+            $value = if ($key.Character -eq 'y' -or $key.Character -eq 'Y') { 'true' } else { 'false' }
+            Update-Config "ALWAYS_LAUNCH_GAME" $value
+            Start-ConfigSetup $Title $Description
+        }
+        default {
+            return
+        }
+    }
 }
 
 # Function to package a mod and optionally launch the game
@@ -243,7 +297,7 @@ function Start-ModPackaging {
             Write-Host $exportTexturePath -ForegroundColor Green
         }
         
-        if ($LaunchGame) {
+        if ($LaunchGame -or $Config.ALWAYS_LAUNCH_GAME -eq 'true') {
             Install-AndLaunchMod -ModName $modName -Timestamp $timestamp -ExportDir $exportDir -ExportUtoc $exportUtoc -ExportUcas $exportUcas -ExportPak $exportPak -Config $Config
         }
         

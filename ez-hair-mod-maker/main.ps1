@@ -319,9 +319,6 @@ function Get-CharacterSelection {
                 $selectedCharacter = $characters[$selectedIndex]
                 # Update last used character in config
                 Update-Config "LAST_USED_CHARACTER" $selectedCharacter
-                Write-Host "`nYou have selected: " -NoNewline
-                Write-Host $selectedCharacter -ForegroundColor Green
-                Start-Sleep -Seconds 1
                 return $selectedCharacter
             }
         }
@@ -333,7 +330,8 @@ function Get-TexturePath {
     $lastUsedPath = $config['LAST_USED_TEXTURE_PATH']
     
     if ($lastUsedPath -and (Test-Path $lastUsedPath)) {
-        Write-Host "`nPrevious texture: $lastUsedPath"
+        Write-Host "`nPrevious texture: " -NoNewline
+        Write-Host $lastUsedPath -ForegroundColor Green
         Write-Host "Press Enter to use previous texture, or enter a new path:"
     } else {
         Write-Host "`nEnter the path to your texture file (png, jpg, or bmp):"
@@ -583,10 +581,13 @@ while ($true) {
         $texturePath = Get-TexturePath
         if (-not $texturePath) { continue }
         
-        # Ask about launching game after getting texture
-        Write-Host "`nWould you like to launch the game after packaging? (Y/N)" -ForegroundColor Cyan
-        $launchKey = $Host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown")
-        $launchGame = $launchKey.Character -eq 'y' -or $launchKey.Character -eq 'Y'
+        # Ask about launching game after getting texture (if not set to always launch)
+        $launchGame = $config.ALWAYS_LAUNCH_GAME -eq 'true'
+        if (-not $launchGame) {
+            Write-Host "`nWould you like to launch the game after packaging? (Y/N)" -ForegroundColor Cyan
+            $launchKey = $Host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown")
+            $launchGame = $launchKey.Character -eq 'y' -or $launchKey.Character -eq 'Y'
+        }
         
         # Create mod directory structure
         $modContentPath = New-ModDirectoryStructure $newModFolder $character
@@ -637,10 +638,13 @@ while ($true) {
         $texturePath = Get-TexturePath
         if (-not $texturePath) { continue }
         
-        # Ask about launching game after getting texture
-        Write-Host "`nWould you like to launch the game after packaging? (Y/N)" -ForegroundColor Cyan
-        $launchKey = $Host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown")
-        $launchGame = $launchKey.Character -eq 'y' -or $launchKey.Character -eq 'Y'
+        # Ask about launching game after getting texture (if not set to always launch)
+        $launchGame = $config.ALWAYS_LAUNCH_GAME -eq 'true'
+        if (-not $launchGame) {
+            Write-Host "`nWould you like to launch the game after packaging? (Y/N)" -ForegroundColor Cyan
+            $launchKey = $Host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown")
+            $launchGame = $launchKey.Character -eq 'y' -or $launchKey.Character -eq 'Y'
+        }
         
         Start-TextureInjection $character $modContentPath $texturePath
         
