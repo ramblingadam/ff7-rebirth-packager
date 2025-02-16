@@ -555,7 +555,7 @@ while ($true) {
     # Make new mod
     if ($choice -eq 1) {
         # Get mod name
-        $newModFolder = Read-Host "`nEnter a name for your mod (e.g., 'tifa-green-hair')"
+        $newModFolder = Read-Host "`nEnter a name for your mod:"
         if ([string]::IsNullOrWhiteSpace($newModFolder)) { continue }
         
         # Select character
