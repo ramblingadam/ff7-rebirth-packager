@@ -250,9 +250,9 @@ function Start-ModPackaging {
     
     # Set file paths
     $gamePakDir = Join-Path $Config.GAME_DIR "\End\Content\Paks"
-    $exportUtoc = Join-Path $exportDir "${modName}_P.utoc"
-    $exportUcas = Join-Path $exportDir "${modName}_P.ucas"
-    $exportPak = Join-Path $exportDir "${modName}_P.pak"
+    $exportUtoc = Join-Path $exportDir "z${modName}_P.utoc"
+    $exportUcas = Join-Path $exportDir "z${modName}_P.ucas"
+    $exportPak = Join-Path $exportDir "z${modName}_P.pak"
     
     Write-Host "`nUsing Mod Name: " -NoNewline -ForegroundColor Yellow
     Write-Host "$modName`n" -ForegroundColor Green
@@ -284,7 +284,7 @@ function Start-ModPackaging {
         Write-Host "${exportDir}`n" -ForegroundColor Green
         
         # Create zip file
-        Compress-Archive -Path (Join-Path $exportDir "*_P.*") -DestinationPath (Join-Path $exportDir "$modName.zip") -Force
+        Compress-Archive -Path (Join-Path $exportDir "z*_P.*") -DestinationPath (Join-Path $exportDir "$modName.zip") -Force
         Write-Host "Zip file created:" -ForegroundColor Yellow
         Write-Host $exportDir\$modName.zip -ForegroundColor Green
         

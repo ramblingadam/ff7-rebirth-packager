@@ -204,6 +204,8 @@ function Start-TextureInjection {
                 # Call Python directly with our custom arguments
                 $pythonOutput = & $pythonExe -E $pythonScript $targetUasset $newTexturePath --save_folder="$targetDir" --skip_non_texture --image_filter=cubic 2>&1
                 
+                Start-Sleep -Seconds 1
+
                 if ($LASTEXITCODE -eq 0) {
                     Write-Host "Done!" -ForegroundColor Green
                     Write-Host "`nPython Script Output:" -ForegroundColor Yellow
