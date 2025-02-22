@@ -8,6 +8,19 @@ $rootDir = Split-Path $PSScriptRoot -Parent
 # Import config utilities
 . (Join-Path $rootDir "modules/config-utils.ps1")
 
+# Define texture type metadata
+$textureTypeMetadata = @{
+    "Red XIII" = @{
+        "fur" = @{
+            isMultiTexture = $true
+            parts = @(
+                @{ name = "body"; prompt = "BODY fur texture" },
+                @{ name = "head"; prompt = "HEAD fur texture" }
+            )
+        }
+    }
+}
+
 # Function to get texture path with previous path support
 function Get-TexturePath {
     param(
@@ -18,7 +31,38 @@ function Get-TexturePath {
     # Read config
     $config = Read-ConfigFile
     
-    # Build config key for this character and texture type
+    # Check if this is a multi-texture type
+    $metadata = $textureTypeMetadata[$character]
+    if ($metadata -and $metadata[$textureType] -and $metadata[$textureType].isMultiTexture) {
+        $texturePaths = @{}
+        
+        # Get each texture part
+        foreach ($part in $metadata[$textureType].parts) {
+            Write-Host "`nEnter the path to the $($part.prompt) file (png, jpg, or bmp):"
+            
+            # Get and validate the texture path
+            do {
+                $input = Read-Host
+                
+                if (-not (Test-Path $input)) {
+                    Write-Host "Error: File does not exist!" -ForegroundColor Red
+                    continue
+                }
+                if (-not ($input -match '\.(png|jpg|bmp)$')) {
+                    Write-Host "Error: File must be a png, jpg, or bmp!" -ForegroundColor Red
+                    continue
+                }
+                
+                $texturePaths[$part.name] = $input
+                break
+                
+            } while ($true)
+        }
+        
+        return $texturePaths
+    }
+    
+    # Normal single texture handling
     $configKey = ($character -replace ' ', '').ToUpper() + "_" + $textureType.ToUpper() + "_TEXTURE_PATH"
     $lastUsedPath = $config[$configKey]
       
@@ -159,7 +203,7 @@ function Start-TextureInjectionProcess {
         [string]$textureType,
         
         [Parameter(Mandatory)]
-        [string]$texturePath
+        $texturePath # Can be string or hashtable
     )
     
     # Import texture utils
@@ -169,24 +213,54 @@ function Start-TextureInjectionProcess {
     $sourceFiles = $localCharacterFiles[$character][$textureType]
     $targetPaths = $characterFiles[$character][$textureType]
     
-    # Process files in pairs (uasset + ubulk)
-    for ($i = 0; $i -lt $sourceFiles.Count; $i += 2) {
-        $sourceUasset = Join-Path "original-assets" $sourceFiles[$i]
-        $sourceUbulk = Join-Path "original-assets" $sourceFiles[$i+1]
-        $targetPath = Join-Path $modContentPath $targetPaths[$i/2]
-        
-        Write-Host "`nProcessing $($sourceFiles[$i])"
-        
-        $success = Start-TextureInjection `
-            -SourceUasset $sourceUasset `
-            -SourceUbulk $sourceUbulk `
-            -TargetPath $targetPath `
-            -TexturePath $texturePath
-        
-        if (-not $success) {
-            $continue = Read-Host "`nDo you want to continue with the remaining files? (Y/N)"
-            if ($continue -ne 'Y') {
-                return $false
+    # Check if this is a multi-texture case
+    $metadata = $textureTypeMetadata[$character]
+    if ($metadata -and $metadata[$textureType] -and $metadata[$textureType].isMultiTexture) {
+        # Process each texture part
+        $textureIndex = 0
+        foreach ($part in $metadata[$textureType].parts) {
+            Write-Host "`nProcessing $($part.prompt)..."
+            
+            $sourceUasset = Join-Path "original-assets" $sourceFiles[$textureIndex]
+            $sourceUbulk = Join-Path "original-assets" $sourceFiles[$textureIndex + 1]
+            $targetPath = Join-Path $modContentPath $targetPaths[$textureIndex/2]
+            
+            $success = Start-TextureInjection `
+                -SourceUasset $sourceUasset `
+                -SourceUbulk $sourceUbulk `
+                -TargetPath $targetPath `
+                -TexturePath $texturePath[$part.name]
+            
+            if (-not $success) {
+                $continue = Read-Host "`nDo you want to continue with the remaining files? (Y/N)"
+                if ($continue -ne 'Y') {
+                    return $false
+                }
+            }
+            
+            $textureIndex += 2
+        }
+    }
+    else {
+        # Process single texture case
+        for ($i = 0; $i -lt $sourceFiles.Count; $i += 2) {
+            $sourceUasset = Join-Path "original-assets" $sourceFiles[$i]
+            $sourceUbulk = Join-Path "original-assets" $sourceFiles[$i+1]
+            $targetPath = Join-Path $modContentPath $targetPaths[$i/2]
+            
+            Write-Host "`nProcessing $($sourceFiles[$i])"
+            
+            $success = Start-TextureInjection `
+                -SourceUasset $sourceUasset `
+                -SourceUbulk $sourceUbulk `
+                -TargetPath $targetPath `
+                -TexturePath $texturePath
+            
+            if (-not $success) {
+                $continue = Read-Host "`nDo you want to continue with the remaining files? (Y/N)"
+                if ($continue -ne 'Y') {
+                    return $false
+                }
             }
         }
     }
