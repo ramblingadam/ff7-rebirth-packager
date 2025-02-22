@@ -219,6 +219,20 @@ function Start-ConfigSetup {
     }
 }
 
+# Function to read config file
+function Read-ConfigFile {
+    $configPath = Join-Path $PSScriptRoot "config.ini"
+    $config = @{}
+    if (Test-Path $configPath) {
+        Get-Content $configPath | ForEach-Object {
+            if ($_ -match '^\s*([^#][^=]+)=(.*)$') {
+                $config[$matches[1].Trim()] = $matches[2].Trim()
+            }
+        }
+    }
+    return $config
+}
+
 # Function to package a mod and optionally launch the game
 function Start-ModPackaging {
     param(
