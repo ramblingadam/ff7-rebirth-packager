@@ -197,14 +197,15 @@ function Start-TextureInjection {
     param(
         $character,
         $modContentPath,
-        $texturePath
+        $texturePath,
+        $textureType
     )
     
     Write-Host "`nInjecting textures..." -ForegroundColor Cyan
     
     # Get corresponding source and target files
-    $sourceFiles = $localCharacterFiles[$character].hair
-    $targetPaths = $characterFiles[$character].hair
+    $sourceFiles = $localCharacterFiles[$character][$textureType]
+    $targetPaths = $characterFiles[$character][$textureType]
     
     # Setup Python environment
     $toolsDir = Join-Path (Split-Path $PSScriptRoot -Parent) "tools\UE4-DDS-Tools-v0.6.1-Batch"
@@ -443,10 +444,18 @@ function Show-TextureTypeMenu {
 
 # Function to get texture path with previous path support
 function Get-TexturePath {
-    $lastUsedPath = $config['LAST_USED_TEXTURE_PATH']
+    param(
+        $character,
+        $textureType
+    )
     
+    # Build config key for this character and texture type
+    $configKey = ($character -replace ' ', '').ToUpper() + "_" + $textureType.ToUpper() + "_TEXTURE_PATH"
+    $lastUsedPath = $config[$configKey]
+    
+      
     if ($lastUsedPath -and (Test-Path $lastUsedPath)) {
-        Write-Host "`nPrevious texture: " -NoNewline
+        Write-Host "`nPrevious texture for $character ($textureType): " -NoNewline
         Write-Host $lastUsedPath -ForegroundColor Green
         Write-Host "Press Enter to use previous texture, or enter a new path:"
     } else {
@@ -475,7 +484,7 @@ function Get-TexturePath {
         
         # Update config with new path
         if ($texturePath -ne $lastUsedPath) {
-            Update-Config "LAST_USED_TEXTURE_PATH" $texturePath
+            Update-Config $configKey $texturePath
         }
         
         return $texturePath
@@ -697,7 +706,7 @@ while ($true) {
         }
         
         # Get texture path
-        $texturePath = Get-TexturePath
+        $texturePath = Get-TexturePath $character $textureType
         if (-not $texturePath) { continue }
         
         # Ask about launching game after getting texture (if not set to always launch)
@@ -712,7 +721,7 @@ while ($true) {
         $modContentPath = New-ModDirectoryStructure $newModFolder $character
         
         # Start texture injection
-        Start-TextureInjection $character $modContentPath $texturePath
+        Start-TextureInjection $character $modContentPath $texturePath $textureType
         
         # Complete the operation (will always package for new mods)
         Complete-ModOperation $newModFolder $true -launchGame $launchGame -texturePath $texturePath
@@ -757,7 +766,7 @@ while ($true) {
         }
         
         # Get texture file path
-        $texturePath = Get-TexturePath
+        $texturePath = Get-TexturePath $character $textureType
         if (-not $texturePath) { continue }
         
         # Ask about launching game after getting texture (if not set to always launch)
@@ -768,7 +777,7 @@ while ($true) {
             $launchGame = $launchKey.Character -eq 'y' -or $launchKey.Character -eq 'Y'
         }
         
-        Start-TextureInjection $character $modContentPath $texturePath
+        Start-TextureInjection $character $modContentPath $texturePath $textureType
         
         # Complete the operation (will always package)
         Complete-ModOperation $modFolder $false -launchGame $launchGame -texturePath $texturePath
