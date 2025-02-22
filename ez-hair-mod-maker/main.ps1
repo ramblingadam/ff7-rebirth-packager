@@ -1,10 +1,13 @@
+$rootDir = Split-Path $PSScriptRoot -Parent
+
 # Import shared utilities
-. (Join-Path $PSScriptRoot "..\shared-utils.ps1")
+. (Join-Path $rootDir "shared-utils.ps1")
 
 # Import modules
-. (Join-Path $PSScriptRoot "modules\texture-utils.ps1")
-. (Join-Path $PSScriptRoot "modules\character-utils.ps1")
-. (Join-Path $PSScriptRoot "modules\file-validation.ps1")
+. (Join-Path $rootDir "modules\texture-utils.ps1")
+. (Join-Path $rootDir "modules\character-utils.ps1")
+. (Join-Path $rootDir "modules\file-validation.ps1")
+. (Join-Path $rootDir "modules\config-utils.ps1")
 
 # Function to create mod directory structure
 function New-ModDirectoryStructure {
@@ -195,7 +198,7 @@ function Start-QuickUpdate {
     Start-Sleep -Seconds 1
     
     # Start texture injection
-    . (Join-Path $PSScriptRoot "modules\texture-utils.ps1")
+    . (Join-Path $rootDir "modules\texture-utils.ps1")
     Start-TextureInjection $character $modContentPath $texturePath $textureType $localCharacterFiles $characterFiles 
     
     # Complete the operation and auto-launch
@@ -269,7 +272,7 @@ while ($true) {
         $modContentPath = New-ModDirectoryStructure $newModFolder $character
         
         # Start texture injection
-        . (Join-Path $PSScriptRoot "modules\texture-utils.ps1")
+        . (Join-Path $rootDir "modules\texture-utils.ps1")
         Start-TextureInjection $character $modContentPath $texturePath $textureType $localCharacterFiles $characterFiles 
         
         # Complete the operation (will always package for new mods)
@@ -335,7 +338,7 @@ while ($true) {
             $launchGame = $launchKey.Character -eq 'y' -or $launchKey.Character -eq 'Y'
         }
         
-        . (Join-Path $PSScriptRoot "modules\texture-utils.ps1")
+        . (Join-Path $rootDir "modules\texture-utils.ps1")
         Start-TextureInjection $character $modContentPath $texturePath $textureType $localCharacterFiles $characterFiles 
         
         # Complete the operation (will always package)

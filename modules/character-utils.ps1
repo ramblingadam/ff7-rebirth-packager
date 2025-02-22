@@ -1,6 +1,8 @@
+$rootDir = Split-Path $PSScriptRoot -Parent
+
 # Character selection and validation utilities
-. (Join-Path $PSScriptRoot "..\..\shared-utils.ps1")
-. (Join-Path $PSScriptRoot "config-utils.ps1")
+. (Join-Path $rootDir "shared-utils.ps1")
+. (Join-Path $rootDir "modules/config-utils.ps1")
 $basePlayerCharacterAssetPath = "End/Content/Character/Player"
 # Local source files (original hair textures to use as base)
 $localCharacterFiles = @{
@@ -97,7 +99,7 @@ $characterFiles = @{
         )
         'fur' = @(
             "$basePlayerCharacterAssetPath/PC0004_00_RedXIII_Standard/Texture/PC0004_00_Body_C.uasset",
-            "$basePlayerCharacterAssetPath/PC0004_00_RedXIII_Standard/Texture/PC0004_00_Fur_C.uasset"
+            "$basePlayerCharacterAssetPath/PC0004_00_RedXIII_Standard/Texture/PC0004_00_Head_C.uasset"
         )
     }
     'Yuffie' = @{

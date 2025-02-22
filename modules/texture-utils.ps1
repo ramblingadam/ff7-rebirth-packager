@@ -1,7 +1,12 @@
+$rootDir = Split-Path $PSScriptRoot -Parent
+
 # Texture handling and injection utilities
 
 # Import shared utilities
-. (Join-Path $PSScriptRoot "..\..\shared-utils.ps1")
+. (Join-Path $rootDir "shared-utils.ps1")
+
+# Import config utilities
+. (Join-Path $rootDir "modules/config-utils.ps1")
 
 # Function to get texture path with previous path support
 function Get-TexturePath {
@@ -73,7 +78,7 @@ function Start-TextureInjection {
     $targetPaths = $characterFiles[$character][$textureType]
     
     # Setup Python environment
-    $toolsDir = Join-Path (Split-Path (Split-Path $PSScriptRoot -Parent) -Parent) "tools\UE4-DDS-Tools-v0.6.1-Batch"
+    $toolsDir = Join-Path  $rootDir "tools\UE4-DDS-Tools-v0.6.1-Batch"
     $pythonExe = Join-Path $toolsDir "python\python.exe"
     $pythonScript = Join-Path $toolsDir "src\main.py"
     

@@ -68,13 +68,13 @@ function Get-ModFolder {
 }
 
 # Function to update config file
-function Update-Config {
-    param($key, $value)
-    $configPath = Join-Path $PSScriptRoot "config.ini"
-    $content = Get-Content $configPath -Raw
-    $content = $content -replace "(?m)^$key=.*$", "$key=$value"
-    [System.IO.File]::WriteAllText($configPath, $content)
-}
+# function Update-Config {
+#     param($key, $value)
+#     $configPath = Join-Path $PSScriptRoot "config.ini"
+#     $content = Get-Content $configPath -Raw
+#     $content = $content -replace "(?m)^$key=.*$", "$key=$value"
+#     [System.IO.File]::WriteAllText($configPath, $content)
+# }
 
 # Function to validate directory exists
 function Test-DirectoryValid {

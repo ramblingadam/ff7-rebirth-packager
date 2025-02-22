@@ -1,3 +1,5 @@
+$rootDir = Split-Path $PSScriptRoot -Parent
+
 # Functions to verify necessary files and paths exists
 
 function Test-SourceFiles {
@@ -31,6 +33,7 @@ function Test-ModFiles {
       $modContentPath,
       $textureType = "hair"  # Default to hair for backward compatibility
   )
+  Write-Host "modcontentPath to check: $modContentPath" -ForegroundColor Cyan
   
   $missingFiles = @()
   $foundFiles = @()
