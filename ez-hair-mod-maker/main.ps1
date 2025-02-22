@@ -45,6 +45,12 @@ $localCharacterFiles = @{
       'red-xiii/PC0004_02_Hair_C.uasset',
       'red-xiii/PC0004_02_Hair_C.ubulk'
     )
+    'fur' = @(
+      'red-xiii/PC0004_00_Body_C.uasset',
+      'red-xiii/PC0004_00_Body_C.ubulk',
+      'red-xiii/PC0004_00_Head_C.uasset',
+      'red-xiii/PC0004_00_Head_C.ubulk'
+    )
   }
   'Yuffie' = @{
     'hair' = @(
@@ -90,6 +96,10 @@ $characterFiles = @{
         'hair' = @(
             'PC0004_00_RedXIII_Standard/Texture/PC0004_00_Hair_C.uasset',
             'PC0004_02_RedXIII_Loveless/Texture/PC0004_02_Hair_C.uasset'
+        )
+        'fur' = @(
+            'PC0004_00_RedXIII_Standard/Texture/PC0004_00_Body_C.uasset',
+            'PC0004_00_RedXIII_Standard/Texture/PC0004_00_Fur_C.uasset'
         )
     }
     'Yuffie' = @{
