@@ -4,62 +4,7 @@
 # Import modules
 . (Join-Path $PSScriptRoot "modules\texture-utils.ps1")
 . (Join-Path $PSScriptRoot "modules\character-utils.ps1")
-
-
-# Function to verify all required source files exist
-function Test-SourceFiles {
-    param(
-        $character,
-        $textureType = 'hair'  # Default to 'hair' for backward compatibility
-    )
-    
-    $sourceFiles = $localCharacterFiles[$character][$textureType]
-    $missingFiles = @()
-    
-    Write-Host "`nVerifying source files for $character ($textureType)..." -ForegroundColor Cyan
-    foreach ($file in $sourceFiles) {
-        $fullPath = Join-Path "original-assets" $file
-        Write-Host -NoNewline "Checking $file... "
-        if (Test-Path $fullPath) {
-            Write-Host "Found!" -ForegroundColor Green
-        } else {
-            Write-Host "Missing!" -ForegroundColor Red
-            $missingFiles += $file
-        }
-    }
-    
-    return $missingFiles
-}
-
-# Function to verify files exist in mod
-function Test-ModFiles {
-    param(
-        $character,
-        $modContentPath,
-        $textureType = "hair"  # Default to hair for backward compatibility
-    )
-    
-    $missingFiles = @()
-    $foundFiles = @()
-    
-    foreach ($targetPath in $characterFiles[$character][$textureType]) {
-        $fullPath = Join-Path $modContentPath $targetPath
-        Write-Host "Checking for $fullPath..." -NoNewline
-        
-        if (Test-Path $fullPath) {
-            Write-Host "Found!" -ForegroundColor Green
-            $foundFiles += $fullPath
-        } else {
-            Write-Host "Not found!" -ForegroundColor Yellow
-            $missingFiles += $fullPath
-        }
-    }
-    
-    return @{
-        MissingFiles = $missingFiles
-        FoundFiles = $foundFiles
-    }
-}
+. (Join-Path $PSScriptRoot "modules\file-validation.ps1")
 
 # Function to create mod directory structure
 function New-ModDirectoryStructure {
@@ -370,7 +315,8 @@ while ($true) {
         }
         
         # Get texture file path
-        $texturePath = Get-TexturePath $character $textureType
+        while (-not $texturePath) {
+            $texturePath = Get-TexturePath $character $textureType
         Write-Host "Texture: " -NoNewline; Write-Host $texturePath -ForegroundColor Green
         if (-not $texturePath) { 
             Write-Host "`nError: No valid texture path found for $character ($textureType)." -ForegroundColor Red
@@ -378,6 +324,8 @@ while ($true) {
             $null = $Host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown")
             continue 
         }
+        }
+        
         
         # Ask about launching game after getting texture (if not set to always launch)
         $launchGame = $config.ALWAYS_LAUNCH_GAME -eq 'true'
