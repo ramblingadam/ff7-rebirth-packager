@@ -150,15 +150,7 @@ function Start-ConfigSetup {
     Write-Host "----------------------------`n"
     
     # Load existing config if it exists
-    $configPath = Join-Path $PSScriptRoot "config.ini"
-    $config = @{}
-    if (Test-Path $configPath) {
-        Get-Content $configPath | ForEach-Object {
-            if ($_ -match '^\s*([^#][^=]+)=(.*)$') {
-                $config[$matches[1].Trim()] = $matches[2].Trim()
-            }
-        }
-    }
+    $config = Read-ConfigFile
     
     # Mod base directory
     Write-Host "1. Mod Base Directory (current: " -NoNewline

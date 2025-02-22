@@ -70,14 +70,7 @@ function Update-Config {
 }
 
 # Read config file
-$config = @{}
-if (Test-Path '..\config.ini') {
-    Get-Content '..\config.ini' | ForEach-Object {
-        if ($_ -match '^([^#].+?)=(.*)$') {
-            $config[$matches[1].Trim()] = $matches[2].Trim()
-        }
-    }
-}
+$config = Read-ConfigFile
 
 # Check if we need to run first-time setup
 $requiredSettings = @(

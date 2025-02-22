@@ -615,16 +615,9 @@ function Start-QuickUpdate {
 
 # Main script execution
 while ($true) {
-    # Read config file to get MOD_BASE_DIR
-    $config = @{}
-    if (Test-Path '..\config.ini') {
-        Get-Content '..\config.ini' | ForEach-Object {
-            if ($_ -match '^([^#].+?)=(.*)$') {
-                $config[$matches[1].Trim()] = $matches[2].Trim()
-            }
-        }
-    }
-
+    # Read config file
+    $config = Read-ConfigFile
+    
     # Check if config values are set
     if (-not $config.MOD_BASE_DIR -or -not $config.GAME_DIR -or -not $config.STEAM_EXE) {
         Start-ConfigSetup "FF7 Rebirth Hair Mod Maker" "By Tirien"
