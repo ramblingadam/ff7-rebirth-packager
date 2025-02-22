@@ -68,46 +68,46 @@ $localCharacterFiles = @{
 $characterFiles = @{
     'Cloud' = @{
         'hair' = @(
-            'PC0000_00_Cloud_Standard/Texture/PC0000_00_Hair_C.uasset',
-            'PC0000_06_Cloud_Soldier/Texture/PC0000_06_Hair_C.uasset'
+            "$basePlayerCharacterAssetPath/PC0000_00_Cloud_Standard/Texture/PC0000_00_Hair_C.uasset",
+            "$basePlayerCharacterAssetPath/PC0000_06_Cloud_Soldier/Texture/PC0000_06_Hair_C.uasset"
         )
     }
     'Tifa' = @{
         'hair' = @(
-            'PC0002_00_Tifa_Standard/Texture/PC0002_00_Hair_C.uasset',
-            'PC0002_05_Tifa_Soldier/Texture/PC0002_05_Hair_C.uasset',
-            'PC0002_08_Tifa_CostaClothing/Texture/PC0002_08_Hair_C.uasset'
+            "$basePlayerCharacterAssetPath/PC0002_00_Tifa_Standard/Texture/PC0002_00_Hair_C.uasset",
+            "$basePlayerCharacterAssetPath/PC0002_05_Tifa_Soldier/Texture/PC0002_05_Hair_C.uasset",
+            "$basePlayerCharacterAssetPath/PC0002_08_Tifa_CostaClothing/Texture/PC0002_08_Hair_C.uasset"
         )
     }
     'Barret' = @{
         'hair' = @(
-            'PC0001_00_Barret_Standard/Texture/PC0001_00_Hair_C.uasset'
+            "$basePlayerCharacterAssetPath/PC0001_00_Barret_Standard/Texture/PC0001_00_Hair_C.uasset"
         )
     }
     'Aerith' = @{
         'hair' = @(
-            'PC0003_00_Aerith_Standard/Texture/PC0003_00_Hair_C.uasset',
-            'PC0003_05_Aerith_Soldier/Texture/PC0003_05_Hair_C.uasset'
+            "$basePlayerCharacterAssetPath/PC0003_00_Aerith_Standard/Texture/PC0003_00_Hair_C.uasset",
+            "$basePlayerCharacterAssetPath/PC0003_05_Aerith_Soldier/Texture/PC0003_05_Hair_C.uasset"
         )
     }
     'Red XIII' = @{
         'hair' = @(
-            'PC0004_00_RedXIII_Standard/Texture/PC0004_00_Hair_C.uasset',
-            'PC0004_02_RedXIII_Loveless/Texture/PC0004_02_Hair_C.uasset'
+            "$basePlayerCharacterAssetPath/PC0004_00_RedXIII_Standard/Texture/PC0004_00_Hair_C.uasset",
+            "$basePlayerCharacterAssetPath/PC0004_02_RedXIII_Loveless/Texture/PC0004_02_Hair_C.uasset"
         )
         'fur' = @(
-            'PC0004_00_RedXIII_Standard/Texture/PC0004_00_Body_C.uasset',
-            'PC0004_00_RedXIII_Standard/Texture/PC0004_00_Fur_C.uasset'
+            "$basePlayerCharacterAssetPath/PC0004_00_RedXIII_Standard/Texture/PC0004_00_Body_C.uasset",
+            "$basePlayerCharacterAssetPath/PC0004_00_RedXIII_Standard/Texture/PC0004_00_Fur_C.uasset"
         )
     }
     'Yuffie' = @{
         'hair' = @(
-            'PC0005_00_Yuffie_Standard/Texture/PC0005_00_Hair_C.uasset'
+            "$basePlayerCharacterAssetPath/PC0005_00_Yuffie_Standard/Texture/PC0005_00_Hair_C.uasset"
         )
     }
     'Cait Sith' = @{
         'hair' = @(
-            'PC0007_00_CaitSith_Standard/Texture/PC0007_00_Hair_C.uasset'
+            "$basePlayerCharacterAssetPath/PC0007_00_CaitSith_Standard/Texture/PC0007_00_Hair_C.uasset"
         )
     }
 }

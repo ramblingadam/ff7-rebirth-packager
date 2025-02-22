@@ -43,7 +43,7 @@ function Test-ModFiles {
     $foundFiles = @()
     
     foreach ($targetPath in $characterFiles[$character][$textureType]) {
-        $fullPath = Join-Path $modContentPath (Join-Path $basePlayerCharacterAssetPath $targetPath)
+        $fullPath = Join-Path $modContentPath $targetPath
         Write-Host "Checking for $fullPath..." -NoNewline
         
         if (Test-Path $fullPath) {
@@ -71,7 +71,7 @@ function New-ModDirectoryStructure {
     
     # Create directories for each target file
     foreach ($targetFile in $characterFiles[$character].hair) {
-        $targetPath = Join-Path $modContentPath (Join-Path $basePlayerCharacterAssetPath (Split-Path $targetFile -Parent))
+        $targetPath = Join-Path $modContentPath (Join-Path  (Split-Path $targetFile -Parent))
         Write-Host "Creating directory: $targetPath"
         New-Item -ItemType Directory -Path $targetPath -Force | Out-Null
     }
@@ -251,7 +251,7 @@ function Start-QuickUpdate {
     
     # Start texture injection
     . (Join-Path $PSScriptRoot "modules\texture-utils.ps1")
-    Start-TextureInjection $character $modContentPath $texturePath $textureType $localCharacterFiles $characterFiles $basePlayerCharacterAssetPath
+    Start-TextureInjection $character $modContentPath $texturePath $textureType $localCharacterFiles $characterFiles 
     
     # Complete the operation and auto-launch
     Complete-ModOperation $modFolder $false -AutoLaunch
@@ -325,7 +325,7 @@ while ($true) {
         
         # Start texture injection
         . (Join-Path $PSScriptRoot "modules\texture-utils.ps1")
-        Start-TextureInjection $character $modContentPath $texturePath $textureType $localCharacterFiles $characterFiles $basePlayerCharacterAssetPath
+        Start-TextureInjection $character $modContentPath $texturePath $textureType $localCharacterFiles $characterFiles 
         
         # Complete the operation (will always package for new mods)
         Complete-ModOperation $newModFolder $true -launchGame $launchGame -texturePath $texturePath
@@ -388,7 +388,7 @@ while ($true) {
         }
         
         . (Join-Path $PSScriptRoot "modules\texture-utils.ps1")
-        Start-TextureInjection $character $modContentPath $texturePath $textureType $localCharacterFiles $characterFiles $basePlayerCharacterAssetPath
+        Start-TextureInjection $character $modContentPath $texturePath $textureType $localCharacterFiles $characterFiles 
         
         # Complete the operation (will always package)
         Complete-ModOperation $modFolder $false -launchGame $launchGame -texturePath $texturePath
