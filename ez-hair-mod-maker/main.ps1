@@ -368,9 +368,75 @@ function Get-CharacterSelection {
                 Update-Config "LAST_USED_CHARACTER" $selectedCharacter
                 return @{
                     Character = $selectedCharacter
-                    TextureType = 'hair'  # Default to hair for now
+                    TextureType = Get-TextureTypeSelection $selectedCharacter
                 }
             }
+        }
+    }
+}
+
+# Function to get texture type selection
+function Get-TextureTypeSelection {
+    param($character)
+    
+    # Get available texture types
+    $textureTypes = @($localCharacterFiles[$character].Keys | Sort-Object)
+    
+    # If only one type available, return it automatically
+    if ($textureTypes.Count -eq 1) {
+        $type = $textureTypes[0]
+        Write-Host "`nMaking a $type mod!" -ForegroundColor Cyan
+        return $type
+    }
+    
+    $selectedIndex = 0
+    $maxIndex = $textureTypes.Count - 1
+    
+    while ($true) {
+        Show-TextureTypeMenu $character $selectedIndex
+        
+        $key = $host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown")
+        
+        switch ($key.VirtualKeyCode) {
+            38 { # Up arrow
+                if ($selectedIndex -gt 0) { $selectedIndex-- }
+            }
+            40 { # Down arrow
+                if ($selectedIndex -lt $maxIndex) { $selectedIndex++ }
+            }
+            13 { # Enter
+                $selectedType = $textureTypes[$selectedIndex]
+                Write-Host "`nMaking a $selectedType mod!" -ForegroundColor Cyan
+                return $selectedType
+            }
+        }
+    }
+}
+
+# Function to show texture type selection menu
+function Show-TextureTypeMenu {
+    param(
+        $character,
+        $selectedIndex = 0
+    )
+    
+    Clear-Host
+    Write-Host "+=========================================+" -ForegroundColor Yellow
+    Write-Host "|        Select Texture Type to Edit      |" -ForegroundColor Yellow
+    Write-Host "+=========================================+`n" -ForegroundColor Yellow
+    
+    Write-Host "Select a texture type for $character using arrow keys (UP/DOWN) and press Enter to confirm`n" -ForegroundColor Cyan
+    
+    # Get available texture types
+    $textureTypes = @($localCharacterFiles[$character].Keys | Sort-Object)
+    
+    for ($i = 0; $i -lt $textureTypes.Count; $i++) {
+        $type = $textureTypes[$i]
+        $prefix = if ($i -eq $selectedIndex) { "-> " } else { "   " }
+        if ($i -eq $selectedIndex) {
+            Write-Host "$prefix$type" -ForegroundColor Green
+        } else {
+            Write-Host "$prefix$type"
         }
     }
 }
