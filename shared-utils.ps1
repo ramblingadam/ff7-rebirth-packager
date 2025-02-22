@@ -359,7 +359,7 @@ function Install-AndLaunchMod {
     Copy-Item -Path $ExportUcas -Destination $gameExportDir -Force
     Copy-Item -Path $ExportPak -Destination $gameExportDir -Force
     Write-Host "Files copied successfully`n" -ForegroundColor Green
-    Start-Sleep -Seconds 1
+    Start-Sleep -Seconds 2
     
     # Launch game
     Write-Host "Launching game..." -ForegroundColor Yellow
