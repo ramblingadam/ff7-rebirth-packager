@@ -366,7 +366,10 @@ function Get-CharacterSelection {
                 $selectedCharacter = $characters[$selectedIndex]
                 # Update last used character in config
                 Update-Config "LAST_USED_CHARACTER" $selectedCharacter
-                return $selectedCharacter
+                return @{
+                    Character = $selectedCharacter
+                    TextureType = 'hair'  # Default to hair for now
+                }
             }
         }
     }
@@ -606,15 +609,18 @@ while ($true) {
         if ([string]::IsNullOrWhiteSpace($newModFolder)) { continue }
         
         # Select character
-        $character = Get-CharacterSelection
-        if ($character -eq "CONFIG") {
+        $characterSelection = Get-CharacterSelection
+        if ($characterSelection -eq "CONFIG") {
             Start-ConfigSetup "FF7 Rebirth Hair Mod Maker" "By Tirien"
             continue
         }
-        if (-not $character) { continue }
+        if (-not $characterSelection) { continue }
+        
+        $character = $characterSelection.Character
+        $textureType = $characterSelection.TextureType
         
         # Verify source files
-        $missingFiles = Test-SourceFiles $character
+        $missingFiles = Test-SourceFiles $character $textureType
         if ($missingFiles.Count -gt 0) {
             Write-Host "`nError: The following source files are missing:" -ForegroundColor Red
             $missingFiles | ForEach-Object { Write-Host $_ }
@@ -657,12 +663,15 @@ while ($true) {
 
         $modContentPath = Join-Path $config['MOD_BASE_DIR'] "$modFolder\mod-content"
 
-        $character = Get-CharacterSelection
-        if ($character -eq "CONFIG") {
+        $characterSelection = Get-CharacterSelection
+        if ($characterSelection -eq "CONFIG") {
             Start-ConfigSetup "FF7 Rebirth Hair Mod Maker" "A tool for creating hair mods"
             continue
         }
-        if (-not $character) { continue }
+        if (-not $characterSelection) { continue }
+        
+        $character = $characterSelection.Character
+        $textureType = $characterSelection.TextureType
         
         # Verify files exist in mod
         Write-Host "`nVerifying files in existing mod..."
