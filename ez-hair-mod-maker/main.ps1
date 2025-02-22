@@ -148,17 +148,18 @@ function Test-SourceFiles {
     return $missingFiles
 }
 
-# Function to verify files exist in mod content path
+# Function to verify files exist in mod
 function Test-ModFiles {
     param(
         $character,
-        $modContentPath
+        $modContentPath,
+        $textureType = "hair"  # Default to hair for backward compatibility
     )
     
     $missingFiles = @()
     $foundFiles = @()
     
-    foreach ($targetPath in $characterFiles[$character].hair) {
+    foreach ($targetPath in $characterFiles[$character][$textureType]) {
         $fullPath = Join-Path $modContentPath (Join-Path $baseHairAssetPath $targetPath)
         Write-Host "Checking for $fullPath..." -NoNewline
         
@@ -193,97 +194,6 @@ function New-ModDirectoryStructure {
     }
     
     return $modContentPath
-}
-
-# Function to inject textures
-function Start-TextureInjection {
-    param(
-        $character,
-        $modContentPath,
-        $texturePath,
-        $textureType
-    )
-    
-    Write-Host "`nInjecting textures..." -ForegroundColor Cyan
-    
-    # Get corresponding source and target files
-    $sourceFiles = $localCharacterFiles[$character][$textureType]
-    $targetPaths = $characterFiles[$character][$textureType]
-    
-    # Setup Python environment
-    $toolsDir = Join-Path (Split-Path $PSScriptRoot -Parent) "tools\UE4-DDS-Tools-v0.6.1-Batch"
-    $pythonExe = Join-Path $toolsDir "python\python.exe"
-    $pythonScript = Join-Path $toolsDir "src\main.py"
-    
-    for ($i = 0; $i -lt $sourceFiles.Count; $i += 2) {  # Process in pairs (uasset + ubulk)
-        $sourceUasset = Join-Path "original-assets" $sourceFiles[$i]
-        $sourceUbulk = Join-Path "original-assets" $sourceFiles[$i+1]
-        $targetPath = Join-Path $modContentPath (Join-Path $baseHairAssetPath $targetPaths[$i/2])
-        $targetDir = Split-Path -Parent $targetPath
-        
-        Write-Host "`nProcessing $($sourceFiles[$i])"
-        
-        try {
-            # Copy source files to target directory
-            Write-Host "Copying source files..." -NoNewline
-            Copy-Item $sourceUasset (Join-Path $targetDir (Split-Path $sourceUasset -Leaf)) -Force
-            Copy-Item $sourceUbulk (Join-Path $targetDir (Split-Path $sourceUbulk -Leaf)) -Force
-            Write-Host "Done!" -ForegroundColor Green
-            
-            # Copy and rename texture file
-            $newTextureName = [System.IO.Path]::GetFileNameWithoutExtension($targetPath)
-            $textureExt = [System.IO.Path]::GetExtension($texturePath)
-            $newTexturePath = Join-Path $targetDir "$newTextureName$textureExt"
-            
-            Write-Host "Copying texture file..." -NoNewline
-            Copy-Item $texturePath $newTexturePath -Force
-            Write-Host "Done!" -ForegroundColor Green
-            
-            # Prepare for texture injection
-            Write-Host "Running texture injection..." -NoNewline
-            
-            # Get the target uasset path
-            $targetUasset = Join-Path $targetDir (Split-Path $sourceUasset -Leaf)
-            
-            # Change to the UE4-DDS-Tools directory
-            Push-Location $toolsDir
-            try {
-                # Call Python directly with our custom arguments
-                $pythonOutput = & $pythonExe -E $pythonScript $targetUasset $newTexturePath --save_folder="$targetDir" --skip_non_texture --image_filter=cubic 2>&1
-                
-                Start-Sleep -Seconds 1
-
-                if ($LASTEXITCODE -eq 0) {
-                    Write-Host "Done!" -ForegroundColor Green
-                    Write-Host "`nPython Script Output:" -ForegroundColor Yellow
-                    $pythonOutput | ForEach-Object { Write-Host $_ }
-                    
-                    # Clean up the copied texture file
-                    Write-Host "Cleaning up temporary texture file..." -NoNewline
-                    if (Test-Path $newTexturePath) {
-                        Remove-Item $newTexturePath -Force
-                        Write-Host "Done!" -ForegroundColor Green
-                    }
-                } else {
-                    Write-Host "Failed!" -ForegroundColor Red
-                    Write-Host "`nPython Script Output:" -ForegroundColor Yellow
-                    $pythonOutput | ForEach-Object { Write-Host $_ }
-                    throw "Python script failed with exit code $LASTEXITCODE"
-                }
-            }
-            finally {
-                Pop-Location
-            }
-        }
-        catch {
-            Write-Host "`nError occurred while processing $($sourceFiles[$i]):" -ForegroundColor Red
-            Write-Host $_.Exception.Message -ForegroundColor Red
-            $continue = Read-Host "`nDo you want to continue with the remaining files? (Y/N)"
-            if ($continue -ne 'Y') {
-                exit
-            }
-        }
-    }
 }
 
 # Function to ask user if they want to update an existing hair mod or make a new one
@@ -607,7 +517,8 @@ function Start-QuickUpdate {
     Start-Sleep -Seconds 1
     
     # Start texture injection
-    Start-TextureInjection $character $modContentPath $texturePath $textureType
+    . (Join-Path $PSScriptRoot "modules\texture-utils.ps1")
+    Start-TextureInjection $character $modContentPath $texturePath $textureType $localCharacterFiles $characterFiles $baseHairAssetPath
     
     # Complete the operation and auto-launch
     Complete-ModOperation $modFolder $false -AutoLaunch
@@ -680,7 +591,8 @@ while ($true) {
         $modContentPath = New-ModDirectoryStructure $newModFolder $character
         
         # Start texture injection
-        Start-TextureInjection $character $modContentPath $texturePath $textureType
+        . (Join-Path $PSScriptRoot "modules\texture-utils.ps1")
+        Start-TextureInjection $character $modContentPath $texturePath $textureType $localCharacterFiles $characterFiles $baseHairAssetPath
         
         # Complete the operation (will always package for new mods)
         Complete-ModOperation $newModFolder $true -launchGame $launchGame -texturePath $texturePath
@@ -709,8 +621,8 @@ while ($true) {
         
         # Verify files exist in mod
         Write-Host "`nVerifying files in existing mod..."
-        $fileCheck = Test-ModFiles $character $modContentPath
-        
+        $fileCheck = Test-ModFiles $character $modContentPath $textureType
+
         if ($fileCheck.MissingFiles.Count -gt 0) {
             Write-Host "`nWarning: Some files are missing in the mod:" -ForegroundColor Yellow
             $fileCheck.MissingFiles | ForEach-Object { Write-Host "- $_" }
@@ -726,7 +638,13 @@ while ($true) {
         
         # Get texture file path
         $texturePath = Get-TexturePath $character $textureType
-        if (-not $texturePath) { continue }
+        Write-Host "Texture: " -NoNewline; Write-Host $texturePath -ForegroundColor Green
+        if (-not $texturePath) { 
+            Write-Host "`nError: No valid texture path found for $character ($textureType)." -ForegroundColor Red
+            Write-Host "Press any key to continue..."
+            $null = $Host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown")
+            continue 
+        }
         
         # Ask about launching game after getting texture (if not set to always launch)
         $launchGame = $config.ALWAYS_LAUNCH_GAME -eq 'true'
@@ -736,7 +654,8 @@ while ($true) {
             $launchGame = $launchKey.Character -eq 'y' -or $launchKey.Character -eq 'Y'
         }
         
-        Start-TextureInjection $character $modContentPath $texturePath $textureType
+        . (Join-Path $PSScriptRoot "modules\texture-utils.ps1")
+        Start-TextureInjection $character $modContentPath $texturePath $textureType $localCharacterFiles $characterFiles $baseHairAssetPath
         
         # Complete the operation (will always package)
         Complete-ModOperation $modFolder $false -launchGame $launchGame -texturePath $texturePath
