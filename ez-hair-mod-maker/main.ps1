@@ -312,15 +312,17 @@ function Show-CharacterMenu {
     Write-Host "(Or press 'C' to open configuration setup)`n" -ForegroundColor Yellow
     
     # Convert dictionary keys to array for consistent indexing
-    $characters = @($characterFiles.Keys)
+    $characters = @($localCharacterFiles.Keys)
     
     for ($i = 0; $i -lt $characters.Count; $i++) {
+        $char = $characters[$i]
+        $textureTypes = "(" + ($localCharacterFiles[$char].Keys -join ", ") + ")"
         $prefix = if ($i -eq $selectedIndex) { "-> " } else { "   " }
         $suffix = if ($i -eq $lastUsedIndex) { " (last used)" } else { "" }
         if ($i -eq $selectedIndex) {
-            Write-Host "$prefix$($characters[$i])$suffix" -ForegroundColor Green
+            Write-Host "$prefix$char $textureTypes$suffix" -ForegroundColor Green
         } else {
-            Write-Host "$prefix$($characters[$i])$suffix"
+            Write-Host "$prefix$char $textureTypes$suffix"
         }
     }
 }
@@ -328,7 +330,7 @@ function Show-CharacterMenu {
 # Function to get character selection
 function Get-CharacterSelection {
     # Convert dictionary keys to array for consistent indexing
-    $characters = @($characterFiles.Keys)
+    $characters = @($localCharacterFiles.Keys)
     
     # Find index of last used character
     $selectedIndex = 0
