@@ -122,13 +122,16 @@ $characterFiles = @{
 
 # Function to verify all required source files exist
 function Test-SourceFiles {
-    param($character)
+    param(
+        $character,
+        $textureType = 'hair'  # Default to 'hair' for backward compatibility
+    )
     
-    $sourceFiles = $localCharacterFiles[$character]
+    $sourceFiles = $localCharacterFiles[$character][$textureType]
     $missingFiles = @()
     
-    Write-Host "`nVerifying source files for $character..." -ForegroundColor Cyan
-    foreach ($file in $sourceFiles.hair) {
+    Write-Host "`nVerifying source files for $character ($textureType)..." -ForegroundColor Cyan
+    foreach ($file in $sourceFiles) {
         $fullPath = Join-Path "original-assets" $file
         Write-Host -NoNewline "Checking $file... "
         if (Test-Path $fullPath) {
