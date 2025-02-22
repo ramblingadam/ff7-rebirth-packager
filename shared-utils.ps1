@@ -268,8 +268,16 @@ function Start-ModPackaging {
         "--game-dir", $gamePakDir,
         "--output-path", $exportUtoc
     )
+
+    Write-Host "`nRunning UnrealReZen..." -ForegroundColor Yellow
     & "./UnrealReZen.exe" $unrealReZenArgs
     $unrealReZenExitCode = $LASTEXITCODE
+    Write-Host "UnrealReZen Exit Code: $unrealReZenExitCode" -ForegroundColor $(if ($unrealReZenExitCode -eq 0) { "Green" } else { "Red" })
+    
+    Write-Host "`nChecking for output files:" -ForegroundColor Yellow
+    Write-Host "UTOC: $(Test-Path $exportUtoc)" -ForegroundColor Cyan
+    Write-Host "UCAS: $(Test-Path $exportUcas)" -ForegroundColor Cyan
+    Write-Host "PAK: $(Test-Path $exportPak)" -ForegroundColor Cyan
     Pop-Location
     
     if ($unrealReZenExitCode -eq 0) {

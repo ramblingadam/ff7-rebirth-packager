@@ -1,2 +1,3 @@
 *.uasset
 *.ubulk
+__pycache__

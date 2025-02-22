@@ -6,78 +6,108 @@ $baseHairAssetPath = "End/Content/Character/Player"
 
 # Local source files (original hair textures to use as base)
 $localCharacterFiles = @{
-  'Cloud' = @(
-    'cloud/PC0000_00_Hair_C.uasset',
-    'cloud/PC0000_00_Hair_C.ubulk',
-    'cloud/PC0000_06_Hair_C.uasset',
-    'cloud/PC0000_06_Hair_C.ubulk'
-  )
-  'Tifa' = @(
-    'tifa/PC0002_00_Hair_C.uasset',
-    'tifa/PC0002_00_Hair_C.ubulk',
-    'tifa/PC0002_05_Hair_C.uasset',
-    'tifa/PC0002_05_Hair_C.ubulk',
-    'tifa/PC0002_08_Hair_C.uasset',
-    'tifa/PC0002_08_Hair_C.ubulk'
-  )
-  'Barret' = @(
-    'barret/PC0001_00_Hair_C.uasset',
-    'barret/PC0001_00_Hair_C.ubulk'
-  )
-  'Aerith' = @(
-    'aerith/PC0003_00_Hair_C.uasset',
-    'aerith/PC0003_00_Hair_C.ubulk',
-    'aerith/PC0003_05_Hair_C.uasset',
-    'aerith/PC0003_05_Hair_C.ubulk'
-  )
-  'Red XIII' = @(
-    'red-xiii/PC0004_00_Hair_C.uasset',
-    'red-xiii/PC0004_00_Hair_C.ubulk',
-    'red-xiii/PC0004_02_Hair_C.uasset',
-    'red-xiii/PC0004_02_Hair_C.ubulk'
-  )
-  'Yuffie' = @(
-    'yuffie/PC0005_00_Hair_C.uasset',
-    'yuffie/PC0005_00_Hair_C.ubulk'
-  )
-  'Cait Sith' = @(
-    'cait-sith/PC0007_00_Hair_C.uasset',
-    'cait-sith/PC0007_00_Hair_C.ubulk'
-  )
+  'Cloud' = @{
+    'hair' = @(
+      'cloud/PC0000_00_Hair_C.uasset',
+      'cloud/PC0000_00_Hair_C.ubulk',
+      'cloud/PC0000_06_Hair_C.uasset',
+      'cloud/PC0000_06_Hair_C.ubulk'
+    )
+  }
+  'Tifa' = @{
+    'hair' = @(
+      'tifa/PC0002_00_Hair_C.uasset',
+      'tifa/PC0002_00_Hair_C.ubulk',
+      'tifa/PC0002_05_Hair_C.uasset',
+      'tifa/PC0002_05_Hair_C.ubulk',
+      'tifa/PC0002_08_Hair_C.uasset',
+      'tifa/PC0002_08_Hair_C.ubulk'
+    )
+  }
+  'Barret' = @{
+    'hair' = @(
+      'barret/PC0001_00_Hair_C.uasset',
+      'barret/PC0001_00_Hair_C.ubulk'
+    )
+  }
+  'Aerith' = @{
+    'hair' = @(
+      'aerith/PC0003_00_Hair_C.uasset',
+      'aerith/PC0003_00_Hair_C.ubulk',
+      'aerith/PC0003_05_Hair_C.uasset',
+      'aerith/PC0003_05_Hair_C.ubulk'
+    )
+  }
+  'Red XIII' = @{
+    'hair' = @(
+      'red-xiii/PC0004_00_Hair_C.uasset',
+      'red-xiii/PC0004_00_Hair_C.ubulk',
+      'red-xiii/PC0004_02_Hair_C.uasset',
+      'red-xiii/PC0004_02_Hair_C.ubulk'
+    )
+  }
+  'Yuffie' = @{
+    'hair' = @(
+      'yuffie/PC0005_00_Hair_C.uasset',
+      'yuffie/PC0005_00_Hair_C.ubulk'
+    )
+  }
+  'Cait Sith' = @{
+    'hair' = @(
+      'cait-sith/PC0007_00_Hair_C.uasset',
+      'cait-sith/PC0007_00_Hair_C.ubulk'
+    )
+  }
 }
 
 # Target paths in mod directory
 $characterFiles = @{
-    'Cloud' = @(
-        'PC0000_00_Cloud_Standard/Texture/PC0000_00_Hair_C.uasset',
-        'PC0000_06_Cloud_Soldier/Texture/PC0000_06_Hair_C.uasset'
-    )
-    'Tifa' = @(
-        'PC0002_00_Tifa_Standard/Texture/PC0002_00_Hair_C.uasset',
-        'PC0002_05_Tifa_Soldier/Texture/PC0002_05_Hair_C.uasset',
-        'PC0002_08_Tifa_CostaClothing/Texture/PC0002_08_Hair_C.uasset'
-    )
-    'Barret' = @(
-        'PC0001_00_Barret_Standard/Texture/PC0001_00_Hair_C.uasset'
-    )
-    'Aerith' = @(
-        'PC0003_00_Aerith_Standard/Texture/PC0003_00_Hair_C.uasset',
-        'PC0003_05_Aerith_Soldier/Texture/PC0003_05_Hair_C.uasset'
-    )
-    'Red XIII' = @(
-        'PC0004_00_RedXIII_Standard/Texture/PC0004_00_Hair_C.uasset',
-        'PC0004_02_RedXIII_Loveless/Texture/PC0004_02_Hair_C.uasset'
-    )
-    'Yuffie' = @(
-        'PC0005_00_Yuffie_Standard/Texture/PC0005_00_Hair_C.uasset'
-    )
-    'Cait Sith' = @(
-        'PC0007_00_CaitSith_Standard/Texture/PC0007_00_Hair_C.uasset'
-    )
-    # 'Vincent' = @(
-    #     'Vincent_Hair_C.uasset',
-    #     'Vincent_Hair_C.uasset'
-    # )
+    'Cloud' = @{
+        'hair' = @(
+            'PC0000_00_Cloud_Standard/Texture/PC0000_00_Hair_C.uasset',
+            'PC0000_06_Cloud_Soldier/Texture/PC0000_06_Hair_C.uasset'
+        )
+    }
+    'Tifa' = @{
+        'hair' = @(
+            'PC0002_00_Tifa_Standard/Texture/PC0002_00_Hair_C.uasset',
+            'PC0002_05_Tifa_Soldier/Texture/PC0002_05_Hair_C.uasset',
+            'PC0002_08_Tifa_CostaClothing/Texture/PC0002_08_Hair_C.uasset'
+        )
+    }
+    'Barret' = @{
+        'hair' = @(
+            'PC0001_00_Barret_Standard/Texture/PC0001_00_Hair_C.uasset'
+        )
+    }
+    'Aerith' = @{
+        'hair' = @(
+            'PC0003_00_Aerith_Standard/Texture/PC0003_00_Hair_C.uasset',
+            'PC0003_05_Aerith_Soldier/Texture/PC0003_05_Hair_C.uasset'
+        )
+    }
+    'Red XIII' = @{
+        'hair' = @(
+            'PC0004_00_RedXIII_Standard/Texture/PC0004_00_Hair_C.uasset',
+            'PC0004_02_RedXIII_Loveless/Texture/PC0004_02_Hair_C.uasset'
+        )
+    }
+    'Yuffie' = @{
+        'hair' = @(
+            'PC0005_00_Yuffie_Standard/Texture/PC0005_00_Hair_C.uasset'
+        )
+    }
+    'Cait Sith' = @{
+        'hair' = @(
+            'PC0007_00_CaitSith_Standard/Texture/PC0007_00_Hair_C.uasset'
+        )
+    }
+    # 'Vincent' = @{
+    #     'hair' = @(
+    #         'Vincent_Hair_C.uasset',
+    #         'Vincent_Hair_C.uasset'
+    #     )
+    # }
 }
 
 # Function to verify all required source files exist
@@ -88,7 +118,7 @@ function Test-SourceFiles {
     $missingFiles = @()
     
     Write-Host "`nVerifying source files for $character..." -ForegroundColor Cyan
-    foreach ($file in $sourceFiles) {
+    foreach ($file in $sourceFiles.hair) {
         $fullPath = Join-Path "original-hair" $file
         Write-Host -NoNewline "Checking $file... "
         if (Test-Path $fullPath) {
@@ -112,7 +142,7 @@ function Test-ModFiles {
     $missingFiles = @()
     $foundFiles = @()
     
-    foreach ($targetPath in $characterFiles[$character]) {
+    foreach ($targetPath in $characterFiles[$character].hair) {
         $fullPath = Join-Path $modContentPath (Join-Path $baseHairAssetPath $targetPath)
         Write-Host "Checking for $fullPath..." -NoNewline
         
@@ -140,7 +170,7 @@ function New-ModDirectoryStructure {
     Write-Host "`nCreating mod directory structure..." -ForegroundColor Cyan
     
     # Create directories for each target file
-    foreach ($targetFile in $characterFiles[$character]) {
+    foreach ($targetFile in $characterFiles[$character].hair) {
         $targetPath = Join-Path $modContentPath (Join-Path $baseHairAssetPath (Split-Path $targetFile -Parent))
         Write-Host "Creating directory: $targetPath"
         New-Item -ItemType Directory -Path $targetPath -Force | Out-Null
@@ -160,8 +190,8 @@ function Start-TextureInjection {
     Write-Host "`nInjecting textures..." -ForegroundColor Cyan
     
     # Get corresponding source and target files
-    $sourceFiles = $localCharacterFiles[$character]
-    $targetPaths = $characterFiles[$character]
+    $sourceFiles = $localCharacterFiles[$character].hair
+    $targetPaths = $characterFiles[$character].hair
     
     # Setup Python environment
     $toolsDir = Join-Path (Split-Path $PSScriptRoot -Parent) "tools\UE4-DDS-Tools-v0.6.1-Batch"
