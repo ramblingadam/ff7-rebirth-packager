@@ -119,7 +119,7 @@ function Test-SourceFiles {
     
     Write-Host "`nVerifying source files for $character..." -ForegroundColor Cyan
     foreach ($file in $sourceFiles.hair) {
-        $fullPath = Join-Path "original-hair" $file
+        $fullPath = Join-Path "original-assets/hair" $file
         Write-Host -NoNewline "Checking $file... "
         if (Test-Path $fullPath) {
             Write-Host "Found!" -ForegroundColor Green
@@ -199,8 +199,8 @@ function Start-TextureInjection {
     $pythonScript = Join-Path $toolsDir "src\main.py"
     
     for ($i = 0; $i -lt $sourceFiles.Count; $i += 2) {  # Process in pairs (uasset + ubulk)
-        $sourceUasset = Join-Path "original-hair" $sourceFiles[$i]
-        $sourceUbulk = Join-Path "original-hair" $sourceFiles[$i+1]
+        $sourceUasset = Join-Path "original-assets/hair" $sourceFiles[$i]
+        $sourceUbulk = Join-Path "original-assets/hair" $sourceFiles[$i+1]
         $targetPath = Join-Path $modContentPath (Join-Path $baseHairAssetPath $targetPaths[$i/2])
         $targetDir = Split-Path -Parent $targetPath
         
@@ -603,7 +603,7 @@ while ($true) {
         if ($missingFiles.Count -gt 0) {
             Write-Host "`nError: The following source files are missing:" -ForegroundColor Red
             $missingFiles | ForEach-Object { Write-Host $_ }
-            Write-Host "`nPlease extract these files from the game and place them in the original-hair directory."
+            Write-Host "`nPlease extract these files from the game and place them in the original-assets/hair directory."
             Write-Host "Press any key to continue..."
             $null = $Host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown")
             continue
