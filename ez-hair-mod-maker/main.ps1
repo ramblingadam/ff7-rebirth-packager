@@ -225,53 +225,6 @@ function Start-QuickUpdate {
     Complete-ModOperation $modFolder $false -AutoLaunch
 }
 
-# Function to handle texture injection process
-function Start-TextureInjectionProcess {
-    param(
-        [Parameter(Mandatory)]
-        [string]$character,
-        
-        [Parameter(Mandatory)]
-        [string]$modContentPath,
-        
-        [Parameter(Mandatory)]
-        [string]$textureType,
-        
-        [Parameter(Mandatory)]
-        [string]$texturePath
-    )
-    
-    # Import texture utils
-    . (Join-Path $rootDir "modules\texture-utils.ps1")
-    
-    # Get source and target files
-    $sourceFiles = $localCharacterFiles[$character][$textureType]
-    $targetPaths = $characterFiles[$character][$textureType]
-    
-    # Process files in pairs (uasset + ubulk)
-    for ($i = 0; $i -lt $sourceFiles.Count; $i += 2) {
-        $sourceUasset = Join-Path "original-assets" $sourceFiles[$i]
-        $sourceUbulk = Join-Path "original-assets" $sourceFiles[$i+1]
-        $targetPath = Join-Path $modContentPath $targetPaths[$i/2]
-        
-        Write-Host "`nProcessing $($sourceFiles[$i])"
-        
-        $success = Start-TextureInjection `
-            -SourceUasset $sourceUasset `
-            -SourceUbulk $sourceUbulk `
-            -TargetPath $targetPath `
-            -TexturePath $texturePath
-        
-        if (-not $success) {
-            $continue = Read-Host "`nDo you want to continue with the remaining files? (Y/N)"
-            if ($continue -ne 'Y') {
-                return $false
-            }
-        }
-    }
-    
-    return $true
-}
 
 # Main script execution
 while ($true) {
