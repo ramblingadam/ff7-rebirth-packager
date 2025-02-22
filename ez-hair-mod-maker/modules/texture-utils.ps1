@@ -64,7 +64,7 @@ function Start-TextureInjection {
         $textureType,
         $localCharacterFiles,
         $characterFiles,
-        $baseHairAssetPath
+        $basePlayerCharacterAssetPath
     )
     
     Write-Host "`nInjecting textures..." -ForegroundColor Cyan
@@ -81,7 +81,7 @@ function Start-TextureInjection {
     for ($i = 0; $i -lt $sourceFiles.Count; $i += 2) {  # Process in pairs (uasset + ubulk)
         $sourceUasset = Join-Path "original-assets" $sourceFiles[$i]
         $sourceUbulk = Join-Path "original-assets" $sourceFiles[$i+1]
-        $targetPath = Join-Path $modContentPath (Join-Path $baseHairAssetPath $targetPaths[$i/2])
+        $targetPath = Join-Path $modContentPath (Join-Path $basePlayerCharacterAssetPath $targetPaths[$i/2])
         $targetDir = Split-Path -Parent $targetPath
         
         Write-Host "`nProcessing $($sourceFiles[$i])"
