@@ -11,15 +11,28 @@ $rootDir = Split-Path $PSScriptRoot -Parent
 
 # Function to create mod directory structure
 function New-ModDirectoryStructure {
-    param($modName, $character)
+    param(
+        [Parameter(Mandatory)]
+        [string]$modName,
+        
+        [Parameter(Mandatory)]
+        [string]$character,
+        
+        [Parameter(Mandatory)]
+        [string]$textureType
+    )
+    
+    # Read config
+    $config = Read-ConfigFile
     
     # Create mod content directory
     $modContentPath = Join-Path $config['MOD_BASE_DIR'] "$modName\mod-content"
     Write-Host "`nCreating mod directory structure..." -ForegroundColor Cyan
     
     # Create directories for each target file
-    foreach ($targetFile in $characterFiles[$character].hair) {
-        $targetPath = Join-Path $modContentPath (Join-Path  (Split-Path $targetFile -Parent))
+    foreach ($targetFile in $characterFiles[$character][$textureType]) {
+        $targetDir = Split-Path $targetFile -Parent
+        $targetPath = Join-Path $modContentPath $targetDir
         Write-Host "Creating directory: $targetPath"
         New-Item -ItemType Directory -Path $targetPath -Force | Out-Null
     }
@@ -199,7 +212,32 @@ function Start-QuickUpdate {
     
     # Start texture injection
     . (Join-Path $rootDir "modules\texture-utils.ps1")
-    Start-TextureInjection $character $modContentPath $texturePath $textureType $localCharacterFiles $characterFiles 
+    
+    # Get source and target files
+    $sourceFiles = $localCharacterFiles[$character][$textureType]
+    $targetPaths = $characterFiles[$character][$textureType]
+    
+    # Process files in pairs (uasset + ubulk)
+    for ($i = 0; $i -lt $sourceFiles.Count; $i += 2) {
+        $sourceUasset = Join-Path "original-assets" $sourceFiles[$i]
+        $sourceUbulk = Join-Path "original-assets" $sourceFiles[$i+1]
+        $targetPath = Join-Path $modContentPath $targetPaths[$i/2]
+        
+        Write-Host "`nProcessing $($sourceFiles[$i])"
+        
+        $success = Start-TextureInjection `
+            -SourceUasset $sourceUasset `
+            -SourceUbulk $sourceUbulk `
+            -TargetPath $targetPath `
+            -TexturePath $texturePath
+        
+        if (-not $success) {
+            $continue = Read-Host "`nDo you want to continue with the remaining files? (Y/N)"
+            if ($continue -ne 'Y') {
+                return
+            }
+        }
+    }
     
     # Complete the operation and auto-launch
     Complete-ModOperation $modFolder $false -AutoLaunch
@@ -269,11 +307,36 @@ while ($true) {
         }
         
         # Create mod directory structure
-        $modContentPath = New-ModDirectoryStructure $newModFolder $character
+        $modContentPath = New-ModDirectoryStructure $newModFolder $character $textureType
         
         # Start texture injection
         . (Join-Path $rootDir "modules\texture-utils.ps1")
-        Start-TextureInjection $character $modContentPath $texturePath $textureType $localCharacterFiles $characterFiles 
+        
+        # Get source and target files
+        $sourceFiles = $localCharacterFiles[$character][$textureType]
+        $targetPaths = $characterFiles[$character][$textureType]
+        
+        # Process files in pairs (uasset + ubulk)
+        for ($i = 0; $i -lt $sourceFiles.Count; $i += 2) {
+            $sourceUasset = Join-Path "original-assets" $sourceFiles[$i]
+            $sourceUbulk = Join-Path "original-assets" $sourceFiles[$i+1]
+            $targetPath = Join-Path $modContentPath $targetPaths[$i/2]
+            
+            Write-Host "`nProcessing $($sourceFiles[$i])"
+            
+            $success = Start-TextureInjection `
+                -SourceUasset $sourceUasset `
+                -SourceUbulk $sourceUbulk `
+                -TargetPath $targetPath `
+                -TexturePath $texturePath
+            
+            if (-not $success) {
+                $continue = Read-Host "`nDo you want to continue with the remaining files? (Y/N)"
+                if ($continue -ne 'Y') {
+                    return
+                }
+            }
+        }
         
         # Complete the operation (will always package for new mods)
         Complete-ModOperation $newModFolder $true -launchGame $launchGame -texturePath $texturePath
@@ -339,7 +402,32 @@ while ($true) {
         }
         
         . (Join-Path $rootDir "modules\texture-utils.ps1")
-        Start-TextureInjection $character $modContentPath $texturePath $textureType $localCharacterFiles $characterFiles 
+        
+        # Get source and target files
+        $sourceFiles = $localCharacterFiles[$character][$textureType]
+        $targetPaths = $characterFiles[$character][$textureType]
+        
+        # Process files in pairs (uasset + ubulk)
+        for ($i = 0; $i -lt $sourceFiles.Count; $i += 2) {
+            $sourceUasset = Join-Path "original-assets" $sourceFiles[$i]
+            $sourceUbulk = Join-Path "original-assets" $sourceFiles[$i+1]
+            $targetPath = Join-Path $modContentPath $targetPaths[$i/2]
+            
+            Write-Host "`nProcessing $($sourceFiles[$i])"
+            
+            $success = Start-TextureInjection `
+                -SourceUasset $sourceUasset `
+                -SourceUbulk $sourceUbulk `
+                -TargetPath $targetPath `
+                -TexturePath $texturePath
+            
+            if (-not $success) {
+                $continue = Read-Host "`nDo you want to continue with the remaining files? (Y/N)"
+                if ($continue -ne 'Y') {
+                    return
+                }
+            }
+        }
         
         # Complete the operation (will always package)
         Complete-ModOperation $modFolder $false -launchGame $launchGame -texturePath $texturePath
