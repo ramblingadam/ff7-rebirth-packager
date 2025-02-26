@@ -13,6 +13,10 @@ $localCharacterFiles = @{
             'cloud/PC0000_06_Hair_C.uasset',
             'cloud/PC0000_06_Hair_C.ubulk'
         )
+        'eyes' = @(
+            'cloud/PC0000_00_Eye_C.uasset',
+            'cloud/PC0000_00_Eye_C.ubulk'
+        )
     }
     'Tifa' = @{
         'hair' = @(
@@ -23,11 +27,19 @@ $localCharacterFiles = @{
             'tifa/PC0002_08_Hair_C.uasset',
             'tifa/PC0002_08_Hair_C.ubulk'
         )
+        'eyes' = @(
+            'tifa/PC0002_00_Eye_C.uasset',
+            'tifa/PC0002_00_Eye_C.ubulk'
+        )
     }
     'Barret' = @{
         'hair' = @(
             'barret/PC0001_00_Hair_C.uasset',
             'barret/PC0001_00_Hair_C.ubulk'
+        )
+        'eyes' = @(
+            'barret/PC0001_00_Eye_C.uasset',
+            'barret/PC0001_00_Eye_C.ubulk'
         )
     }
     'Aerith' = @{
@@ -36,6 +48,10 @@ $localCharacterFiles = @{
             'aerith/PC0003_00_Hair_C.ubulk',
             'aerith/PC0003_05_Hair_C.uasset',
             'aerith/PC0003_05_Hair_C.ubulk'
+        )
+        'eyes' = @(
+            'aerith/PC0003_00_Eye_C.uasset',
+            'aerith/PC0003_00_Eye_C.ubulk'
         )
     }
     'Red XIII' = @{
@@ -51,17 +67,29 @@ $localCharacterFiles = @{
             'red-xiii/PC0004_00_Head_C.uasset',
             'red-xiii/PC0004_00_Head_C.ubulk'
         )
+        'eyes' = @(
+            'red-xiii/PC0004_00_Eye_C.uasset',
+            'red-xiii/PC0004_00_Eye_C.ubulk'
+        )
     }
     'Yuffie' = @{
         'hair' = @(
             'yuffie/PC0005_00_Hair_C.uasset',
             'yuffie/PC0005_00_Hair_C.ubulk'
         )
+        'eyes' = @(
+            'yuffie/PC0005_00_Eye_C.uasset',
+            'yuffie/PC0005_00_Eye_C.ubulk'
+        )
     }
     'Cait Sith' = @{
         'hair' = @(
             'cait-sith/PC0007_00_Hair_C.uasset',
             'cait-sith/PC0007_00_Hair_C.ubulk'
+        )
+        'eyes' = @(
+            'cait-sith/PC0007_00_Eye_C.uasset',
+            'cait-sith/PC0007_00_Eye_C.ubulk'
         )
     }
 }
@@ -73,6 +101,9 @@ $characterFiles = @{
             "$basePlayerCharacterAssetPath/PC0000_00_Cloud_Standard/Texture/PC0000_00_Hair_C.uasset",
             "$basePlayerCharacterAssetPath/PC0000_06_Cloud_Soldier/Texture/PC0000_06_Hair_C.uasset"
         )
+        'eyes' = @(
+            "$basePlayerCharacterAssetPath/PC0000_00_Cloud_Standard/Texture/PC0000_00_Eye_C.uasset"
+        )
     }
     'Tifa' = @{
         'hair' = @(
@@ -80,10 +111,16 @@ $characterFiles = @{
             "$basePlayerCharacterAssetPath/PC0002_05_Tifa_Soldier/Texture/PC0002_05_Hair_C.uasset",
             "$basePlayerCharacterAssetPath/PC0002_08_Tifa_CostaClothing/Texture/PC0002_08_Hair_C.uasset"
         )
+        'eyes' = @(
+            "$basePlayerCharacterAssetPath/PC0002_00_Tifa_Standard/Texture/PC0002_00_Eye_C.uasset"
+        )
     }
     'Barret' = @{
         'hair' = @(
             "$basePlayerCharacterAssetPath/PC0001_00_Barret_Standard/Texture/PC0001_00_Hair_C.uasset"
+        )
+        'eyes' = @(
+            "$basePlayerCharacterAssetPath/PC0001_00_Barret_Standard/Texture/PC0001_00_Eye_C.uasset"
         )
     }
     'Aerith' = @{
@@ -91,11 +128,17 @@ $characterFiles = @{
             "$basePlayerCharacterAssetPath/PC0003_00_Aerith_Standard/Texture/PC0003_00_Hair_C.uasset",
             "$basePlayerCharacterAssetPath/PC0003_05_Aerith_Soldier/Texture/PC0003_05_Hair_C.uasset"
         )
+        'eyes' = @(
+            "$basePlayerCharacterAssetPath/PC0003_00_Aerith_Standard/Texture/PC0003_00_Eye_C.uasset"
+        )
     }
     'Red XIII' = @{
         'hair' = @(
             "$basePlayerCharacterAssetPath/PC0004_00_RedXIII_Standard/Texture/PC0004_00_Hair_C.uasset",
             "$basePlayerCharacterAssetPath/PC0004_02_RedXIII_Loveless/Texture/PC0004_02_Hair_C.uasset"
+        )
+        'eyes' = @(
+            "$basePlayerCharacterAssetPath/PC0004_00_RedXIII_Standard/Texture/PC0004_00_Eye_C.uasset"
         )
         'fur' = @(
             "$basePlayerCharacterAssetPath/PC0004_00_RedXIII_Standard/Texture/PC0004_00_Body_C.uasset",
@@ -106,10 +149,16 @@ $characterFiles = @{
         'hair' = @(
             "$basePlayerCharacterAssetPath/PC0005_00_Yuffie_Standard/Texture/PC0005_00_Hair_C.uasset"
         )
-    }
+        'eyes' = @(
+            "$basePlayerCharacterAssetPath/PC0005_00_Yuffie_Standard/Texture/PC0005_00_Eye_C.uasset"
+        )
+    } 
     'Cait Sith' = @{
         'hair' = @(
             "$basePlayerCharacterAssetPath/PC0007_00_CaitSith_Standard/Texture/PC0007_00_Hair_C.uasset"
+        )
+        'eyes' = @(
+            "$basePlayerCharacterAssetPath/PC0007_00_CaitSith_Standard/Texture/PC0007_00_Eye_C.uasset"
         )
     }
 }
