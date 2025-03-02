@@ -16,6 +16,16 @@ $localCharacterFiles = @{
         'eyes' = @(
             'cloud/PC0000_00_Eye_C.uasset',
             'cloud/PC0000_00_Eye_C.ubulk'
+            'cloud/PC0000_00_Eye_Large_C.uasset',
+            'cloud/PC0000_00_Eye_Large_C.ubulk'
+        )
+        # 'eyes-large' = @(
+        #     'cloud/PC0000_00_Eye_Large_C.uasset',
+        #     'cloud/PC0000_00_Eye_Large_C.ubulk'
+        # )
+        'head' = @(
+            'cloud/PC0000_00_Head_C.uasset',
+            'cloud/PC0000_00_Head_C.ubulk'
         )
     }
     'Tifa' = @{
@@ -31,6 +41,22 @@ $localCharacterFiles = @{
             'tifa/PC0002_00_Eye_C.uasset',
             'tifa/PC0002_00_Eye_C.ubulk'
         )
+        'head' = @(
+            'tifa/PC0002_00_Head_C.uasset',
+            'tifa/PC0002_00_Head_C.ubulk'
+        )
+        'majestic-glamour-top' = @(
+            'tifa/PC0002_08_BodyA_C.uasset',
+            'tifa/PC0002_08_BodyA_C.ubulk'
+        )
+        'majestic-glamour-bottom' = @(
+            'tifa/PC0002_08_BodyB_C.uasset',
+            'tifa/PC0002_08_BodyB_C.ubulk'
+        )
+        'majestic-glamour-bow' = @(
+            'tifa/PC0002_08_BodyC_C.uasset',
+            'tifa/PC0002_08_BodyC_C.ubulk'
+        )
     }
     'Barret' = @{
         'hair' = @(
@@ -40,6 +66,10 @@ $localCharacterFiles = @{
         'eyes' = @(
             'barret/PC0001_00_Eye_C.uasset',
             'barret/PC0001_00_Eye_C.ubulk'
+        )
+        'head' = @(
+            'barret/PC0001_00_Head_C.uasset',
+            'barret/PC0001_00_Head_C.ubulk'
         )
     }
     'Aerith' = @{
@@ -102,7 +132,15 @@ $characterFiles = @{
             "$basePlayerCharacterAssetPath/PC0000_06_Cloud_Soldier/Texture/PC0000_06_Hair_C.uasset"
         )
         'eyes' = @(
-            "$basePlayerCharacterAssetPath/PC0000_00_Cloud_Standard/Texture/PC0000_00_Eye_C.uasset"
+            "$basePlayerCharacterAssetPath/PC0000_00_Cloud_Standard/Texture/PC0000_00_Eye_C.uasset",
+            "$basePlayerCharacterAssetPath/PC0000_00_Cloud_Standard/Texture/PC0000_00_Eye_Large_C.uasset"
+        )
+        # 'eyes-large' = @(
+        #     "$basePlayerCharacterAssetPath/PC0000_00_Cloud_Standard/Texture/PC0000_00_Eye_Large_C.uasset",
+        #     "$basePlayerCharacterAssetPath/PC0000_00_Cloud_Standard/Texture/PC0000_00_Eye_Large_C.ubulk"
+        # )
+        'head' = @(
+            "$basePlayerCharacterAssetPath/PC0000_00_Cloud_Standard/Texture/PC0000_00_Head_C.uasset"
         )
     }
     'Tifa' = @{
@@ -114,6 +152,18 @@ $characterFiles = @{
         'eyes' = @(
             "$basePlayerCharacterAssetPath/PC0002_00_Tifa_Standard/Texture/PC0002_00_Eye_C.uasset"
         )
+        'head' = @(
+            "$basePlayerCharacterAssetPath/PC0002_00_Tifa_Standard/Texture/PC0002_00_Head_C.uasset"
+        )
+        'majestic-glamour-top' = @(
+            "$basePlayerCharacterAssetPath/PC0002_08_Tifa_CostaClothing/Texture/PC0002_08_BodyA_C.uasset"
+        )
+        'majestic-glamour-bottom' = @(
+            "$basePlayerCharacterAssetPath/PC0002_08_Tifa_CostaClothing/Texture/PC0002_08_BodyB_C.uasset"
+        )
+        'majestic-glamour-bow' = @(
+            "$basePlayerCharacterAssetPath/PC0002_08_Tifa_CostaClothing/Texture/PC0002_08_BodyC_C.uasset"
+        )
     }
     'Barret' = @{
         'hair' = @(
@@ -121,6 +171,9 @@ $characterFiles = @{
         )
         'eyes' = @(
             "$basePlayerCharacterAssetPath/PC0001_00_Barret_Standard/Texture/PC0001_00_Eye_C.uasset"
+        )
+        'head' = @(
+            "$basePlayerCharacterAssetPath/PC0001_00_Barret_Standard/Texture/PC0001_00_Head_C.uasset"
         )
     }
     'Aerith' = @{

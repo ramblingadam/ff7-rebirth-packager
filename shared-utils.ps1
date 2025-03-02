@@ -235,6 +235,8 @@ function Start-ModPackaging {
         [switch]$LaunchGame = $false,
         [string]$TexturePath = $null
     )
+
+    Write-Host "`nStarting mod packaging..." -ForegroundColor Yellow
     
     # Get current timestamp for directory naming
     $timestamp = Get-Date -Format 'yyyyMMdd_HHmmss'
@@ -244,7 +246,9 @@ function Start-ModPackaging {
     if (-not (Test-Path $contentPath)) {
         Write-Host "Error: Mod content path not found:"
         Write-Host $contentPath
-        return $false
+        Write-Host "Press any key to exit..."
+        $null = $Host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown")
+        exit 1
     }
     
     # Convert dash-case to PascalCase for mod name
@@ -254,6 +258,9 @@ function Start-ModPackaging {
     $exportDir = Join-Path $Config.MOD_BASE_DIR "$ModFolder\${modName}-$timestamp"
     New-Item -ItemType Directory -Path $exportDir -Force | Out-Null
     
+Write-Host "`nExport Directory:" -ForegroundColor Yellow
+Write-Host $exportDir -ForegroundColor Green
+
     # Set file paths
     $gamePakDir = Join-Path $Config.GAME_DIR "\End\Content\Paks"
     $exportUtoc = Join-Path $exportDir "z${modName}_P.utoc"

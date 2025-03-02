@@ -19,6 +19,15 @@ $textureTypeMetadata = @{
             )
         }
     }
+    # "Cloud" = @{
+    #     "eyes" = @{
+    #         isMultiTexture = $true
+    #         parts = @(
+    #             @{ name = "normal"; prompt = "EYE normal size texture" },
+    #             @{ name = "large"; prompt = "EYE large size texture" }
+    #         )
+    #     }
+    # }
 }
 
 # Function to get texture path with previous path support
@@ -158,7 +167,7 @@ function Start-TextureInjection {
         Push-Location $toolsDir
         try {
             $pythonOutput = & $pythonExe -E $pythonScript $targetUasset $newTexturePath --save_folder="$targetDir" --skip_non_texture --image_filter=cubic 2>&1
-            Start-Sleep -Seconds 1
+            Start-Sleep -Seconds 2
 
             if ($LASTEXITCODE -eq 0) {
                 Write-Host "Done!" -ForegroundColor Green

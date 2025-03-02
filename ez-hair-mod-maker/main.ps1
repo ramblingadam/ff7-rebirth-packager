@@ -81,7 +81,8 @@ function Complete-ModOperation {
     
     if ($AutoLaunch) {
         Write-Host "`nQuick updating and launching..." -ForegroundColor Yellow
-        Start-ModPackaging -ModFolder $modFolder -Config $config -LaunchGame:$true -TexturePath $config.LAST_USED_TEXTURE_PATH
+        # Start-ModPackaging -ModFolder $modFolder -Config $config -LaunchGame:$true -TexturePath $config.LAST_USED_TEXTURE_PATH
+        Start-ModPackaging -ModFolder $modFolder -Config $config -LaunchGame:$true -TexturePath $texturePath
         exit 0
     } else {
         Write-Host "`nStarting packaging process..." -ForegroundColor Yellow
@@ -251,9 +252,7 @@ while ($true) {
     
     # Make new mod
     if ($choice -eq 1) {
-        # Get mod name
-        $newModFolder = Read-Host "`nEnter a name for your mod:"
-        if ([string]::IsNullOrWhiteSpace($newModFolder)) { continue }
+       
         
         # Select character
         $characterSelection = Get-CharacterSelection
@@ -265,6 +264,8 @@ while ($true) {
         
         $character = $characterSelection.Character
         $textureType = $characterSelection.TextureType
+
+       
         
         # Verify source files
         $missingFiles = Test-SourceFiles $character $textureType
@@ -280,6 +281,16 @@ while ($true) {
         # Get texture path
         $texturePath = Get-TexturePath $character $textureType
         if (-not $texturePath) { continue }
+
+         # Get mod name
+         if ($config.AUTO_NAME_MODS -eq "true") {
+            $textureFileName = Split-Path $texturePath -Leaf
+            $textureFileNameNoExt = [System.IO.Path]::GetFileNameWithoutExtension($textureFileName)
+            $newModFolder = "$character-$textureType-$textureFileNameNoExt".ToLower()
+        } else {
+            $newModFolder = Read-Host "`nEnter a name for your mod:"
+            if ([string]::IsNullOrWhiteSpace($newModFolder)) { continue }
+        }
         
         # Ask about launching game after getting texture (if not set to always launch)
         $launchGame = $config.ALWAYS_LAUNCH_GAME -eq 'true'
@@ -374,7 +385,10 @@ while ($true) {
             -texturePath $texturePath
         
         if (-not $success) {
-            return
+            Write-Host "`nError: Failed to inject texture." -ForegroundColor Red
+            Write-Host "Press any key to exit..."
+            $null = $Host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown")
+            exit 1
         }
         
         # Complete the operation (will always package)
