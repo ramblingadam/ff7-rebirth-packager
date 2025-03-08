@@ -83,6 +83,10 @@ $localCharacterFiles = @{
             'aerith/PC0003_00_Eye_C.uasset',
             'aerith/PC0003_00_Eye_C.ubulk'
         )
+        'head' = @(
+            'aerith/PC0003_00_Head_C.uasset',
+            'aerith/PC0003_00_Head_C.ubulk'
+        )
     }
     'Red XIII' = @{
         'hair' = @(
@@ -110,6 +114,18 @@ $localCharacterFiles = @{
         'eyes' = @(
             'yuffie/PC0005_00_Eye_C.uasset',
             'yuffie/PC0005_00_Eye_C.ubulk'
+        )
+        'head' = @(
+            'yuffie/PC0005_00_Head_C.uasset',
+            'yuffie/PC0005_00_Head_C.ubulk'
+        )
+        'clothes-main' = @(
+            'yuffie/PC0005_00_BodyB_C.uasset',
+            'yuffie/PC0005_00_BodyB_C.ubulk'
+        )
+        'clothes-armor' = @(
+            'yuffie/PC0005_00_BodyC_C.uasset',
+            'yuffie/PC0005_00_BodyC_C.ubulk'
         )
     }
     'Cait Sith' = @{
@@ -184,6 +200,9 @@ $characterFiles = @{
         'eyes' = @(
             "$basePlayerCharacterAssetPath/PC0003_00_Aerith_Standard/Texture/PC0003_00_Eye_C.uasset"
         )
+        'head' = @(
+            "$basePlayerCharacterAssetPath/PC0003_00_Aerith_Standard/Texture/PC0003_00_Head_C.uasset"
+        )
     }
     'Red XIII' = @{
         'hair' = @(
@@ -204,6 +223,15 @@ $characterFiles = @{
         )
         'eyes' = @(
             "$basePlayerCharacterAssetPath/PC0005_00_Yuffie_Standard/Texture/PC0005_00_Eye_C.uasset"
+        )
+        'head' = @(
+            "$basePlayerCharacterAssetPath/PC0005_00_Yuffie_Standard/Texture/PC0005_00_Head_C.uasset"
+        )
+        'clothes-main' = @(
+            "$basePlayerCharacterAssetPath/PC0005_00_Yuffie_Standard/Texture/PC0005_00_BodyB_C.uasset"
+        )
+        'clothes-armor' = @(
+            "$basePlayerCharacterAssetPath/PC0005_00_Yuffie_Standard/Texture/PC0005_00_BodyC_C.uasset"
         )
     } 
     'Cait Sith' = @{
