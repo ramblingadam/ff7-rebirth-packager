@@ -123,9 +123,21 @@ $localCharacterFiles = @{
             'yuffie/PC0005_00_BodyB_C.uasset',
             'yuffie/PC0005_00_BodyB_C.ubulk'
         )
+        'clothes-main-mg' = @(
+            'yuffie/PC0005_00_BodyB_Mg.uasset',
+            'yuffie/PC0005_00_BodyB_Mg.ubulk'
+        )
+        'clothes-main-intergrade' = @(
+            'yuffie/PC0005_00_BodyB_C_RM.uasset',
+            'yuffie/PC0005_00_BodyB_C_RM.ubulk'
+        )
         'clothes-armor' = @(
             'yuffie/PC0005_00_BodyC_C.uasset',
             'yuffie/PC0005_00_BodyC_C.ubulk'
+        )
+        'clothes-accessories' = @(
+            'yuffie/PC0005_00_BodyA_C.uasset',
+            'yuffie/PC0005_00_BodyA_C.ubulk'
         )
     }
     'Cait Sith' = @{
@@ -230,8 +242,17 @@ $characterFiles = @{
         'clothes-main' = @(
             "$basePlayerCharacterAssetPath/PC0005_00_Yuffie_Standard/Texture/PC0005_00_BodyB_C.uasset"
         )
+        'clothes-main-mg' = @(
+            "$basePlayerCharacterAssetPath/PC0005_00_Yuffie_Standard/Texture/PC0005_00_BodyB_Mg.uasset"
+        )
+        'clothes-main-intergrade' = @(
+            "$basePlayerCharacterAssetPath/PC0005_00_Yuffie_Standard/Texture/PC0005_00_BodyB_C_RM.uasset"
+        )
         'clothes-armor' = @(
             "$basePlayerCharacterAssetPath/PC0005_00_Yuffie_Standard/Texture/PC0005_00_BodyC_C.uasset"
+        )
+        'clothes-accessories' = @(
+            "$basePlayerCharacterAssetPath/PC0005_00_Yuffie_Standard/Texture/PC0005_00_BodyA_C.uasset"
         )
     } 
     'Cait Sith' = @{
