@@ -29,6 +29,10 @@ function New-ModDirectoryStructure {
     $modContentPath = Join-Path $config['MOD_BASE_DIR'] "$modName\mod-content"
     Write-Host "`nCreating mod directory structure..." -ForegroundColor Cyan
     
+Write-Host $characterFiles
+Write-Host $characterFiles[$character]
+Write-Host $characterFiles[$character][$textureType]
+
     # Create directories for each target file
     foreach ($targetFile in $characterFiles[$character][$textureType]) {
         $targetDir = Split-Path $targetFile -Parent
@@ -284,8 +288,16 @@ while ($true) {
 
          # Get mod name
          if ($config.AUTO_NAME_MODS -eq "true") {
-            $textureFileName = Split-Path $texturePath -Leaf
-            $textureFileNameNoExt = [System.IO.Path]::GetFileNameWithoutExtension($textureFileName)
+            # Handle multi-texture case
+            if ($texturePath -is [hashtable]) {
+                # Use the first texture's filename for the mod name
+                $firstTexturePath = $texturePath.Values | Select-Object -First 1
+                $textureFileName = Split-Path $firstTexturePath -Leaf
+                $textureFileNameNoExt = [System.IO.Path]::GetFileNameWithoutExtension($textureFileName)
+            } else {
+                $textureFileName = Split-Path $texturePath -Leaf
+                $textureFileNameNoExt = [System.IO.Path]::GetFileNameWithoutExtension($textureFileName)
+            }
             $newModFolder = "$character-$textureType-$textureFileNameNoExt".ToLower()
         } else {
             $newModFolder = Read-Host "`nEnter a name for your mod:"

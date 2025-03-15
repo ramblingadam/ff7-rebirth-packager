@@ -4,6 +4,7 @@ $rootDir = Split-Path $PSScriptRoot -Parent
 . (Join-Path $rootDir "shared-utils.ps1")
 . (Join-Path $rootDir "modules/config-utils.ps1")
 $basePlayerCharacterAssetPath = "End/Content/Character/Player"
+$basePropertyCharacterAssetPath = "End/Content/Character/Property"
 # Local source files (original hair textures to use as base)
 $localCharacterFiles = @{
     'Cloud' = @{
@@ -26,6 +27,10 @@ $localCharacterFiles = @{
         'head' = @(
             'cloud/PC0000_00_Head_C.uasset',
             'cloud/PC0000_00_Head_C.ubulk'
+        )
+        'clothes-saber' = @(
+            'cloud/PC0000_00_Arm_C.uasset',
+            'cloud/PC0000_00_Arm_C.ubulk'
         )
     }
     'Tifa' = @{
@@ -56,6 +61,14 @@ $localCharacterFiles = @{
         'majestic-glamour-bow' = @(
             'tifa/PC0002_08_BodyC_C.uasset',
             'tifa/PC0002_08_BodyC_C.ubulk'
+        )
+        'clothes-descendant-a' = @(
+            'tifa/BodyPartA_C.uasset'
+            # 'tifa/BodyPartA_C.ubulk'
+        )
+        'clothes-descendant-b' = @(
+            'tifa/BodyPartB_C.uasset'
+            # 'tifa/BodyPartB_C.ubulk'
         )
     }
     'Barret' = @{
@@ -150,6 +163,19 @@ $localCharacterFiles = @{
             'cait-sith/PC0007_00_Eye_C.ubulk'
         )
     }
+    'Chocobo Standard' = @{
+        # 'feather' = @(
+        #     'chocobo-standard/VE0009_00_Feather_C.uasset',
+        #     'chocobo-standard/VE0009_00_Feather_C.ubulk'
+        # )
+        'body' = @(
+            'chocobo-standard/VE0009_00_Body_C.uasset',
+            'chocobo-standard/VE0009_00_Body_C.ubulk'
+            'chocobo-standard/VE0009_00_Feather_C.uasset',
+            'chocobo-standard/VE0009_00_Feather_C.ubulk'
+        )
+
+    }
 }
 
 # Target paths in mod directory
@@ -169,6 +195,9 @@ $characterFiles = @{
         # )
         'head' = @(
             "$basePlayerCharacterAssetPath/PC0000_00_Cloud_Standard/Texture/PC0000_00_Head_C.uasset"
+        )
+        'clothes-saber' = @(
+            "$basePlayerCharacterAssetPath/PC0000_00_Cloud_Standard/Texture/PC0000_00_Arm_C.uasset"
         )
     }
     'Tifa' = @{
@@ -191,6 +220,12 @@ $characterFiles = @{
         )
         'majestic-glamour-bow' = @(
             "$basePlayerCharacterAssetPath/PC0002_08_Tifa_CostaClothing/Texture/PC0002_08_BodyC_C.uasset"
+        )
+        'clothes-descendant-a' = @(
+            "$basePlayerCharacterAssetPath/PC0002_00_Tifa_Standard/Texture/PC0002_00_BodyPartA_C.uasset"
+        )
+        'clothes-descendant-b' = @(
+            "$basePlayerCharacterAssetPath/PC0002_00_Tifa_Standard/Texture/PC0002_00_BodyPartB_C.uasset"
         )
     }
     'Barret' = @{
@@ -261,6 +296,15 @@ $characterFiles = @{
         )
         'eyes' = @(
             "$basePlayerCharacterAssetPath/PC0007_00_CaitSith_Standard/Texture/PC0007_00_Eye_C.uasset"
+        )
+    }
+    'Chocobo Standard' = @{
+        # 'feather' = @(
+        #     "$basePlayerCharacterAssetPath/Property/VE0009_00_Chocobo_Standard/Texture/VE0009_00_Feather_C.uasset"
+        # )
+        'body' = @(
+            "$basePropertyCharacterAssetPath/VE0009_00_Chocobo_Standard/Texture/VE0009_00_Body_C.uasset"
+            "$basePropertyCharacterAssetPath/VE0009_00_Chocobo_Standard/Texture/VE0009_00_Feather_C.uasset"
         )
     }
 }

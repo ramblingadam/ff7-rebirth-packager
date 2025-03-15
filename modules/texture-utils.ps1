@@ -19,6 +19,15 @@ $textureTypeMetadata = @{
             )
         }
     }
+    "Chocobo Standard" = @{
+        "body" = @{
+            isMultiTexture = $true
+            parts = @(
+                @{ name = "body"; prompt = "BODY texture" },
+                @{ name = "feathers"; prompt = "FEATHERS texture" }
+            )
+        }
+    }
     # "Cloud" = @{
     #     "eyes" = @{
     #         isMultiTexture = $true
