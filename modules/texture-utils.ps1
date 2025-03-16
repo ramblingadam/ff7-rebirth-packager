@@ -8,46 +8,10 @@ $rootDir = Split-Path $PSScriptRoot -Parent
 # Import config utilities
 . (Join-Path $rootDir "modules/config-utils.ps1")
 
-# Define texture type metadata
-$textureTypeMetadata = @{
-    "Red XIII" = @{
-        "fur" = @{
-            isMultiTexture = $true
-            parts = @(
-                @{ name = "body"; prompt = "BODY fur texture" },
-                @{ name = "head"; prompt = "HEAD fur texture" }
-            )
-        }
-    }
-    "Chocobo-standard" = @{
-        "body" = @{
-            isMultiTexture = $true
-            parts = @(
-                @{ name = "body"; prompt = "BODY texture" },
-                @{ name = "feathers"; prompt = "FEATHERS texture" }
-            )
-        }
-    }
-    "Tifa" = @{
-        "clothes-descendant-w-acc" = @{
-            isMultiTexture = $true
-            earlyLoadOrder = $true
-            parts = @(
-                @{ name = "body"; prompt = "BODY-A texture"; uassetOnly = $true },
-                @{ name = "hair-acc"; prompt = "HAIR-ACC texture"; uassetOnly = $true }
-            )
-        }
-    }
-    # "Cloud" = @{
-    #     "eyes" = @{
-    #         isMultiTexture = $true
-    #         parts = @(
-    #             @{ name = "normal"; prompt = "EYE normal size texture" },
-    #             @{ name = "large"; prompt = "EYE large size texture" }
-    #         )
-    #     }
-    # }
-}
+# Import character utilities
+. (Join-Path $rootDir "modules/character-utils.ps1")
+
+
 
 # Function to get texture path with previous path support
 function Get-TexturePath {

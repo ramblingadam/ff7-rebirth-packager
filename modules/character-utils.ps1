@@ -168,19 +168,102 @@ $localCharacterFiles = @{
             'cait-sith/PC0007_00_Eye_C.ubulk'
         )
     }
-    'Chocobo Standard' = @{
-        # 'feather' = @(
-        #     'chocobo-standard/VE0009_00_Feather_C.uasset',
-        #     'chocobo-standard/VE0009_00_Feather_C.ubulk'
-        # )
+    'Chocobo-standard' = @{
         'body' = @(
             'chocobo-standard/VE0009_00_Body_C.uasset',
             'chocobo-standard/VE0009_00_Body_C.ubulk'
             'chocobo-standard/VE0009_00_Feather_C.uasset',
             'chocobo-standard/VE0009_00_Feather_C.ubulk'
         )
-
+        'body-w-eye' = @(
+            'chocobo-standard/VE0009_00_Body_C.uasset',
+            'chocobo-standard/VE0009_00_Body_C.ubulk'
+            'chocobo-standard/VE0009_00_Feather_C.uasset',
+            'chocobo-standard/VE0009_00_Feather_C.ubulk',
+            'chocobo-standard/VE0009_00_Eye_C.uasset',
+            'chocobo-standard/VE0009_00_Eye_C.ubulk'
+        )
     }
+    'Chocobo-mountain' = @{
+        'body' = @(
+            'chocobo-mountain/VE0009_02_Body_C.uasset',
+            'chocobo-mountain/VE0009_02_Body_C.ubulk'
+            'chocobo-mountain/VE0009_02_Feather_C.uasset',
+            'chocobo-mountain/VE0009_02_Feather_C.ubulk'
+        )
+        'body-w-eye' = @(
+            'chocobo-mountain/VE0009_02_Body_C.uasset',
+            'chocobo-mountain/VE0009_02_Body_C.ubulk'
+            'chocobo-mountain/VE0009_02_Feather_C.uasset',
+            'chocobo-mountain/VE0009_02_Feather_C.ubulk',
+            'chocobo-mountain/VE0009_02_Eye_C.uasset',
+            'chocobo-mountain/VE0009_02_Eye_C.ubulk'
+        )
+    }
+    'Chocobo-sand' = @{
+        'body' = @(
+            'chocobo-sand/VE0009_03_Body_C.uasset',
+            'chocobo-sand/VE0009_03_Body_C.ubulk'
+            'chocobo-sand/VE0009_03_Feather_C.uasset',
+            'chocobo-sand/VE0009_03_Feather_C.ubulk'
+        )
+        'body-w-eye' = @(
+            'chocobo-sand/VE0009_03_Body_C.uasset',
+            'chocobo-sand/VE0009_03_Body_C.ubulk'
+            'chocobo-sand/VE0009_03_Feather_C.uasset',
+            'chocobo-sand/VE0009_03_Feather_C.ubulk',
+            'chocobo-sand/VE0009_03_Eye_C.uasset',
+            'chocobo-sand/VE0009_03_Eye_C.ubulk'
+        )
+    }
+    'Chocobo-forest' = @{
+        'body' = @(
+            'chocobo-forest/VE0009_05_Body_C.uasset',
+            'chocobo-forest/VE0009_05_Body_C.ubulk'
+            'chocobo-forest/VE0009_05_Feather_C.uasset',
+            'chocobo-forest/VE0009_05_Feather_C.ubulk'
+        )
+        'body-w-eye' = @(
+            'chocobo-forest/VE0009_05_Body_C.uasset',
+            'chocobo-forest/VE0009_05_Body_C.ubulk'
+            'chocobo-forest/VE0009_05_Feather_C.uasset',
+            'chocobo-forest/VE0009_05_Feather_C.ubulk',
+            'chocobo-forest/VE0009_05_Eye_C.uasset',
+            'chocobo-forest/VE0009_05_Eye_C.ubulk'
+        )
+    }
+    'Chocobo-sky' = @{
+        'body' = @(
+            'chocobo-sky/VE0009_06_Body_C.uasset',
+            'chocobo-sky/VE0009_06_Body_C.ubulk'
+            'chocobo-sky/VE0009_06_Feather_C.uasset',
+            'chocobo-sky/VE0009_06_Feather_C.ubulk'
+        )
+        'body-w-eye' = @(
+            'chocobo-sky/VE0009_06_Body_C.uasset',
+            'chocobo-sky/VE0009_06_Body_C.ubulk'
+            'chocobo-sky/VE0009_06_Feather_C.uasset',
+            'chocobo-sky/VE0009_06_Feather_C.ubulk',
+            'chocobo-sky/VE0009_06_Eye_C.uasset',
+            'chocobo-sky/VE0009_06_Eye_C.ubulk'
+        )
+    }
+    'Chocobo-ocean' = @{
+        'body' = @(
+            'chocobo-ocean/VE0009_07_Body_C.uasset',
+            'chocobo-ocean/VE0009_07_Body_C.ubulk'
+            'chocobo-ocean/VE0009_07_Feather_C.uasset',
+            'chocobo-ocean/VE0009_07_Feather_C.ubulk'
+        )
+        'body-w-eye' = @(
+            'chocobo-ocean/VE0009_07_Body_C.uasset',
+            'chocobo-ocean/VE0009_07_Body_C.ubulk'
+            'chocobo-ocean/VE0009_07_Feather_C.uasset',
+            'chocobo-ocean/VE0009_07_Feather_C.ubulk',
+            'chocobo-ocean/VE0009_07_Eye_C.uasset',
+            'chocobo-ocean/VE0009_07_Eye_C.ubulk'
+        )
+    }  
 }
 
 # Target paths in mod directory
@@ -310,7 +393,7 @@ $characterFiles = @{
             "$basePlayerCharacterAssetPath/PC0007_00_CaitSith_Standard/Texture/PC0007_00_Eye_C.uasset"
         )
     }
-    'Chocobo Standard' = @{
+    'Chocobo-standard' = @{
         # 'feather' = @(
         #     "$basePlayerCharacterAssetPath/Property/VE0009_00_Chocobo_Standard/Texture/VE0009_00_Feather_C.uasset"
         # )
@@ -318,6 +401,131 @@ $characterFiles = @{
             "$basePropertyCharacterAssetPath/VE0009_00_Chocobo_Standard/Texture/VE0009_00_Body_C.uasset"
             "$basePropertyCharacterAssetPath/VE0009_00_Chocobo_Standard/Texture/VE0009_00_Feather_C.uasset"
         )
+    }
+}
+
+# Define texture type metadata
+$textureTypeMetadata = @{
+    "Red XIII" = @{
+        "fur" = @{
+            isMultiTexture = $true
+            parts = @(
+                @{ name = "body"; prompt = "BODY fur texture" },
+                @{ name = "head"; prompt = "HEAD fur texture" }
+            )
+        }
+    }
+    "Tifa" = @{
+        "clothes-descendant-w-acc" = @{
+            isMultiTexture = $true
+            earlyLoadOrder = $true
+            parts = @(
+                @{ name = "body"; prompt = "BODY-A texture"; uassetOnly = $true },
+                @{ name = "hair-acc"; prompt = "HAIR-ACC texture"; uassetOnly = $true }
+            )
+        }
+    }
+    "Chocobo-standard" = @{
+        "body" = @{
+            isMultiTexture = $true
+            parts = @(
+                @{ name = "body"; prompt = "BODY texture" },
+                @{ name = "feathers"; prompt = "FEATHERS texture" }
+            )
+        }
+        "body-w-eye" = @{
+            isMultiTexture = $true
+            parts = @(
+                @{ name = "body"; prompt = "BODY texture" },
+                @{ name = "feathers"; prompt = "FEATHERS texture" },
+                @{ name = "eye"; prompt = "EYE texture" }
+            )
+        }
+    }
+    "Chocobo-mountain" = @{
+        "body" = @{
+            isMultiTexture = $true
+            parts = @(
+                @{ name = "body"; prompt = "BODY texture" },
+                @{ name = "feathers"; prompt = "FEATHERS texture" }
+            )
+        }
+        "body-w-eye" = @{
+            isMultiTexture = $true
+            parts = @(
+                @{ name = "body"; prompt = "BODY texture" },
+                @{ name = "feathers"; prompt = "FEATHERS texture" },
+                @{ name = "eye"; prompt = "EYE texture" }
+            )
+        }
+    }
+    "Chocobo-sand" = @{
+        "body" = @{
+            isMultiTexture = $true
+            parts = @(
+                @{ name = "body"; prompt = "BODY texture" },
+                @{ name = "feathers"; prompt = "FEATHERS texture" }
+            )
+        }
+        "body-w-eye" = @{
+            isMultiTexture = $true
+            parts = @(
+                @{ name = "body"; prompt = "BODY texture" },
+                @{ name = "feathers"; prompt = "FEATHERS texture" },
+                @{ name = "eye"; prompt = "EYE texture" }
+            )
+        }
+    }
+    "Chocobo-forest" = @{
+        "body" = @{
+            isMultiTexture = $true
+            parts = @(
+                @{ name = "body"; prompt = "BODY texture" },
+                @{ name = "feathers"; prompt = "FEATHERS texture" }
+            )
+        }
+        "body-w-eye" = @{
+            isMultiTexture = $true
+            parts = @(
+                @{ name = "body"; prompt = "BODY texture" },
+                @{ name = "feathers"; prompt = "FEATHERS texture" },
+                @{ name = "eye"; prompt = "EYE texture" }
+            )
+        }
+    }
+    "Chocobo-sky" = @{
+        "body" = @{
+            isMultiTexture = $true
+            parts = @(
+                @{ name = "body"; prompt = "BODY texture" },
+                @{ name = "feathers"; prompt = "FEATHERS texture" }
+            )
+        }
+        "body-w-eye" = @{
+            isMultiTexture = $true
+            parts = @(
+                @{ name = "body"; prompt = "BODY texture" },
+                @{ name = "feathers"; prompt = "FEATHERS texture" },
+                @{ name = "eye"; prompt = "EYE texture" }
+            )
+        }
+    }
+    "Chocobo-ocean" = @{
+        "body" = @{
+            isMultiTexture = $true
+            parts = @(
+                @{ name = "body"; prompt = "BODY texture" },
+                @{ name = "feathers"; prompt = "FEATHERS texture" }
+            )
+        }
+        "body-w-eye" = @{
+            isMultiTexture = $true
+            parts = @(
+                @{ name = "body"; prompt = "BODY texture" },
+                @{ name = "feathers"; prompt = "FEATHERS texture" },
+                @{ name = "eye"; prompt = "EYE texture" }
+            )
+        }
     }
 }
 
