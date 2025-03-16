@@ -71,8 +71,8 @@ $localCharacterFiles = @{
         'clothes-descendant-hair-acc' = @(
             'tifa/HairAcc_C.uasset'
         )
-        'clothes-descendant-a-w-hair-acc' = @(
-            'tifa/BodyPartA_C.uasset'
+        'clothes-descendant-w-acc' = @(
+            'tifa/BodyPartA_C.uasset',
             'tifa/HairAcc_C.uasset'
         )
     }
@@ -235,7 +235,7 @@ $characterFiles = @{
         'clothes-descendant-hair-acc' = @(
             "$basePlayerCharacterAssetPath/PC0002_00_Tifa_Standard/Texture/HairAcc_C.uasset"
         )
-        'clothes-descendant-a-w-hair-acc' = @(
+        'clothes-descendant-w-acc' = @(
             "$basePlayerCharacterAssetPath/PC0002_00_Tifa_Standard/Texture/BodyPartA_C.uasset",
             "$basePlayerCharacterAssetPath/PC0002_00_Tifa_Standard/Texture/HairAcc_C.uasset"
         )

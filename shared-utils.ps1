@@ -233,7 +233,8 @@ function Start-ModPackaging {
         [Parameter(Mandatory=$true)]
         [hashtable]$Config,
         [switch]$LaunchGame = $false,
-        [string]$TexturePath = $null
+        [string]$TexturePath = $null,
+        [switch]$EarlyLoadOrder = $false
     )
 
     Write-Host "`nStarting mod packaging..." -ForegroundColor Yellow
@@ -258,14 +259,22 @@ function Start-ModPackaging {
     $exportDir = Join-Path $Config.MOD_BASE_DIR "$ModFolder\${modName}-$timestamp"
     New-Item -ItemType Directory -Path $exportDir -Force | Out-Null
     
-Write-Host "`nExport Directory:" -ForegroundColor Yellow
-Write-Host $exportDir -ForegroundColor Green
+    Write-Host "`nExport Directory:" -ForegroundColor Yellow
+    Write-Host $exportDir -ForegroundColor Green
+
+    # Put a `z` or an `a` at the start of mod name to assist users with load order
+    if ($earlyLoadOrder) {
+        $loadOrderPrefix = "a"
+    } else {
+        $loadOrderPrefix = "z"
+    }
+
 
     # Set file paths
     $gamePakDir = Join-Path $Config.GAME_DIR "\End\Content\Paks"
-    $exportUtoc = Join-Path $exportDir "z${modName}_P.utoc"
-    $exportUcas = Join-Path $exportDir "z${modName}_P.ucas"
-    $exportPak = Join-Path $exportDir "z${modName}_P.pak"
+    $exportUtoc = Join-Path $exportDir "${loadOrderPrefix}${modName}_P.utoc"
+    $exportUcas = Join-Path $exportDir "${loadOrderPrefix}${modName}_P.ucas"
+    $exportPak = Join-Path $exportDir "${loadOrderPrefix}${modName}_P.pak"
     
     Write-Host "`nUsing Mod Name: " -NoNewline -ForegroundColor Yellow
     Write-Host "$modName`n" -ForegroundColor Green

@@ -19,7 +19,7 @@ $textureTypeMetadata = @{
             )
         }
     }
-    "Chocobo Standard" = @{
+    "Chocobo-standard" = @{
         "body" = @{
             isMultiTexture = $true
             parts = @(
@@ -29,8 +29,9 @@ $textureTypeMetadata = @{
         }
     }
     "Tifa" = @{
-        "clothes-descendant-a-w-hair-acc" = @{
+        "clothes-descendant-w-acc" = @{
             isMultiTexture = $true
+            earlyLoadOrder = $true
             parts = @(
                 @{ name = "body"; prompt = "BODY-A texture"; uassetOnly = $true },
                 @{ name = "hair-acc"; prompt = "HAIR-ACC texture"; uassetOnly = $true }

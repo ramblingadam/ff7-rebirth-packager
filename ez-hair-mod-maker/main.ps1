@@ -70,7 +70,8 @@ function Complete-ModOperation {
         $isNew,
         [switch]$AutoLaunch = $false,
         $launchGame = $false,
-        $texturePath = $null
+        $texturePath = $null,
+        [switch]$EarlyLoadOrder = $false
     )
     
     # Update last used mod in config
@@ -90,7 +91,7 @@ function Complete-ModOperation {
         exit 0
     } else {
         Write-Host "`nStarting packaging process..." -ForegroundColor Yellow
-        Start-ModPackaging -ModFolder $modFolder -Config $config -LaunchGame:$launchGame -TexturePath $texturePath
+        Start-ModPackaging -ModFolder $modFolder -Config $config -LaunchGame:$launchGame -TexturePath $texturePath 
         exit 0
     }
     
@@ -290,10 +291,11 @@ while ($true) {
          if ($config.AUTO_NAME_MODS -eq "true") {
             # Handle multi-texture case
             if ($texturePath -is [hashtable]) {
-                # Use the first texture's filename for the mod name
-                $firstTexturePath = $texturePath.Values | Select-Object -First 1
-                $textureFileName = Split-Path $firstTexturePath -Leaf
-                $textureFileNameNoExt = [System.IO.Path]::GetFileNameWithoutExtension($textureFileName)
+                # Combine all texture filenames
+                $textureFileNames = $texturePath.Values | ForEach-Object {
+                    [System.IO.Path]::GetFileNameWithoutExtension($_)
+                }
+                $textureFileNameNoExt = $textureFileNames -join "-"
             } else {
                 $textureFileName = Split-Path $texturePath -Leaf
                 $textureFileNameNoExt = [System.IO.Path]::GetFileNameWithoutExtension($textureFileName)
@@ -327,7 +329,7 @@ while ($true) {
         }
         
         # Complete the operation (will always package for new mods)
-        Complete-ModOperation $newModFolder $true -launchGame $launchGame -texturePath $texturePath
+        Complete-ModOperation $newModFolder $true -launchGame $launchGame -texturePath $texturePath 
     }
 
     # Update existing mod
