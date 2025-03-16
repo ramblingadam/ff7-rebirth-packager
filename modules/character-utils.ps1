@@ -64,11 +64,16 @@ $localCharacterFiles = @{
         )
         'clothes-descendant-a' = @(
             'tifa/BodyPartA_C.uasset'
-            # 'tifa/BodyPartA_C.ubulk'
         )
         'clothes-descendant-b' = @(
             'tifa/BodyPartB_C.uasset'
-            # 'tifa/BodyPartB_C.ubulk'
+        )
+        'clothes-descendant-hair-acc' = @(
+            'tifa/HairAcc_C.uasset'
+        )
+        'clothes-descendant-a-w-hair-acc' = @(
+            'tifa/BodyPartA_C.uasset'
+            'tifa/HairAcc_C.uasset'
         )
     }
     'Barret' = @{
@@ -222,10 +227,17 @@ $characterFiles = @{
             "$basePlayerCharacterAssetPath/PC0002_08_Tifa_CostaClothing/Texture/PC0002_08_BodyC_C.uasset"
         )
         'clothes-descendant-a' = @(
-            "$basePlayerCharacterAssetPath/PC0002_00_Tifa_Standard/Texture/PC0002_00_BodyPartA_C.uasset"
+            "$basePlayerCharacterAssetPath/PC0002_00_Tifa_Standard/Texture/BodyPartA_C.uasset"
         )
         'clothes-descendant-b' = @(
-            "$basePlayerCharacterAssetPath/PC0002_00_Tifa_Standard/Texture/PC0002_00_BodyPartB_C.uasset"
+            "$basePlayerCharacterAssetPath/PC0002_00_Tifa_Standard/Texture/BodyPartB_C.uasset"
+        )
+        'clothes-descendant-hair-acc' = @(
+            "$basePlayerCharacterAssetPath/PC0002_00_Tifa_Standard/Texture/HairAcc_C.uasset"
+        )
+        'clothes-descendant-a-w-hair-acc' = @(
+            "$basePlayerCharacterAssetPath/PC0002_00_Tifa_Standard/Texture/BodyPartA_C.uasset",
+            "$basePlayerCharacterAssetPath/PC0002_00_Tifa_Standard/Texture/HairAcc_C.uasset"
         )
     }
     'Barret' = @{

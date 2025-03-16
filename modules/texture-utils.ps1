@@ -28,6 +28,15 @@ $textureTypeMetadata = @{
             )
         }
     }
+    "Tifa" = @{
+        "clothes-descendant-a-w-hair-acc" = @{
+            isMultiTexture = $true
+            parts = @(
+                @{ name = "body"; prompt = "BODY-A texture"; uassetOnly = $true },
+                @{ name = "hair-acc"; prompt = "HAIR-ACC texture"; uassetOnly = $true }
+            )
+        }
+    }
     # "Cloud" = @{
     #     "eyes" = @{
     #         isMultiTexture = $true
@@ -128,7 +137,7 @@ function Start-TextureInjection {
         [Parameter(Mandatory)]
         [string]$SourceUasset,
         
-        [Parameter(Mandatory)]
+        [Parameter()]
         [string]$SourceUbulk,
         
         [Parameter(Mandatory)]
@@ -157,7 +166,9 @@ function Start-TextureInjection {
         # Copy source files
         Write-Host "Copying source files..." -NoNewline
         Copy-Item $SourceUasset (Join-Path $targetDir (Split-Path $SourceUasset -Leaf)) -Force
-        Copy-Item $SourceUbulk (Join-Path $targetDir (Split-Path $SourceUbulk -Leaf)) -Force
+        if ($SourceUbulk) {
+            Copy-Item $SourceUbulk (Join-Path $targetDir (Split-Path $SourceUbulk -Leaf)) -Force
+        }
         Write-Host "Done!" -ForegroundColor Green
         
         # Copy and rename texture file
@@ -240,8 +251,13 @@ function Start-TextureInjectionProcess {
             Write-Host "`nProcessing $($part.prompt)..."
             
             $sourceUasset = Join-Path "original-assets" $sourceFiles[$textureIndex]
-            $sourceUbulk = Join-Path "original-assets" $sourceFiles[$textureIndex + 1]
-            $targetPath = Join-Path $modContentPath $targetPaths[$textureIndex/2]
+            if ($part.uAssetOnly) {
+                $sourceUbulk = $null
+                $targetPath = Join-Path $modContentPath $targetPaths[$textureIndex]
+            } else {
+                $sourceUbulk = Join-Path "original-assets" $sourceFiles[$textureIndex + 1]
+                $targetPath = Join-Path $modContentPath $targetPaths[$textureIndex/2]
+            }
             
             $success = Start-TextureInjection `
                 -SourceUasset $sourceUasset `
@@ -255,8 +271,12 @@ function Start-TextureInjectionProcess {
                     return $false
                 }
             }
-            
-            $textureIndex += 2
+
+            if ($sourceUbulk) {
+                $textureIndex += 2
+            } else {
+                $textureIndex += 1
+            }
         }
     }
     else {
