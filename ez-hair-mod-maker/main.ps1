@@ -233,6 +233,83 @@ function Start-QuickUpdate {
 }
 
 
+# Function to show multi-mod type menu
+function Show-MultiModTypeMenu {
+    param($selectedIndex = 0)
+    Clear-Host
+    Write-Host "+=========================================+" -ForegroundColor Yellow
+    Write-Host "|         Select Multi-Mod Type           |" -ForegroundColor Yellow
+    Write-Host "+=========================================+`n" -ForegroundColor Yellow
+
+    Write-Host "Select a type using arrow keys (UP/DOWN) and press Enter to confirm" -ForegroundColor Cyan
+    Write-Host "Press 'C' to open configuration setup`n" -ForegroundColor Yellow
+    
+    $options = @(
+        "Chocobo"
+    )
+    
+    for ($i = 0; $i -lt $options.Count; $i++) {
+        $prefix = if ($i -eq $selectedIndex) { "-> " } else { "   " }
+        if ($i -eq $selectedIndex) {
+            Write-Host "$prefix$($options[$i])" -ForegroundColor Green
+        } else {
+            Write-Host "$prefix$($options[$i])"
+        }
+    }
+}
+
+# Function to handle multi-mod type menu input
+function Get-MultiModTypeSelection {
+    $selectedIndex = 0
+    $maxIndex = 0  # Only one option for now
+
+    while ($true) {
+        Show-MultiModTypeMenu $selectedIndex
+
+        $key = $host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown")
+
+        switch ($key.VirtualKeyCode) {
+            38 { # Up arrow
+                if ($selectedIndex -gt 0) { $selectedIndex-- }
+            }
+            40 { # Down arrow
+                if ($selectedIndex -lt $maxIndex) { $selectedIndex++ }
+            }
+            67 { # 'C' key
+                return "CONFIG"
+            }
+            13 { # Enter
+                return $selectedIndex + 1
+            }
+        }
+    }
+}
+
+# Function to handle chocobo multi-mod creation
+function Start-ChocoboMultiMod {
+    # Get texture type selection using Chocobo-standard as reference
+    $textureType = Get-TextureTypeSelection "Chocobo-standard"
+    if (-not $textureType) { return }
+    
+    # Get texture paths (will handle multi-texture automatically)
+    $texturePath = Get-TexturePath "Chocobo-standard" $textureType
+    if (-not $texturePath) { return }
+    
+    # For now, just show what we got
+    Write-Host "`nSelected texture type: $textureType" -ForegroundColor Yellow
+    if ($texturePath -is [hashtable]) {
+        Write-Host "Selected textures:" -ForegroundColor Yellow
+        $texturePath.GetEnumerator() | ForEach-Object {
+            Write-Host "$($_.Key): $($_.Value)" -ForegroundColor Green
+        }
+    } else {
+        Write-Host "Selected texture: $texturePath" -ForegroundColor Green
+    }
+    
+    Write-Host "`nPress any key to continue..."
+    $null = $Host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown")
+}
+
 # Main script execution
 while ($true) {
     # Read config file
@@ -412,9 +489,14 @@ while ($true) {
 
     # Create multi-mod
     if ($choice -eq 3) {
-        Write-Host "`nMulti-mod creation coming soon..." -ForegroundColor Yellow
-        Write-Host "Press any key to continue..."
-        $null = $Host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown")
+        $multiModType = Get-MultiModTypeSelection
+        if ($multiModType -eq "CONFIG") {
+            Start-ConfigSetup "FF7 Rebirth Hair Mod Maker" "By Tirien"
+            continue
+        }
+        
+        # Currently only chocobo multi-mods are supported
+        Start-ChocoboMultiMod
         continue
     }
 }
