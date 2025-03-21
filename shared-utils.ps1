@@ -234,7 +234,8 @@ function Start-ModPackaging {
         [hashtable]$Config,
         [switch]$LaunchGame = $false,
         [string]$TexturePath = $null,
-        [switch]$EarlyLoadOrder = $false
+        [switch]$EarlyLoadOrder = $false,
+        [switch]$BatchProcessing = $false
     )
 
     Write-Host "`nStarting mod packaging..." -ForegroundColor Yellow
@@ -327,7 +328,7 @@ function Start-ModPackaging {
             Write-Host $exportTexturePath -ForegroundColor Green
         }
         
-        if ($LaunchGame -or $Config.ALWAYS_LAUNCH_GAME -eq 'true') {
+        if (($LaunchGame -or $Config.ALWAYS_LAUNCH_GAME -eq 'true') -and -not $BatchProcessing) {
             Install-AndLaunchMod -ModName $modName -Timestamp $timestamp -ExportDir $exportDir -ExportUtoc $exportUtoc -ExportUcas $exportUcas -ExportPak $exportPak -Config $Config
         }
         

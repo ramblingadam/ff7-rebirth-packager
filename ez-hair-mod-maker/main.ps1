@@ -346,13 +346,27 @@ function Start-ChocoboMultiMod {
         }
         
         Write-Host "Successfully created mod structure for $chocoboType" -ForegroundColor Green
+        
+        # Package the mod with BatchProcessing flag
+        $success = Start-ModPackaging `
+            -ModFolder $newModFolder `
+            -Config $config `
+            -TexturePath $texturePath `
+            -BatchProcessing
+            
+        if (-not $success) {
+            $allSuccess = $false
+            Write-Host "Failed to package mod for $chocoboType" -ForegroundColor Red
+            continue
+        }
+        
+        Write-Host "Successfully packaged mod for $chocoboType" -ForegroundColor Green
     }
     
     if ($allSuccess) {
-        Write-Host "`nAll chocobo mod structures created successfully!" -ForegroundColor Green
-        # We'll add packaging in the next step
+        Write-Host "`nAll chocobo mods created and packaged successfully!" -ForegroundColor Green
     } else {
-        Write-Host "`nSome mods failed to create. Please check the errors above." -ForegroundColor Red
+        Write-Host "`nSome mods failed to create or package. Please check the errors above." -ForegroundColor Red
     }
     
     Write-Host "`nPress any key to continue..."
