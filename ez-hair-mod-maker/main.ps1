@@ -309,6 +309,7 @@ function Start-ChocoboMultiMod {
     
     $allSuccess = $true
     $createdMods = @()
+    $successfulMods = @()
     
     foreach ($chocoboType in $chocoboTypes) {
         Write-Host "`nProcessing $chocoboType..." -ForegroundColor Yellow
@@ -347,6 +348,15 @@ function Start-ChocoboMultiMod {
         
         Write-Host "Successfully created mod structure for $chocoboType" -ForegroundColor Green
         
+        # Get current timestamp for directory naming
+        $timestamp = Get-Date -Format 'yyyyMMdd_HHmmss'
+        
+        # Convert dash-case to PascalCase for mod name
+        $modName = ($newModFolder -split '-' | ForEach-Object { $_.Substring(0,1).ToUpper() + $_.Substring(1).ToLower() }) -join ''
+        
+        # Create timestamped export directory
+        $exportDir = Join-Path $config.MOD_BASE_DIR "$newModFolder\${modName}-$timestamp"
+        
         # Package the mod with BatchProcessing flag
         $success = Start-ModPackaging `
             -ModFolder $newModFolder `
@@ -361,10 +371,25 @@ function Start-ChocoboMultiMod {
         }
         
         Write-Host "Successfully packaged mod for $chocoboType" -ForegroundColor Green
+        
+        # Store successful mod details for potential installation
+        $successfulMods += @{
+            ModName = $modName
+            Timestamp = $timestamp
+            ExportUtoc = Join-Path $exportDir "z${modName}_P.utoc"
+            ExportUcas = Join-Path $exportDir "z${modName}_P.ucas"
+            ExportPak = Join-Path $exportDir "z${modName}_P.pak"
+        }
     }
     
     if ($allSuccess) {
         Write-Host "`nAll chocobo mods created and packaged successfully!" -ForegroundColor Green
+        
+        # If auto-launch is enabled, install all mods and launch game
+        if ($config.ALWAYS_LAUNCH_GAME -eq 'true') {
+            Write-Host "`nAuto-launch is enabled. Installing all mods..." -ForegroundColor Yellow
+            Install-MultiMods -ModDetails $successfulMods -Config $config
+        }
     } else {
         Write-Host "`nSome mods failed to create or package. Please check the errors above." -ForegroundColor Red
     }

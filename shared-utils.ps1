@@ -389,3 +389,68 @@ function Install-AndLaunchMod {
     Start-Process $Config.STEAM_EXE -ArgumentList "-applaunch", $Config.STEAM_APPID
     Start-Sleep -Seconds 3
 }
+
+# Function to install multiple mods and optionally launch the game
+function Install-MultiMods {
+    param(
+        [Parameter(Mandatory=$true)]
+        [array]$ModDetails,
+        [Parameter(Mandatory=$true)]
+        [hashtable]$Config
+    )
+    
+    $gamePakDir = Join-Path $Config.GAME_DIR "\End\Content\Paks"
+    
+    # Clean up previous versions of all mods in batch
+    Write-Host "`nCleaning up previous versions in game directory..." -ForegroundColor Yellow
+    foreach ($mod in $ModDetails) {
+        Get-ChildItem -Path $gamePakDir -Directory | Where-Object { 
+            $_.Name -like "$($mod.ModName)-*" 
+        } | ForEach-Object {
+            Write-Host "Removing: $($_.FullName)"
+            Remove-Item $_.FullName -Recurse -Force
+            Write-Host "Removed: $($_.FullName)" -ForegroundColor Green
+        }
+    }
+    Start-Sleep -Seconds 1
+    
+    $allSuccess = $true
+    
+    # Install each mod
+    foreach ($mod in $ModDetails) {
+        Write-Host "`nInstalling $($mod.ModName)..." -ForegroundColor Yellow
+        
+        # Create mod directory in game Paks folder
+        $gameExportDir = Join-Path $gamePakDir "$($mod.ModName)-$($mod.Timestamp)"
+        if (-not (Test-Path $gameExportDir)) {
+            New-Item -ItemType Directory -Path $gameExportDir -Force | Out-Null
+        }
+        
+        # Copy mod files
+        try {
+            Copy-Item -Path $mod.ExportUtoc -Destination $gameExportDir -Force
+            Copy-Item -Path $mod.ExportUcas -Destination $gameExportDir -Force
+            Copy-Item -Path $mod.ExportPak -Destination $gameExportDir -Force
+            Write-Host "Successfully installed $($mod.ModName)" -ForegroundColor Green
+        }
+        catch {
+            Write-Host "Failed to install $($mod.ModName): $_" -ForegroundColor Red
+            $allSuccess = $false
+        }
+    }
+    
+    if ($allSuccess) {
+        Write-Host "`nAll mods installed successfully!" -ForegroundColor Green
+        
+        # Launch game
+        Write-Host "`nLaunching game..." -ForegroundColor Yellow
+        Start-Process $Config.STEAM_EXE -ArgumentList "-applaunch", $Config.STEAM_APPID
+        Start-Sleep -Seconds 3
+        
+        return $true
+    }
+    else {
+        Write-Host "`nSome mods failed to install. The game will not be launched." -ForegroundColor Red
+        return $false
+    }
+}
