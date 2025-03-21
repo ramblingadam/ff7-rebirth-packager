@@ -295,15 +295,64 @@ function Start-ChocoboMultiMod {
     $texturePath = Get-TexturePath "Chocobo-standard" $textureType
     if (-not $texturePath) { return }
     
-    # For now, just show what we got
-    Write-Host "`nSelected texture type: $textureType" -ForegroundColor Yellow
-    if ($texturePath -is [hashtable]) {
-        Write-Host "Selected textures:" -ForegroundColor Yellow
-        $texturePath.GetEnumerator() | ForEach-Object {
-            Write-Host "$($_.Key): $($_.Value)" -ForegroundColor Green
+    # Get all chocobo types
+    $chocoboTypes = @(
+        "Chocobo-standard",
+        "Chocobo-mountain",
+        "Chocobo-sand",
+        "Chocobo-forest",
+        "Chocobo-sky",
+        "Chocobo-ocean"
+    )
+    
+    Write-Host "`nCreating mods for all chocobo types..." -ForegroundColor Cyan
+    
+    $allSuccess = $true
+    $createdMods = @()
+    
+    foreach ($chocoboType in $chocoboTypes) {
+        Write-Host "`nProcessing $chocoboType..." -ForegroundColor Yellow
+        
+        # Generate mod name using same pattern as single mod flow
+        if ($texturePath -is [hashtable]) {
+            # Multi-texture case
+            $textureFileNames = $texturePath.Values | ForEach-Object {
+                [System.IO.Path]::GetFileNameWithoutExtension($_)
+            }
+            $textureFileNameNoExt = $textureFileNames -join "-"
+        } else {
+            # Single texture case
+            $textureFileName = Split-Path $texturePath -Leaf
+            $textureFileNameNoExt = [System.IO.Path]::GetFileNameWithoutExtension($textureFileName)
         }
+        
+        $newModFolder = "$chocoboType-$textureType-$textureFileNameNoExt".ToLower()
+        $createdMods += $newModFolder
+        
+        # Create mod directory structure
+        $modContentPath = New-ModDirectoryStructure $newModFolder $chocoboType $textureType
+        
+        # Start texture injection process
+        $success = Start-TextureInjectionProcess `
+            -character $chocoboType `
+            -modContentPath $modContentPath `
+            -textureType $textureType `
+            -texturePath $texturePath
+            
+        if (-not $success) {
+            $allSuccess = $false
+            Write-Host "Failed to create mod for $chocoboType" -ForegroundColor Red
+            continue
+        }
+        
+        Write-Host "Successfully created mod structure for $chocoboType" -ForegroundColor Green
+    }
+    
+    if ($allSuccess) {
+        Write-Host "`nAll chocobo mod structures created successfully!" -ForegroundColor Green
+        # We'll add packaging in the next step
     } else {
-        Write-Host "Selected texture: $texturePath" -ForegroundColor Green
+        Write-Host "`nSome mods failed to create. Please check the errors above." -ForegroundColor Red
     }
     
     Write-Host "`nPress any key to continue..."
