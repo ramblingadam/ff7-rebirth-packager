@@ -117,7 +117,8 @@ function Show-MainMenu {
     
     $options = @(
         "Create New Hair Mod",
-        "Update Existing Hair Mod"
+        "Update Existing Hair Mod",
+        "Create Multi-Mod"
     )
     
     for ($i = 0; $i -lt $options.Count; $i++) {
@@ -133,7 +134,7 @@ function Show-MainMenu {
 # Function to handle menu input
 function Get-MenuSelection {
     $selectedIndex = 0
-    $maxIndex = 1
+    $maxIndex = 2
 
     while ($true) {
         Show-MainMenu $selectedIndex
@@ -345,7 +346,7 @@ while ($true) {
 
         $characterSelection = Get-CharacterSelection
         if ($characterSelection -eq "CONFIG") {
-            Start-ConfigSetup "FF7 Rebirth Hair Mod Maker" "A tool for creating hair mods"
+            Start-ConfigSetup "FF7 Rebirth Hair Mod Maker" "By Tirien"
             continue
         }
         if (-not $characterSelection) { continue }
@@ -407,5 +408,13 @@ while ($true) {
         
         # Complete the operation (will always package)
         Complete-ModOperation $modFolder $false -launchGame $launchGame -texturePath $texturePath
+    }
+
+    # Create multi-mod
+    if ($choice -eq 3) {
+        Write-Host "`nMulti-mod creation coming soon..." -ForegroundColor Yellow
+        Write-Host "Press any key to continue..."
+        $null = $Host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown")
+        continue
     }
 }
