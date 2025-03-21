@@ -183,6 +183,10 @@ $localCharacterFiles = @{
             'chocobo-standard/VE0009_00_Eye_C.uasset',
             'chocobo-standard/VE0009_00_Eye_C.ubulk'
         )
+        'eyes' = @(
+            'chocobo-standard/VE0009_00_Eye_C.uasset',
+            'chocobo-standard/VE0009_00_Eye_C.ubulk'
+        )
     }
     'Chocobo-mountain' = @{
         'body' = @(
@@ -196,6 +200,10 @@ $localCharacterFiles = @{
             'chocobo-mountain/VE0009_02_Body_C.ubulk'
             'chocobo-mountain/VE0009_02_Feather_C.uasset',
             'chocobo-mountain/VE0009_02_Feather_C.ubulk',
+            'chocobo-mountain/VE0009_02_Eye_C.uasset',
+            'chocobo-mountain/VE0009_02_Eye_C.ubulk'
+        )
+        'eyes' = @(
             'chocobo-mountain/VE0009_02_Eye_C.uasset',
             'chocobo-mountain/VE0009_02_Eye_C.ubulk'
         )
@@ -215,6 +223,10 @@ $localCharacterFiles = @{
             'chocobo-sand/VE0009_03_Eye_C.uasset',
             'chocobo-sand/VE0009_03_Eye_C.ubulk'
         )
+        'eyes' = @(
+            'chocobo-sand/VE0009_03_Eye_C.uasset',
+            'chocobo-sand/VE0009_03_Eye_C.ubulk'
+        )
     }
     'Chocobo-forest' = @{
         'body' = @(
@@ -228,6 +240,10 @@ $localCharacterFiles = @{
             'chocobo-forest/VE0009_05_Body_C.ubulk'
             'chocobo-forest/VE0009_05_Feather_C.uasset',
             'chocobo-forest/VE0009_05_Feather_C.ubulk',
+            'chocobo-forest/VE0009_05_Eye_C.uasset',
+            'chocobo-forest/VE0009_05_Eye_C.ubulk'
+        )
+        'eyes' = @(
             'chocobo-forest/VE0009_05_Eye_C.uasset',
             'chocobo-forest/VE0009_05_Eye_C.ubulk'
         )
@@ -247,6 +263,10 @@ $localCharacterFiles = @{
             'chocobo-sky/VE0009_06_Eye_C.uasset',
             'chocobo-sky/VE0009_06_Eye_C.ubulk'
         )
+        'eyes' = @(
+            'chocobo-sky/VE0009_06_Eye_C.uasset',
+            'chocobo-sky/VE0009_06_Eye_C.ubulk'
+        )
     }
     'Chocobo-ocean' = @{
         'body' = @(
@@ -260,6 +280,10 @@ $localCharacterFiles = @{
             'chocobo-ocean/VE0009_07_Body_C.ubulk'
             'chocobo-ocean/VE0009_07_Feather_C.uasset',
             'chocobo-ocean/VE0009_07_Feather_C.ubulk',
+            'chocobo-ocean/VE0009_07_Eye_C.uasset',
+            'chocobo-ocean/VE0009_07_Eye_C.ubulk'
+        )
+        'eyes' = @(
             'chocobo-ocean/VE0009_07_Eye_C.uasset',
             'chocobo-ocean/VE0009_07_Eye_C.ubulk'
         )
@@ -394,12 +418,87 @@ $characterFiles = @{
         )
     }
     'Chocobo-standard' = @{
-        # 'feather' = @(
-        #     "$basePlayerCharacterAssetPath/Property/VE0009_00_Chocobo_Standard/Texture/VE0009_00_Feather_C.uasset"
-        # )
         'body' = @(
             "$basePropertyCharacterAssetPath/VE0009_00_Chocobo_Standard/Texture/VE0009_00_Body_C.uasset"
             "$basePropertyCharacterAssetPath/VE0009_00_Chocobo_Standard/Texture/VE0009_00_Feather_C.uasset"
+        )
+        'body-w-eyes' = @(
+            "$basePropertyCharacterAssetPath/VE0009_00_Chocobo_Standard/Texture/VE0009_00_Body_C.uasset"
+            "$basePropertyCharacterAssetPath/VE0009_00_Chocobo_Standard/Texture/VE0009_00_Feather_C.uasset"
+            "$basePropertyCharacterAssetPath/VE0009_00_Chocobo_Standard/Texture/VE0009_00_Eye_C.uasset"
+        )
+        'eyes' = @(
+            "$basePropertyCharacterAssetPath/VE0009_00_Chocobo_Standard/Texture/VE0009_00_Eye_C.uasset"
+        )
+    }
+    'Chocobo-mountain' = @{
+        'body' = @(
+            "$basePropertyCharacterAssetPath/VE0009_02_Chocobo_Mountain/Texture/VE0009_02_Body_C.uasset"
+            "$basePropertyCharacterAssetPath/VE0009_02_Chocobo_Mountain/Texture/VE0009_02_Feather_C.uasset"
+        )
+        'body-w-eyes' = @(
+            "$basePropertyCharacterAssetPath/VE0009_02_Chocobo_Mountain/Texture/VE0009_02_Body_C.uasset"
+            "$basePropertyCharacterAssetPath/VE0009_02_Chocobo_Mountain/Texture/VE0009_02_Feather_C.uasset"
+            "$basePropertyCharacterAssetPath/VE0009_02_Chocobo_Mountain/Texture/VE0009_02_Eye_C.uasset"
+        )
+        'eyes' = @(
+            "$basePropertyCharacterAssetPath/VE0009_02_Chocobo_Mountain/Texture/VE0009_02_Eye_C.uasset"
+        )
+    }
+    'Chocobo-sand' = @{
+        'body' = @(
+            "$basePropertyCharacterAssetPath/VE0009_03_Chocobo_Sand/Texture/VE0009_03_Body_C.uasset"
+            "$basePropertyCharacterAssetPath/VE0009_03_Chocobo_Sand/Texture/VE0009_03_Feather_C.uasset"
+        )
+        'body-w-eyes' = @(
+            "$basePropertyCharacterAssetPath/VE0009_03_Chocobo_Sand/Texture/VE0009_03_Body_C.uasset"
+            "$basePropertyCharacterAssetPath/VE0009_03_Chocobo_Sand/Texture/VE0009_03_Feather_C.uasset"
+            "$basePropertyCharacterAssetPath/VE0009_03_Chocobo_Sand/Texture/VE0009_03_Eye_C.uasset"
+        )
+        'eyes' = @(
+            "$basePropertyCharacterAssetPath/VE0009_03_Chocobo_Sand/Texture/VE0009_03_Eye_C.uasset"
+        )
+    }
+    'Chocobo-forest' = @{
+        'body' = @(
+            "$basePropertyCharacterAssetPath/VE0009_05_Chocobo_Forest/Texture/VE0009_05_Body_C.uasset"
+            "$basePropertyCharacterAssetPath/VE0009_05_Chocobo_Forest/Texture/VE0009_05_Feather_C.uasset"
+        )
+        'body-w-eyes' = @(
+            "$basePropertyCharacterAssetPath/VE0009_05_Chocobo_Forest/Texture/VE0009_05_Body_C.uasset"
+            "$basePropertyCharacterAssetPath/VE0009_05_Chocobo_Forest/Texture/VE0009_05_Feather_C.uasset"
+            "$basePropertyCharacterAssetPath/VE0009_05_Chocobo_Forest/Texture/VE0009_05_Eye_C.uasset"
+        )
+        'eyes' = @(
+            "$basePropertyCharacterAssetPath/VE0009_05_Chocobo_Forest/Texture/VE0009_05_Eye_C.uasset"
+        )
+    }
+    'Chocobo-sky' = @{
+        'body' = @(
+            "$basePropertyCharacterAssetPath/VE0009_06_Chocobo_Sky/Texture/VE0009_06_Body_C.uasset"
+            "$basePropertyCharacterAssetPath/VE0009_06_Chocobo_Sky/Texture/VE0009_06_Feather_C.uasset"
+        )
+        'body-w-eyes' = @(
+            "$basePropertyCharacterAssetPath/VE0009_06_Chocobo_Sky/Texture/VE0009_06_Body_C.uasset"
+            "$basePropertyCharacterAssetPath/VE0009_06_Chocobo_Sky/Texture/VE0009_06_Feather_C.uasset"
+            "$basePropertyCharacterAssetPath/VE0009_06_Chocobo_Sky/Texture/VE0009_06_Eye_C.uasset"
+        )
+        'eyes' = @(
+            "$basePropertyCharacterAssetPath/VE0009_06_Chocobo_Sky/Texture/VE0009_06_Eye_C.uasset"
+        )
+    }
+    'Chocobo-ocean' = @{
+        'body' = @(
+            "$basePropertyCharacterAssetPath/VE0009_07_Chocobo_Ocean/Texture/VE0009_07_Body_C.uasset"
+            "$basePropertyCharacterAssetPath/VE0009_07_Chocobo_Ocean/Texture/VE0009_07_Feather_C.uasset"
+        )
+        'body-w-eyes' = @(
+            "$basePropertyCharacterAssetPath/VE0009_07_Chocobo_Ocean/Texture/VE0009_07_Body_C.uasset"
+            "$basePropertyCharacterAssetPath/VE0009_07_Chocobo_Ocean/Texture/VE0009_07_Feather_C.uasset"
+            "$basePropertyCharacterAssetPath/VE0009_07_Chocobo_Ocean/Texture/VE0009_07_Eye_C.uasset"
+        )
+        'eyes' = @(
+            "$basePropertyCharacterAssetPath/VE0009_07_Chocobo_Ocean/Texture/VE0009_07_Eye_C.uasset"
         )
     }
 }
