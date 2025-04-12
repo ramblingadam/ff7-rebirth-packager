@@ -279,7 +279,7 @@ function Start-ModPackaging {
     
     Write-Host "`nUsing Mod Name: " -NoNewline -ForegroundColor Yellow
     Write-Host "$modName`n" -ForegroundColor Green
-    Start-Sleep -Seconds 1
+    # Start-Sleep -Seconds 1
     
     # Run UnrealReZen
     $unrealRezenPath = Join-Path $PSScriptRoot "tools\UnrealReZen\UnrealReZen.exe"
@@ -382,7 +382,7 @@ function Install-AndLaunchMod {
     Copy-Item -Path $ExportUcas -Destination $gameExportDir -Force
     Copy-Item -Path $ExportPak -Destination $gameExportDir -Force
     Write-Host "Files copied successfully`n" -ForegroundColor Green
-    Start-Sleep -Seconds 2
+    Start-Sleep -Seconds 1
     
     # Launch game
     Write-Host "Launching game..." -ForegroundColor Yellow

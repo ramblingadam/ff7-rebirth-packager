@@ -62,6 +62,15 @@ $localCharacterFiles = @{
             'tifa/PC0002_08_BodyC_C.uasset',
             'tifa/PC0002_08_BodyC_C.ubulk'
         )
+        'shining-spirit' = @(
+            'tifa/PC0002_09_BodyA_C.uasset',
+            'tifa/PC0002_09_BodyA_C.ubulk',
+            'tifa/PC0002_09_BodyB_C.uasset',
+            'tifa/PC0002_09_BodyB_C.ubulk'
+            # ,
+            # 'tifa/PC0002_08_BodyC_C.uasset',
+            # 'tifa/PC0002_08_BodyC_C.ubulk'
+        )
         'clothes-descendant-a' = @(
             'tifa/BodyPartA_C.uasset'
         )
@@ -75,6 +84,25 @@ $localCharacterFiles = @{
             'tifa/BodyPartA_C.uasset',
             'tifa/HairAcc_C.uasset'
         )
+        'mermaid-hair-main-c' = @(
+            'tifa/mermaid/HairMain_C.uasset'
+        )
+        'mermaid-hair-braid-c' = @(
+            'tifa/mermaid/HairBraid_C.uasset'
+        )
+        'mermaid-skirt-long' = @(
+            'tifa/mermaid/LONG_SKIRT_Base_Color_-_2048px.uasset'
+        )
+        'mermaid-skirt-base' = @(
+            'tifa/mermaid/SHIRT_SKIRT_Base_Color_-_2048px.uasset'
+        )
+        'mermaid-skin' = @(
+            'tifa/mermaid/Skin_C.uasset'
+        )
+        'mermaid-main' = @(
+            'tifa/mermaid/NEW_UV_MAIN.uasset'
+        )
+
     }
     'Barret' = @{
         'hair' = @(
@@ -156,6 +184,18 @@ $localCharacterFiles = @{
         'clothes-accessories' = @(
             'yuffie/PC0005_00_BodyA_C.uasset',
             'yuffie/PC0005_00_BodyA_C.ubulk'
+        )
+        'clothes-accessories-alpha-a' = @(
+            'yuffie/PC0005_00_BodyA_A.uasset',
+            'yuffie/PC0005_00_BodyA_A.ubulk'
+        )
+        'clothes-accessories-alpha-o' = @(
+            'yuffie/PC0005_00_BodyA_O.uasset',
+            'yuffie/PC0005_00_BodyA_O.ubulk'
+        )
+        'clothes-accessories-alpha-mr' = @(
+            'yuffie/PC0005_00_BodyA_Mr.uasset',
+            'yuffie/PC0005_00_BodyA_Mr.ubulk'
         )
     }
     'Cait Sith' = @{
@@ -324,6 +364,15 @@ $characterFiles = @{
         'head' = @(
             "$basePlayerCharacterAssetPath/PC0002_00_Tifa_Standard/Texture/PC0002_00_Head_C.uasset"
         )
+        'shining-spirit' = @(
+            "$basePlayerCharacterAssetPath/PC0002_09_Tifa_CostaClothing2/Texture/PC0002_09_BodyA_C.uasset",
+            "$basePlayerCharacterAssetPath/PC0002_09_Tifa_CostaClothing2/Texture/PC0002_09_BodyA_C.ubulk",
+            "$basePlayerCharacterAssetPath/PC0002_09_Tifa_CostaClothing2/Texture/PC0002_09_BodyB_C.uasset",
+            "$basePlayerCharacterAssetPath/PC0002_09_Tifa_CostaClothing2/Texture/PC0002_09_BodyB_C.ubulk"
+            # ,
+            # "$basePlayerCharacterAssetPath/PC0002_08_Tifa_CostaClothing/Texture/PC0002_08_BodyC_C.uasset",
+            # "$basePlayerCharacterAssetPath/PC0002_08_Tifa_CostaClothing/Texture/PC0002_08_BodyC_C.ubulk"
+        )
         'majestic-glamour-top' = @(
             "$basePlayerCharacterAssetPath/PC0002_08_Tifa_CostaClothing/Texture/PC0002_08_BodyA_C.uasset"
         )
@@ -407,6 +456,15 @@ $characterFiles = @{
         )
         'clothes-accessories' = @(
             "$basePlayerCharacterAssetPath/PC0005_00_Yuffie_Standard/Texture/PC0005_00_BodyA_C.uasset"
+        )
+        'clothes-accessories-alpha-a' = @(
+            "$basePlayerCharacterAssetPath/PC0005_00_Yuffie_Standard/Texture/PC0005_00_BodyA_A.uasset"
+        )
+        'clothes-accessories-alpha-o' = @(
+            "$basePlayerCharacterAssetPath/PC0005_00_Yuffie_Standard/Texture/PC0005_00_BodyA_O.uasset"
+        )
+        'clothes-accessories-alpha-mr' = @(
+            "$basePlayerCharacterAssetPath/PC0005_00_Yuffie_Standard/Texture/PC0005_00_BodyA_Mr.uasset"
         )
     } 
     'Cait Sith' = @{
@@ -521,6 +579,16 @@ $textureTypeMetadata = @{
             parts = @(
                 @{ name = "body"; prompt = "BODY-A texture"; uassetOnly = $true },
                 @{ name = "hair-acc"; prompt = "HAIR-ACC texture"; uassetOnly = $true }
+            )
+        }
+        "shining-spirit" = @{
+            isMultiTexture = $true
+            earlyLoadOrder = $true
+            parts = @(
+                @{ name = "top"; prompt = "BODY-A(top) texture" },
+                @{ name = "bottom"; prompt = "BODY-B(bottom) texture" }
+                # ,
+                # @{ name = "hair-acc"; prompt = "HAIR-ACC texture" }
             )
         }
     }
